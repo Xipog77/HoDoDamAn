@@ -1,0 +1,12 @@
+.env
+node_modules
+dist
+.vinxi
+.netlify
+.output
+.git
+.agents
+.claude
+.tanstack
+uploads
+*.md

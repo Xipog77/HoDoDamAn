@@ -1,0 +1,1 @@
+ALTER TABLE "anniversaries" ADD COLUMN "post_id" integer;
