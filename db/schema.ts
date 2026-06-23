@@ -26,6 +26,14 @@ export const users = pgTable('users', {
   role: userRoleEnum('role').notNull().default('MEMBER'),
   status: userStatusEnum('status').notNull().default('PENDING'),
   personId: integer('person_id'),
+  email: varchar('email', { length: 255 }),
+  phone: varchar('phone', { length: 50 }),
+  twoFactorEnabled: boolean('two_factor_enabled').default(false).notNull(),
+  twoFactorSecret: text('two_factor_secret'),
+  emailNotifications: boolean('email_notifications').default(true).notNull(),
+  socialLinks: jsonb('social_links'), // { facebook?, zalo?, tiktok?, youtube? }
+  occupation: varchar('occupation', { length: 300 }),
+  currentAddress: varchar('current_address', { length: 500 }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
@@ -53,6 +61,12 @@ export const persons = pgTable('persons', {
   generation: integer('generation').notNull().default(1),
   branch: varchar('branch', { length: 100 }),
   isDeceased: boolean('is_deceased').default(false),
+  phone: varchar('phone', { length: 50 }),
+  email: varchar('email', { length: 255 }),
+  socialLinks: jsonb('social_links'), // { facebook?, zalo?, tiktok?, youtube? }
+  occupation: varchar('occupation', { length: 300 }),
+  currentAddress: varchar('current_address', { length: 500 }),
+  contactVisibility: jsonb('contact_visibility'), // { phone: bool, email: bool, social: bool }
   extra: jsonb('extra'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -78,6 +92,15 @@ export const posts = pgTable('posts', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
+export const postComments = pgTable('post_comments', {
+  id: serial('id').primaryKey(),
+  postId: integer('post_id').notNull(),
+  userId: integer('user_id').notNull(),
+  content: text('content').notNull(),
+  parentId: integer('parent_id'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})
+
 export const galleries = pgTable('galleries', {
   id: serial('id').primaryKey(),
   title: varchar('title', { length: 300 }).notNull(),
@@ -93,6 +116,7 @@ export const familyFund = pgTable('family_fund', {
   description: text('description').notNull(),
   date: varchar('date', { length: 20 }).notNull(),
   recordedBy: integer('recorded_by').notNull(),
+  personId: integer('person_id'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
 
@@ -133,6 +157,16 @@ export const media = pgTable('media', {
   postId: integer('post_id'),
   caption: text('caption'),
   uploadedBy: integer('uploaded_by'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})
+
+export const homeCarouselSlides = pgTable('home_carousel_slides', {
+  id: serial('id').primaryKey(),
+  imageUrl: text('image_url').notNull(),
+  title: varchar('title', { length: 200 }),
+  description: text('description'),
+  order: integer('order').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
 

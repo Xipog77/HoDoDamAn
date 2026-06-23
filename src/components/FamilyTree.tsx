@@ -12,6 +12,8 @@ import {
   Handle,
   Position,
   MarkerType,
+  ReactFlowProvider,
+  useViewport,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import dagre from '@dagrejs/dagre'
@@ -80,16 +82,11 @@ function PersonNode({ data, id }: { data: PersonData & { selected: boolean; onSe
   )
 }
 
-function GenerationLabelNode({ data }: { data: { generation: number } }) {
+function GenerationLabelNode() {
   return (
-    <div className="relative flex items-center h-[90px]">
+    <div className="relative flex items-center h-[90px] pointer-events-none">
       {/* Dashed line background extending to the right */}
-      <div className="absolute left-0 top-1/2 w-[5000px] h-0 border-t-2 border-dashed border-wood-400/40 -z-10 pointer-events-none" />
-      
-      {/* Label Box */}
-      <div className="text-wood-800 font-serif font-bold text-lg whitespace-nowrap bg-parchment px-5 py-2 rounded-xl border-2 border-wood-400 shadow-sm relative z-10 opacity-90">
-        Đời thứ {data.generation}
-      </div>
+      <div className="absolute left-0 top-1/2 w-[10000px] h-0 border-t border-dashed border-wood-400/20 -z-10" />
     </div>
   )
 }
@@ -113,12 +110,27 @@ function layoutWithDagre(nodes: Node[], edges: Edge[]) {
 }
 
 export function FamilyTree() {
+  return (
+    <ReactFlowProvider>
+      <FamilyTreeContent />
+    </ReactFlowProvider>
+  )
+}
+
+function FamilyTreeContent() {
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [loading, setLoading] = useState(true)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [branch, setBranch] = useState('')
   const [rawData, setRawData] = useState<{ nodes: Node[]; edges: Edge[] }>({ nodes: [], edges: [] })
+  const [generationLevels, setGenerationLevels] = useState<Array<{ generation: number; y: number }>>([])
+  const [extent, setExtent] = useState<[[number, number], [number, number]]>([
+    [-10000, -10000],
+    [10000, 10000],
+  ])
+
+  const { y: viewportY, zoom } = useViewport()
 
   const handleSelectNode = useCallback((id: string) => {
     setSelectedNodeId(prev => prev === id ? null : id)
@@ -143,10 +155,16 @@ export function FamilyTree() {
     const laid = layoutWithDagre(rawData.nodes, rawData.edges)
     
     let minX = Infinity
+    let maxX = -Infinity
+    let minY = Infinity
+    let maxY = -Infinity
     const genYs = new Map<number, number>()
 
     const withSelected = laid.map(n => {
       minX = Math.min(minX, n.position.x)
+      maxX = Math.max(maxX, n.position.x + 240)
+      minY = Math.min(minY, n.position.y)
+      maxY = Math.max(maxY, n.position.y + 90)
       const gen = (n.data as unknown as PersonData).generation
       if (gen !== undefined && !genYs.has(gen)) {
         genYs.set(gen, n.position.y)
@@ -176,6 +194,20 @@ export function FamilyTree() {
       },
       animated: e.source === selectedNodeId || e.target === selectedNodeId
     })))
+
+    const levels = Array.from(genYs.entries()).map(([gen, y]) => ({ generation: gen, y }))
+    setGenerationLevels(levels)
+
+    if (minX !== Infinity) {
+      const absoluteMinX = minX - 220
+      const paddingX = 600
+      const paddingYTop = 100
+      const paddingYBottom = 200
+      setExtent([
+        [absoluteMinX - paddingX, minY - paddingYTop],
+        [maxX + paddingX, maxY + paddingYBottom]
+      ])
+    }
   }, [selectedNodeId, handleSelectNode, setNodes, setEdges, rawData])
 
   const selectedPersonData = useMemo(() => {
@@ -207,6 +239,26 @@ export function FamilyTree() {
 
   return (
     <div className="w-full h-full relative overflow-hidden flex">
+      {/* Generation Labels Fixed Left Panel */}
+      <div className="absolute left-4 top-0 bottom-0 w-28 pointer-events-none z-10 overflow-hidden">
+        {generationLevels.map(lvl => {
+          const top = lvl.y * zoom + viewportY
+          return (
+            <div
+              key={lvl.generation}
+              className="absolute left-0 transition-transform duration-75"
+              style={{
+                transform: `translateY(${top}px) translateY(-50%)`,
+              }}
+            >
+              <div className="text-wood-800 font-serif font-bold text-xs whitespace-nowrap bg-parchment/95 px-3 py-1.5 rounded-lg border border-wood-400/40 shadow-md">
+                Đời thứ {lvl.generation}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
       {/* Tree Canvas */}
       <div className="flex-1 relative h-full">
         <ReactFlow
@@ -217,13 +269,14 @@ export function FamilyTree() {
           nodeTypes={nodeTypes}
           fitView
           fitViewOptions={{ padding: 0.2 }}
-          minZoom={0.2}
+          minZoom={0.55}
           maxZoom={1.5}
           nodesDraggable={false}
           panOnDrag={true}
           zoomOnScroll={true}
           zoomOnPinch={true}
           zoomOnDoubleClick={true}
+          translateExtent={extent}
           className="bg-parchment/30"
           onPaneClick={() => setSelectedNodeId(null)}
         >

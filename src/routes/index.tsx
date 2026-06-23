@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { TreePine, Users, Calendar, Bell, BookOpen, ArrowRight, Clock } from 'lucide-react'
+import { TreePine, Users, Calendar, Bell, BookOpen, ArrowRight, Clock, ChevronLeft, ChevronRight } from 'lucide-react'
 import { homepageBackgrounds } from '@/lib/background-images'
 
 interface HomepageData {
@@ -26,61 +26,80 @@ function SkeletonCard() {
 
 function HomePage() {
   const [data, setData] = useState<HomepageData | null>(null)
+  const [slides, setSlides] = useState<any[]>([])
+  const [currentSlide, setCurrentSlide] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Fetch homepage details
     fetch('/api/homepage/data')
       .then(r => r.json())
       .then(setData)
       .catch(console.error)
       .finally(() => setLoading(false))
+
+    // Fetch carousel slides
+    fetch('/api/carousel')
+      .then(r => r.json())
+      .then(d => setSlides(d.slides || []))
+      .catch(console.error)
   }, [])
+
+  // Auto-play slides
+  useEffect(() => {
+    if (slides.length <= 1) return
+    const interval = setInterval(() => {
+      setCurrentSlide(curr => (curr + 1) % slides.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [slides])
+
+  const nextSlide = () => {
+    setCurrentSlide(curr => (curr + 1) % slides.length)
+  }
+
+  const prevSlide = () => {
+    setCurrentSlide(curr => (curr - 1 + slides.length) % slides.length)
+  }
 
   return (
     <div className="min-h-screen">
-      {/* Introduction Hero Section */}
-      <section className="relative text-white py-16 sm:py-24 overflow-hidden border-b border-gold-600/30">
-        {/* Background Image of Từ đường */}
+      
+      {/* Unified Hero & History Banner — Transparent over Background Image */}
+      <section className="relative text-white py-20 overflow-hidden border-b border-gold-600/30">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
           style={{ 
             backgroundImage: `url("${homepageBackgrounds[0] || 'https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?auto=format&fit=crop&q=80&w=1600'}")`,
           }} 
         />
-        {/* Dark overlay to make text readable */}
-        <div className="absolute inset-0 bg-gradient-to-r from-wood-950 via-wood-950/90 to-wood-900/40" />
-        {/* Pattern overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-wood-950/95 via-wood-950/90 to-wood-950/95" />
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(/pattern-trondong.svg)', backgroundSize: '200px' }} />
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            {/* Left Column: History text */}
-            <div className="lg:col-span-10 space-y-6">
-              <div className="inline-flex items-center gap-2 bg-gold-600/20 border border-gold-500/30 rounded-full px-4 py-1.5 backdrop-blur-sm">
-                <span className="text-gold-300 text-sm font-semibold tracking-wider uppercase">Lịch sử & Nguồn cội</span>
-              </div>
-              <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gold-400 drop-shadow-md">
-                Dòng họ Đỗ Đàm An
-              </h1>
-              <div className="w-24 h-1 bg-gold-500 rounded" />
-              
-              <div className="space-y-4 text-stone-200 font-sans text-base leading-relaxed text-justify drop-shadow-sm">
-                <p>
-                  Khởi nguồn từ vùng đất Thanh Hóa ngàn năm văn hiến, cụ Khởi Tổ dòng họ Đỗ Đàm An đã thực hiện cuộc thiên di lịch sử vào thế kỷ 18. Với ý chí sắt đá, lòng dũng cảm phi thường và tầm nhìn xa trông rộng, cụ cùng hiền mẫu đã vượt qua trăm ngàn gian khó để khai sơn phá thạch, lập ấp và đặt nền móng đầu tiên cho cơ nghiệp của dòng tộc tại vùng đất mới.
-                </p>
-                <p>
-                  Trải qua hơn hai trăm năm hưng thịnh và phát triển, qua 9 thế hệ tiếp nối, con cháu dòng họ Đỗ Đàm An luôn giữ vững truyền thống gia phong cao đẹp: lấy <strong>Trung Hiếu làm đầu, Cần Kiệm lập thân</strong>, lấy sự học và tri thức làm kim chỉ nam để vươn lên.
-                </p>
-                <blockquote className="border-l-4 border-gold-500 pl-4 py-2 my-6 italic text-gold-200 bg-wood-950/80 backdrop-blur-sm font-serif rounded-r-lg">
-                  "Cây có cội mới nảy cành xanh lá, nước có nguồn mới bể rộng sông sâu. Con cháu họ Đỗ Đàm An ngàn đời khắc cốt ghi tâm công ơn tiên tổ, cùng nhau đoàn kết xây dựng quê hương, làm rạng danh dòng tộc."
-                </blockquote>
-                <p>
-                  Hệ thống gia phả số này được xây dựng nhằm mục đích thiêng liêng: bảo tồn vẹn nguyên lịch sử dòng họ, ghi nhận công lao của các bậc tiền nhân, đồng thời là cầu nối vững chắc kết nối tình cảm thâm giao của tất cả con cháu nội ngoại trên khắp mọi miền Tổ quốc.
-                </p>
-              </div>
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="inline-flex items-center gap-2 bg-gold-500/20 border border-gold-400/30 rounded-full px-4 py-1.5">
+              <span className="text-gold-300 text-xs font-semibold tracking-wider uppercase font-sans">Lịch sử & Nguồn cội</span>
             </div>
-
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gold-400 drop-shadow-md">
+              Lịch sử Dòng tộc Đỗ Đàm An
+            </h1>
+            <div className="w-20 h-1 bg-gold-600 rounded" />
+            
+            <div className="space-y-5 text-stone-200 font-sans text-base leading-relaxed text-justify">
+              <p>
+                Khởi nguồn từ vùng đất Thanh Hóa ngàn năm văn hiến, cụ Khởi Tổ dòng họ Đỗ Đàm An đã thực hiện cuộc thiên di lịch sử vào thế kỷ 18. Với ý chí sắt đá, lòng dũng cảm phi thường và tầm nhìn xa trông rộng, cụ cùng hiền mẫu đã vượt qua trăm ngàn gian khó để khai sơn phá thạch, lập ấp và đặt nền móng đầu tiên cho cơ nghiệp của dòng tộc tại vùng đất mới.
+              </p>
+              <p>
+                Trải qua hơn hai trăm năm hưng thịnh và phát triển, qua 9 thế hệ tiếp nối, con cháu dòng họ Đỗ Đàm An luôn giữ vững truyền thống gia phong cao đẹp: lấy <strong>Trung Hiếu làm đầu, Cần Kiệm lập thân</strong>, lấy sự học và tri thức làm kim chỉ nam để vươn lên.
+              </p>
+              <blockquote className="border-l-4 border-gold-500 pl-4 py-2 my-6 italic text-stone-200 bg-gold-500/10 font-serif rounded-r-lg">
+                "Cây có cội mới nảy cành xanh lá, nước có nguồn mới bể rộng sông sâu. Con cháu họ Đỗ Đàm An ngàn đời khắc cốt ghi tâm công ơn tiên tổ, cùng nhau đoàn kết xây dựng quê hương, làm rạng danh dòng tộc."
+              </blockquote>
+              <p>
+                Hệ thống gia phả số này được xây dựng nhằm mục đích thiêng liêng: bảo tồn vẹn nguyên lịch sử dòng họ, ghi nhận công lao của các bậc tiền nhân, đồng thời là cầu nối vững chắc kết nối tình cảm thâm giao của tất cả con cháu nội ngoại trên khắp mọi miền Tổ quốc.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -203,6 +222,86 @@ function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Carousel — Bottom Section */}
+      {slides.length > 0 && (
+        <section className="bg-wood-950 border-t border-gold-600/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-2">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="w-12 h-[1px] bg-gold-600/40" />
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-gold-400 text-center">Hình ảnh gia tộc</h2>
+              <div className="w-12 h-[1px] bg-gold-600/40" />
+            </div>
+          </div>
+          <div className="relative w-full h-[360px] sm:h-[480px] md:h-[600px] overflow-hidden">
+            {slides.map((slide, idx) => (
+              <div
+                key={slide.id}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                  idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                }`}
+              >
+                <img
+                  src={slide.imageUrl}
+                  alt={slide.title || 'Slide image'}
+                  className="w-full h-full object-cover object-center"
+                />
+                {/* Overlay Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-wood-950/90 via-wood-950/30 to-transparent" />
+                
+                {/* Slide text details */}
+                {(slide.title || slide.description) && (
+                  <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10 md:p-14 text-white max-w-4xl">
+                    {slide.title && (
+                      <h3 className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-gold-300 drop-shadow-lg mb-2">
+                        {slide.title}
+                      </h3>
+                    )}
+                    {slide.description && (
+                      <p className="text-stone-200 text-sm sm:text-base font-sans drop-shadow-md line-clamp-2 max-w-2xl">
+                        {slide.description}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* Slider controls (arrows) */}
+            {slides.length > 1 && (
+              <>
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-wood-900/60 hover:bg-wood-850/80 border border-wood-700/50 p-2 rounded-full text-white transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-wood-900/60 hover:bg-wood-850/80 border border-wood-700/50 p-2 rounded-full text-white transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </>
+            )}
+
+            {/* Dots Indicator */}
+            {slides.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                {slides.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentSlide(idx)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${
+                      idx === currentSlide ? 'bg-gold-500 w-6' : 'bg-white/50 hover:bg-white/80'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

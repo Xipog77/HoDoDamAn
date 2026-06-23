@@ -1,0 +1,6 @@
+Chỉnh sửa lại phần carosel ở trang chủ sẽ tự chạy ở dưới, chứ không phải ở trên. Phần cấu trúc ở trên vẫn giữ như cũ là phần Lịch sử & Nguồn cội nằm trên phần ảnh trong suốt ở dưới
+Phần quản lý carousel cũng chưa được tối ưu, tinh chỉnh lại cho tôi
+Phần thông báo theo yêu cầu của tôi là bổ sung thêm cơ chế gửi thông báo qua email, sđt đã lưu, đồng thời xóa thông báo cũ mà chưa có
+Trang quản lý sự kiện sẽ trình bày mục tìm kiếm/ chỉnh sửa như cách trình bày ở bên Quản lý hồ sơ và quản lý gia phả
+Phần quản lý bài viết các nút không hoạt động
+Về phần Thông tin cơ bản trong gia phả và hồ sơ, bổ sung thêm trường thông tin về liên hệ (sđt, email, mạng xã hội đã đựoc gắn trong phần cài đặt, có thể lựa chọn công khai hoặc không công khai), thông tin về công việc và nơi ở hiện tại (cũng có thể tự sửa trong cài đặt hoặc mục quản lý của admin

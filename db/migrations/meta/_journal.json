@@ -43,6 +43,20 @@
       "when": 1781108022737,
       "tag": "0005_glorious_timeslip",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1782128107907,
+      "tag": "0006_lazy_gamora",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1782132187559,
+      "tag": "0007_dark_plazm",
+      "breakpoints": true
     }
   ]
 }

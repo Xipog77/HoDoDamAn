@@ -35,6 +35,22 @@ export const Route = createFileRoute('/api/auth/login')({
         return Response.json({ error: 'Tài khoản của bạn đã bị khóa' }, { status: 403 })
       }
 
+      // Check if 2FA is enabled
+      if (user.twoFactorEnabled) {
+        const { code } = body
+        if (!code) {
+          // Tell client that 2FA code is required
+          return Response.json({ requires2FA: true })
+        }
+
+        // Verify the code
+        const { verifyTOTP } = await import('@/lib/totp')
+        const isValidOTP = verifyTOTP(code, user.twoFactorSecret || '')
+        if (!isValidOTP) {
+          return Response.json({ error: 'Mã xác thực 2FA không chính xác' }, { status: 401 })
+        }
+      }
+
       const token = await signToken({
         userId: user.id,
         username: user.username,

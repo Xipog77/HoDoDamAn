@@ -34,6 +34,31 @@ export const Route = createFileRoute('/api/media/$id')({
       return Response.json({ error: 'Lỗi server' }, { status: 500 })
     }
   },
+  PATCH: async ({ params, request }) => {
+    const token = getTokenFromCookies(request.headers.get('cookie'))
+    const payload = token ? await verifyToken(token) : null
+    if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
+      return Response.json({ error: 'Không có quyền' }, { status: 403 })
+    }
+
+    try {
+      const id = parseInt(params.id)
+      const body = await request.json()
+      
+      const entry = await db.query.media.findFirst({ where: eq(media.id, id) })
+      if (!entry) return Response.json({ error: 'Không tìm thấy' }, { status: 404 })
+
+      const [updated] = await db.update(media)
+        .set({ caption: body.caption })
+        .where(eq(media.id, id))
+        .returning()
+
+      return Response.json({ success: true, media: updated })
+    } catch (e) {
+      console.error(e)
+      return Response.json({ error: 'Lỗi server' }, { status: 500 })
+    }
+  },
     }
   }
 })

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState, useCallback } from 'react'
-import { User, Calendar, Heart, MessageSquare, Edit3, Send, MapPin, BookOpen, Image as ImageIcon, Film, X, Plus, ExternalLink, Trash2 } from 'lucide-react'
+import { User, Calendar, Heart, MessageSquare, Edit3, Send, MapPin, BookOpen, Image as ImageIcon, X, Plus, ExternalLink, Trash2, Phone, Mail, Briefcase, Home, Globe } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -22,6 +22,10 @@ interface PersonDetail {
     avatarUrl: string | null; birthplace: string | null;
     residence: string | null; burialPlace: string | null;
     generation: number; branch: string | null; isDeceased: boolean | null;
+    phone: string | null; email: string | null;
+    socialLinks: { facebook?: string; zalo?: string; tiktok?: string; youtube?: string } | null;
+    occupation: string | null; currentAddress: string | null;
+    contactVisibility: { phone?: boolean; email?: boolean; social?: boolean } | null;
   }
   father: { id: number; name: string; avatarUrl: string | null } | null
   mother: { id: number; name: string; avatarUrl: string | null } | null
@@ -432,6 +436,58 @@ function PersonPage() {
                 {person.dob && <InfoRow icon={Calendar} label="Ngày sinh" value={person.dob} />}
                 {person.dod && <InfoRow icon={Calendar} label="Ngày mất" value={person.dod} />}
                 {person.dodLunar && <InfoRow icon={Calendar} label="Ngày mất (âm)" value={person.dodLunar} />}
+                {person.occupation && <InfoRow icon={Briefcase} label="Nghề nghiệp" value={person.occupation} />}
+                {person.currentAddress && <InfoRow icon={Home} label="Nơi ở hiện tại" value={person.currentAddress} />}
+
+                {/* SĐT */}
+                {(isAdmin || (user && user.personId === person.id) || (person.contactVisibility?.phone && person.phone)) ? (
+                  person.phone && <InfoRow icon={Phone} label="Số điện thoại" value={person.phone} />
+                ) : (
+                  person.phone && <InfoRow icon={Phone} label="Số điện thoại" value="🔒 Ẩn (Riêng tư)" />
+                )}
+
+                {/* Email */}
+                {(isAdmin || (user && user.personId === person.id) || (person.contactVisibility?.email && person.email)) ? (
+                  person.email && <InfoRow icon={Mail} label="Email" value={person.email} />
+                ) : (
+                  person.email && <InfoRow icon={Mail} label="Email" value="🔒 Ẩn (Riêng tư)" />
+                )}
+
+                {/* Mạng xã hội */}
+                {person.socialLinks && (Object.values(person.socialLinks).some(Boolean)) && (
+                  <div className="flex items-start gap-3">
+                    <Globe className="w-4 h-4 text-stone-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <span className="text-stone-400 text-xs">Mạng xã hội</span>
+                      {(isAdmin || (user && user.personId === person.id) || person.contactVisibility?.social) ? (
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {person.socialLinks.facebook && (
+                            <a href={person.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-xs bg-stone-50 border border-stone-200 text-gold-700 hover:text-gold-600 px-2 py-1 rounded-lg transition-colors flex items-center gap-1 font-sans">
+                              Facebook <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                          {person.socialLinks.zalo && (
+                            <span className="text-xs bg-stone-50 border border-stone-200 text-stone-700 px-2 py-1 rounded-lg font-sans">
+                              Zalo: {person.socialLinks.zalo}
+                            </span>
+                          )}
+                          {person.socialLinks.tiktok && (
+                            <a href={person.socialLinks.tiktok} target="_blank" rel="noopener noreferrer" className="text-xs bg-stone-50 border border-stone-200 text-gold-700 hover:text-gold-600 px-2 py-1 rounded-lg transition-colors flex items-center gap-1 font-sans">
+                              TikTok <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                          {person.socialLinks.youtube && (
+                            <a href={person.socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-xs bg-stone-50 border border-stone-200 text-gold-700 hover:text-gold-600 px-2 py-1 rounded-lg transition-colors flex items-center gap-1 font-sans">
+                              YouTube <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-stone-700 font-medium mt-0.5">🔒 Ẩn (Riêng tư)</p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

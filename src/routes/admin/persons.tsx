@@ -49,6 +49,12 @@ function AdminPersons() {
   const [biography, setBiography] = useState('')
   const [isDeceased, setIsDeceased] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [socialLinks, setSocialLinks] = useState({ facebook: '', zalo: '', tiktok: '', youtube: '' })
+  const [occupation, setOccupation] = useState('')
+  const [currentAddress, setCurrentAddress] = useState('')
+  const [contactVisibility, setContactVisibility] = useState({ phone: false, email: false, social: false })
   const [saving, setSaving] = useState(false)
 
   // Media List State
@@ -80,7 +86,7 @@ function AdminPersons() {
 
   // Load media of selected person
   const loadMedia = useCallback((personId: number) => {
-    fetch(`/api/media?personId=${personId}`)
+    fetch(`/api/media?personId=${personId}&t=${Date.now()}`)
       .then(r => r.json())
       .then(d => setMediaList(d.media || []))
       .catch(console.error)
@@ -108,6 +114,23 @@ function AdminPersons() {
       setBiography(person.biography || '')
       setAvatarUrl(person.avatarUrl || '')
       setIsDeceased(person.isDeceased || false)
+      setPhone(person.phone || '')
+      setEmail(person.email || '')
+      const sl = person.socialLinks || {}
+      setSocialLinks({
+        facebook: sl.facebook || '',
+        zalo: sl.zalo || '',
+        tiktok: sl.tiktok || '',
+        youtube: sl.youtube || '',
+      })
+      setOccupation(person.occupation || '')
+      setCurrentAddress(person.currentAddress || '')
+      const cv = person.contactVisibility || {}
+      setContactVisibility({
+        phone: !!cv.phone,
+        email: !!cv.email,
+        social: !!cv.social,
+      })
       editor?.commands.setContent(person.fullBiography || '')
     }
   }
@@ -123,6 +146,12 @@ function AdminPersons() {
     setBiography('')
     setAvatarUrl('')
     setIsDeceased(false)
+    setPhone('')
+    setEmail('')
+    setSocialLinks({ facebook: '', zalo: '', tiktok: '', youtube: '' })
+    setOccupation('')
+    setCurrentAddress('')
+    setContactVisibility({ phone: false, email: false, social: false })
     editor?.commands.clearContent()
   }
 
@@ -185,18 +214,57 @@ function AdminPersons() {
 
   const handleDeleteMedia = async (mediaId: number) => {
     if (!confirm('Xóa ảnh này khỏi album?')) return
-    const res = await fetch(`/api/media/${mediaId}`, { method: 'DELETE' })
-    if (res.ok && selectedId) {
-      loadMedia(selectedId)
+    try {
+      const res = await fetch(`/api/media/${mediaId}`, { method: 'DELETE' })
+      if (res.ok) {
+        if (selectedId) {
+          loadMedia(selectedId)
+        }
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        alert('Không thể xóa ảnh: ' + (errData.error || res.statusText || res.status))
+      }
+    } catch (e) {
+      alert('Lỗi kết nối khi xóa ảnh')
+    }
+  }
+
+  const handleEditMediaCaption = async (mediaId: number, currentCaption: string) => {
+    const newCaption = prompt("Nhập chú thích mới cho ảnh:", currentCaption)
+    if (newCaption === null) return // User cancelled
+    
+    try {
+      const res = await fetch(`/api/media/${mediaId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ caption: newCaption.trim() || null }),
+      })
+      if (res.ok) {
+        if (selectedId) {
+          loadMedia(selectedId)
+        }
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        alert('Không thể cập nhật chú thích: ' + (errData.error || res.statusText || res.status))
+      }
+    } catch (e) {
+      alert('Lỗi kết nối khi cập nhật chú thích')
     }
   }
 
   const handleMediaFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !selectedId) return
+    
+    const caption = prompt("Nhập chú thích cho ảnh tải lên (nếu có):")
+    if (caption === null) return // User cancelled
+    
     const formData = new FormData()
     formData.append('file', file)
     formData.append('personId', selectedId.toString())
+    if (caption.trim()) {
+      formData.append('caption', caption.trim())
+    }
     
     try {
       const res = await fetch('/api/media', { method: 'POST', body: formData })
@@ -225,6 +293,12 @@ function AdminPersons() {
       dod: dod || null,
       isDeceased,
       avatarUrl: avatarUrl || null,
+      phone: phone || null,
+      email: email || null,
+      socialLinks: socialLinks,
+      occupation: occupation || null,
+      currentAddress: currentAddress || null,
+      contactVisibility: contactVisibility,
     }
 
     const url = selectedId ? `/api/persons/${selectedId}` : '/api/persons'
@@ -436,6 +510,73 @@ function AdminPersons() {
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Số điện thoại</label>
+                      <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="09xx xxx xxx"
+                        className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Địa chỉ Email</label>
+                      <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com"
+                        className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Nghề nghiệp</label>
+                      <input value={occupation} onChange={e => setOccupation(e.target.value)} placeholder="VD: Kỹ sư, Giáo viên..."
+                        className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Nơi ở hiện tại</label>
+                      <input value={currentAddress} onChange={e => setCurrentAddress(e.target.value)} placeholder="VD: Hà Nội..."
+                        className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xs font-semibold text-stone-600 mb-2 uppercase font-sans tracking-wider">Mạng xã hội</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[0.6875rem] text-stone-500 mb-1 font-sans">Facebook</label>
+                        <input value={socialLinks.facebook} onChange={e => setSocialLinks(sl => ({ ...sl, facebook: e.target.value }))} placeholder="Link Facebook"
+                          className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-gold-300 font-sans" />
+                      </div>
+                      <div>
+                        <label className="block text-[0.6875rem] text-stone-500 mb-1 font-sans">Zalo</label>
+                        <input value={socialLinks.zalo} onChange={e => setSocialLinks(sl => ({ ...sl, zalo: e.target.value }))} placeholder="Link Zalo / SĐT"
+                          className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-gold-300 font-sans" />
+                      </div>
+                      <div>
+                        <label className="block text-[0.6875rem] text-stone-500 mb-1 font-sans">TikTok</label>
+                        <input value={socialLinks.tiktok} onChange={e => setSocialLinks(sl => ({ ...sl, tiktok: e.target.value }))} placeholder="Link TikTok"
+                          className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-gold-300 font-sans" />
+                      </div>
+                      <div>
+                        <label className="block text-[0.6875rem] text-stone-500 mb-1 font-sans">YouTube</label>
+                        <input value={socialLinks.youtube} onChange={e => setSocialLinks(sl => ({ ...sl, youtube: e.target.value }))} placeholder="Link YouTube"
+                          className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-gold-300 font-sans" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xs font-semibold text-stone-600 mb-2 uppercase font-sans tracking-wider">Cài đặt công khai thông tin liên hệ</h3>
+                    <div className="bg-stone-50 p-3 rounded-xl border border-stone-200 grid grid-cols-3 gap-2">
+                      <label className="flex items-center gap-1.5 text-xs text-stone-600 font-sans cursor-pointer">
+                        <input type="checkbox" checked={contactVisibility.phone} onChange={e => setContactVisibility(cv => ({ ...cv, phone: e.target.checked }))} className="accent-gold-600" />
+                        SĐT
+                      </label>
+                      <label className="flex items-center gap-1.5 text-xs text-stone-600 font-sans cursor-pointer">
+                        <input type="checkbox" checked={contactVisibility.email} onChange={e => setContactVisibility(cv => ({ ...cv, email: e.target.checked }))} className="accent-gold-600" />
+                        Email
+                      </label>
+                      <label className="flex items-center gap-1.5 text-xs text-stone-600 font-sans cursor-pointer">
+                        <input type="checkbox" checked={contactVisibility.social} onChange={e => setContactVisibility(cv => ({ ...cv, social: e.target.checked }))} className="accent-gold-600" />
+                        Mạng xã hội
+                      </label>
+                    </div>
+                  </div>
+
                   <div className="flex items-center gap-2">
                     <input type="checkbox" id="isDeceased" checked={isDeceased} onChange={e => setIsDeceased(e.target.checked)} className="w-4 h-4 accent-gold-600" />
                     <label htmlFor="isDeceased" className="text-sm text-stone-600 font-sans">Đã mất (Khuất)</label>
@@ -506,13 +647,24 @@ function AdminPersons() {
                       <div key={media.id} className="relative group rounded-xl overflow-hidden border border-stone-150 aspect-video bg-stone-50">
                         <img src={media.url} alt={media.caption || ''} className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteMedia(media.id)}
-                            className="p-1.5 bg-white/95 hover:bg-white text-crimson-600 rounded-lg self-end shadow-sm hover:scale-105 transition-transform"
-                          >
-                            <Trash className="w-3.5 h-3.5" />
-                          </button>
+                          <div className="flex gap-1.5 self-end">
+                            <button
+                              type="button"
+                              onClick={() => handleEditMediaCaption(media.id, media.caption || '')}
+                              className="p-1.5 bg-white/95 hover:bg-white text-gold-600 rounded-lg shadow-sm hover:scale-105 transition-transform"
+                              title="Sửa chú thích"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteMedia(media.id)}
+                              className="p-1.5 bg-white/95 hover:bg-white text-crimson-600 rounded-lg shadow-sm hover:scale-105 transition-transform"
+                              title="Xóa ảnh"
+                            >
+                              <Trash className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                           {media.caption && (
                             <p className="text-[0.6875rem] text-white font-sans line-clamp-2 bg-black/20 p-1 rounded leading-normal">
                               {media.caption}

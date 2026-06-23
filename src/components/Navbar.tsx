@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useAuth } from './AuthProvider'
-import { Menu, X, TreePine, Users, BookOpen, DollarSign, LogIn, LogOut, User, Shield, Calendar, UserCircle } from 'lucide-react'
+import { Menu, X, TreePine, Users, BookOpen, DollarSign, LogIn, LogOut, User, Shield, Calendar, UserCircle, Settings } from 'lucide-react'
 
 export function Navbar() {
   const { user, logout, isAdmin } = useAuth()
@@ -123,6 +123,14 @@ export function Navbar() {
                         Hồ sơ của tôi
                       </Link>
                     )}
+                    <Link
+                      to="/settings"
+                      onClick={() => setShowUser(false)}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:text-gold-400 hover:bg-wood-700 transition-colors border-b border-wood-700/50"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Cài đặt
+                    </Link>
                     <button
                       onClick={() => { setShowUser(false); logout() }}
                       className="w-full flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:text-crimson-400 hover:bg-wood-700 transition-colors"

@@ -1,13 +1,21 @@
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { useAuth } from '../components/AuthProvider'
-import { Shield, Users, TreePine, BookOpen, DollarSign, Bell, UserCircle, Calendar } from 'lucide-react'
+import { Shield, Users, TreePine, BookOpen, DollarSign, Bell, UserCircle, Calendar, Image as ImageIcon } from 'lucide-react'
 
 export const Route = createFileRoute('/admin')({
   component: AdminLayout,
 })
 
 function AdminLayout() {
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
+        <div className="w-10 h-10 border-4 border-gold-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
 
   if (!isAdmin) {
     return (
@@ -30,6 +38,7 @@ function AdminLayout() {
     { to: '/admin/fund', label: 'Quản lý quỹ họ', icon: DollarSign },
     { to: '/admin/anniversaries', label: 'Quản lý sự kiện', icon: Calendar },
     { to: '/admin/notifications', label: 'Thông báo', icon: Bell },
+    { to: '/admin/carousel', label: 'Quản lý Carousel', icon: ImageIcon },
   ]
 
   return (

@@ -13,7 +13,7 @@ interface User {
 interface AuthContext {
   user: User | null
   loading: boolean
-  login: (username: string, password: string) => Promise<{ error?: string }>
+  login: (username: string, password: string, code?: string) => Promise<{ error?: string; requires2FA?: boolean }>
   register: (username: string, displayName: string, password: string) => Promise<{ error?: string; message?: string }>
   logout: () => Promise<void>
   isAdmin: boolean
@@ -42,14 +42,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false))
   }, [])
 
-  const login = async (username: string, password: string) => {
+  const login = async (username: string, password: string, code?: string) => {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, code }),
     })
     const data = await res.json()
     if (!res.ok) return { error: data.error }
+    if (data.requires2FA) return { requires2FA: true }
     setUser(data.user)
     return {}
   }
