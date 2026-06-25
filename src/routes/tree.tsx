@@ -21,14 +21,14 @@ function TreePage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="relative hidden sm:block">
+          <div className="relative">
             <Filter className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Lọc theo chi/cành..."
+              placeholder="Lọc theo chi..."
               value={branch}
               onChange={e => setBranch(e.target.value)}
-              className="pl-9 pr-3 py-2 text-sm border border-stone-200 rounded-lg focus:ring-2 focus:ring-gold-300 focus:border-gold-400 outline-none w-44 font-sans"
+              className="pl-9 pr-3 py-1.5 text-xs border border-stone-200 rounded-lg focus:ring-2 focus:ring-gold-300 focus:border-gold-400 outline-none w-28 xs:w-40 sm:w-44 font-sans"
             />
           </div>
           <button
@@ -50,7 +50,7 @@ function TreePage() {
 
       {/* Tree */}
       <div className="flex-1 relative">
-        <FamilyTree />
+        <FamilyTree branch={branch} />
       </div>
     </div>
   )

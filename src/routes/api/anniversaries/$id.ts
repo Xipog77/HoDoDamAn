@@ -16,6 +16,7 @@ export const Route = createFileRoute('/api/anniversaries/$id')({
           }
 
           const id = parseInt(params.id)
+          if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
           await db.delete(anniversaries).where(eq(anniversaries.id, id))
           return Response.json({ success: true })
         } catch (e) {

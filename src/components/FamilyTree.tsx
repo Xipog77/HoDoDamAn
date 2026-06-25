@@ -109,20 +109,19 @@ function layoutWithDagre(nodes: Node[], edges: Edge[]) {
   })
 }
 
-export function FamilyTree() {
+export function FamilyTree({ branch = '' }: { branch?: string }) {
   return (
     <ReactFlowProvider>
-      <FamilyTreeContent />
+      <FamilyTreeContent branch={branch} />
     </ReactFlowProvider>
   )
 }
 
-function FamilyTreeContent() {
+function FamilyTreeContent({ branch }: { branch: string }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [loading, setLoading] = useState(true)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
-  const [branch, setBranch] = useState('')
   const [rawData, setRawData] = useState<{ nodes: Node[]; edges: Edge[] }>({ nodes: [], edges: [] })
   const [generationLevels, setGenerationLevels] = useState<Array<{ generation: number; y: number }>>([])
   const [extent, setExtent] = useState<[[number, number], [number, number]]>([

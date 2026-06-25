@@ -8,6 +8,12 @@ export const Route = createFileRoute('/api/fund/')({
   server: {
     handlers: {
       GET: async ({ request }) => {
+        const token = getTokenFromCookies(request.headers.get('cookie'))
+        const payload = token ? await verifyToken(token) : null
+        if (!payload || (payload.status !== 'ACTIVE' && !['ADMIN', 'SUPER_ADMIN'].includes(payload.role))) {
+          return Response.json({ error: 'Bạn cần đăng nhập bằng tài khoản thành viên hoạt động để xem thông tin' }, { status: 403 })
+        }
+
         try {
           const url = new URL(request.url)
           const page = parseInt(url.searchParams.get('page') || '1')

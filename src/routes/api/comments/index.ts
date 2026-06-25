@@ -15,6 +15,9 @@ export const Route = createFileRoute('/api/comments/')({
             return Response.json({ error: 'Thiếu postId' }, { status: 400 })
           }
           const postId = parseInt(postIdStr)
+          if (isNaN(postId)) {
+            return Response.json({ error: 'postId không hợp lệ' }, { status: 400 })
+          }
 
           // Fetch all comments for the post sorted by date
           const comments = await db.query.postComments.findMany({
@@ -76,11 +79,21 @@ export const Route = createFileRoute('/api/comments/')({
             return Response.json({ error: 'Nội dung hoặc postId không hợp lệ' }, { status: 400 })
           }
 
+          const postId = parseInt(body.postId)
+          if (isNaN(postId)) {
+            return Response.json({ error: 'postId không hợp lệ' }, { status: 400 })
+          }
+
+          const parentId = body.parentId ? parseInt(body.parentId) : null
+          if (parentId !== null && isNaN(parentId)) {
+            return Response.json({ error: 'parentId không hợp lệ' }, { status: 400 })
+          }
+
           const [comment] = await db.insert(postComments).values({
-            postId: parseInt(body.postId),
+            postId,
             userId: payload.userId,
             content: body.content,
-            parentId: body.parentId ? parseInt(body.parentId) : null
+            parentId
           }).returning()
 
           return Response.json({ comment }, { status: 201 })

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState, useCallback } from 'react'
-import { User, Calendar, Heart, MessageSquare, Edit3, Send, MapPin, BookOpen, Image as ImageIcon, X, Plus, ExternalLink, Trash2, Phone, Mail, Briefcase, Home, Globe } from 'lucide-react'
+import { User, Calendar, Heart, MessageSquare, Edit3, Send, MapPin, BookOpen, Image as ImageIcon, X, Plus, ExternalLink, Trash2, Phone, Mail, Briefcase, Home, Globe, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -99,7 +99,26 @@ function PersonPage() {
 
   // Media
   const [mediaList, setMediaList] = useState<MediaItem[]>([])
-  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null)
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+
+  // Keyboard navigation for Lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const imagesOnly = mediaList.filter(item => !isVideo(item.url, item.mimeType))
+      if (lightboxIndex === null || imagesOnly.length === 0) return
+
+      if (e.key === 'ArrowLeft') {
+        setLightboxIndex(prev => prev !== null ? (prev - 1 + imagesOnly.length) % imagesOnly.length : null)
+      } else if (e.key === 'ArrowRight') {
+        setLightboxIndex(prev => prev !== null ? (prev + 1) % imagesOnly.length : null)
+      } else if (e.key === 'Escape') {
+        setLightboxIndex(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [lightboxIndex, mediaList])
 
   // Upload / Embed
   const [showMediaForm, setShowMediaForm] = useState(false)
@@ -149,6 +168,7 @@ function PersonPage() {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('personId', id)
+    formData.append('type', 'archive')
     const res = await fetch('/api/media', { method: 'POST', body: formData })
     if (res.ok) { loadMedia(); setShowMediaForm(false) }
   }
@@ -266,7 +286,7 @@ function PersonPage() {
             </div>
 
             {/* Name & badges */}
-            <div className="flex-1 lg:mt-18 lg:pt-2">
+            <div className="flex-1 lg:mt-16 lg:pt-2">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h1 className="font-serif text-3xl font-bold text-wood-900">{person.name}</h1>
@@ -616,7 +636,11 @@ function PersonPage() {
                       src={m.url}
                       alt={m.caption || m.filename}
                       className="w-full aspect-square object-cover cursor-pointer hover:scale-105 transition-transform"
-                      onClick={() => setLightboxUrl(m.url)}
+                      onClick={() => {
+                        const imagesOnly = mediaList.filter(item => !isVideo(item.url, item.mimeType))
+                        const idx = imagesOnly.findIndex(item => item.id === m.id)
+                        setLightboxIndex(idx !== -1 ? idx : null)
+                      }}
                     />
                   )}
                   {m.caption && (
@@ -694,14 +718,73 @@ function PersonPage() {
       )}
 
       {/* Lightbox */}
-      {lightboxUrl && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setLightboxUrl(null)}>
-          <button onClick={() => setLightboxUrl(null)} className="absolute top-4 right-4 text-white bg-black/50 p-2 rounded-full hover:bg-black/70 z-10">
-            <X className="w-6 h-6" />
-          </button>
-          <img src={lightboxUrl} alt="" className="max-w-full max-h-[90vh] rounded-xl shadow-2xl" onClick={e => e.stopPropagation()} />
-        </div>
-      )}
+      {(() => {
+        const imagesOnly = mediaList.filter(item => !isVideo(item.url, item.mimeType))
+        if (lightboxIndex === null || lightboxIndex < 0 || lightboxIndex >= imagesOnly.length) return null
+        const currentImage = imagesOnly[lightboxIndex]
+
+        return (
+          <div 
+            className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4 select-none" 
+            onClick={() => setLightboxIndex(null)}
+          >
+            {/* Close Button */}
+            <button 
+              onClick={() => setLightboxIndex(null)} 
+              className="absolute top-4 right-4 text-white bg-black/50 p-2 rounded-full hover:bg-black/70 z-10 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Previous Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setLightboxIndex(prev => prev !== null ? (prev - 1 + imagesOnly.length) % imagesOnly.length : null)
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/50 p-3 rounded-full hover:bg-black/70 z-10 transition-colors"
+              title="Ảnh trước"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            {/* Next Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setLightboxIndex(prev => prev !== null ? (prev + 1) % imagesOnly.length : null)
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/50 p-3 rounded-full hover:bg-black/70 z-10 transition-colors"
+              title="Ảnh tiếp theo"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Image & Info Container */}
+            <div className="flex flex-col items-center max-w-full max-h-[85vh] relative" onClick={e => e.stopPropagation()}>
+              <img 
+                src={currentImage.url} 
+                alt={currentImage.caption || currentImage.filename} 
+                className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl" 
+              />
+              
+              {/* Index & Caption */}
+              <div className="mt-4 text-center text-white max-w-md px-4">
+                <span className="text-xs bg-white/10 px-2 py-1 rounded-full font-mono">
+                  {lightboxIndex + 1} / {imagesOnly.length}
+                </span>
+                {currentImage.caption && (
+                  <p className="mt-2 text-sm font-sans font-medium text-stone-200">
+                    {currentImage.caption}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }

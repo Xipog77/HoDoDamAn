@@ -58,28 +58,75 @@ export const Route = createFileRoute('/api/media/')({
       const file = formData.get('file') as File | null
       if (!file) return Response.json({ error: 'No file provided' }, { status: 400 })
 
-      const uploadsDir = path.join(process.cwd(), 'uploads')
-      if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true })
+      const personIdVal = formData.get('personId')
+      const postIdVal = formData.get('postId')
+      const caption = formData.get('caption')
+      const type = (formData.get('type') as string) || 'others'
 
-      const ext = file.name.split('.').pop() || 'bin'
-      const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      const filePath = path.join(uploadsDir, uniqueName)
+      const personId = personIdVal ? parseInt(personIdVal as string) : null
+      const postId = postIdVal ? parseInt(postIdVal as string) : null
 
+      // Clean/sanitize filename
+      const sanitizeFilename = (name: string): string => {
+        const ext = name.split('.').pop() || 'bin'
+        const base = name.substring(0, name.lastIndexOf('.')) || name
+        
+        let str = base.toLowerCase()
+        str = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        str = str.replace(/[đĐ]/g, "d")
+        str = str.replace(/[^a-z0-9.-]/g, "-")
+        str = str.replace(/-+/g, "-")
+        str = str.replace(/^-+|-+$/g, "")
+        
+        return `${str}.${ext.toLowerCase()}`
+      }
+
+      const sanitized = sanitizeFilename(file.name)
+      const ext = sanitized.split('.').pop() || 'bin'
+
+      let finalFilename = sanitized
+      if (type === 'portrait' && personId) {
+        finalFilename = `portrait-person-${personId}.${ext}`
+      } else if (type === 'portrait') {
+        finalFilename = `portrait-${sanitized}`
+      } else if (type === 'archive' && personId) {
+        finalFilename = `archive-person-${personId}-${sanitized}`
+      } else if (type === 'archive') {
+        finalFilename = `archive-${sanitized}`
+      } else if (type === 'posts' && postId) {
+        finalFilename = `post-${postId}-${sanitized}`
+      } else if (type === 'posts') {
+        finalFilename = `post-${sanitized}`
+      } else if (type === 'carousel') {
+        finalFilename = `carousel-${sanitized}`
+      } else if (type === 'background') {
+        finalFilename = `background-${sanitized}`
+      } else {
+        finalFilename = `${type}-${sanitized}`
+      }
+
+      // Map to subfolder
+      let subFolder = 'others'
+      if (['archive', 'background', 'portrait', 'carousel', 'posts'].includes(type)) {
+        subFolder = type
+      }
+
+      const subfolderPath = path.join(process.cwd(), 'uploads', subFolder)
+      if (!fs.existsSync(subfolderPath)) fs.mkdirSync(subfolderPath, { recursive: true })
+
+      const filePath = path.join(subfolderPath, finalFilename)
       const buffer = Buffer.from(await file.arrayBuffer())
       fs.writeFileSync(filePath, buffer)
 
-      const fileUrl = `/uploads/${uniqueName}`
-      const personId = formData.get('personId')
-      const postId = formData.get('postId')
-      const caption = formData.get('caption')
+      const fileUrl = `/uploads/${subFolder}/${finalFilename}`
 
       const [entry] = await db.insert(media).values({
         filename: file.name,
         url: fileUrl,
         mimeType: file.type || null,
         source: 'UPLOAD',
-        personId: personId ? parseInt(personId as string) : null,
-        postId: postId ? parseInt(postId as string) : null,
+        personId: personId && !isNaN(personId) ? personId : null,
+        postId: postId && !isNaN(postId) ? postId : null,
         caption: caption ? (caption as string) : null,
         uploadedBy: payload.userId,
       }).returning()

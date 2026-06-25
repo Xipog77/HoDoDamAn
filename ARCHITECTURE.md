@@ -20,6 +20,7 @@ db/                             # Lược đồ database + Khởi tạo client (
   schema.ts                     # Tất cả bảng: users, persons, marriages, posts, anniversaries...
   client.ts                     # Drizzle client kết nối với Postgres
   migrate.ts                    # Script migration tùy chỉnh (chạy tự động khi Docker start)
+  seed.ts                       # Script reset cơ sở dữ liệu và khởi tạo admin mặc định
   migrations/                   # Tệp SQL tự động sinh ra bởi Drizzle Kit
 
 src/

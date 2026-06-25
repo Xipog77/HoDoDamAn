@@ -16,6 +16,7 @@ export const Route = createFileRoute('/api/comments/$id')({
 
         try {
           const id = parseInt(params.id)
+          if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
           const comment = await db.query.postComments.findFirst({
             where: eq(postComments.id, id)
           })

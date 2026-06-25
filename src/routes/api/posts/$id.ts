@@ -10,6 +10,7 @@ export const Route = createFileRoute('/api/posts/$id')({
   GET: async ({ params }) => {
     try {
       const id = parseInt(params.id)
+      if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
       const post = await db.query.posts.findFirst({ where: eq(posts.id, id) })
       if (!post) return Response.json({ error: 'Không tìm thấy bài viết' }, { status: 404 })
 
@@ -28,6 +29,7 @@ export const Route = createFileRoute('/api/posts/$id')({
     }
 
     const id = parseInt(params.id)
+    if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
     await db.delete(posts).where(eq(posts.id, id))
     return Response.json({ success: true })
   },
@@ -41,6 +43,7 @@ export const Route = createFileRoute('/api/posts/$id')({
 
     try {
       const id = parseInt(params.id)
+      if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
       const body = await request.json()
       const [updated] = await db.update(posts).set({ ...body, updatedAt: new Date() }).where(eq(posts.id, id)).returning()
       const author = await db.query.users.findFirst({ where: eq(users.id, updated.authorId) })

@@ -18,6 +18,7 @@ export const Route = createFileRoute('/api/media/$id')({
 
     try {
       const id = parseInt(params.id)
+      if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
       const entry = await db.query.media.findFirst({ where: eq(media.id, id) })
       if (!entry) return Response.json({ error: 'Không tìm thấy' }, { status: 404 })
 
@@ -43,6 +44,7 @@ export const Route = createFileRoute('/api/media/$id')({
 
     try {
       const id = parseInt(params.id)
+      if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
       const body = await request.json()
       
       const entry = await db.query.media.findFirst({ where: eq(media.id, id) })

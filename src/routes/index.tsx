@@ -77,7 +77,7 @@ function HomePage() {
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(/pattern-trondong.svg)', backgroundSize: '200px' }} />
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto flex flex-col gap-6">
             <div className="inline-flex items-center gap-2 bg-gold-500/20 border border-gold-400/30 rounded-full px-4 py-1.5">
               <span className="text-gold-300 text-xs font-semibold tracking-wider uppercase font-sans">Lịch sử & Nguồn cội</span>
             </div>
@@ -86,7 +86,7 @@ function HomePage() {
             </h1>
             <div className="w-20 h-1 bg-gold-600 rounded" />
             
-            <div className="space-y-5 text-stone-200 font-sans text-base leading-relaxed text-justify">
+            <div className="flex flex-col gap-5 text-stone-200 font-sans text-base leading-relaxed text-justify">
               <p>
                 Khởi nguồn từ vùng đất Thanh Hóa ngàn năm văn hiến, cụ Khởi Tổ dòng họ Đỗ Đàm An đã thực hiện cuộc thiên di lịch sử vào thế kỷ 18. Với ý chí sắt đá, lòng dũng cảm phi thường và tầm nhìn xa trông rộng, cụ cùng hiền mẫu đã vượt qua trăm ngàn gian khó để khai sơn phá thạch, lập ấp và đặt nền móng đầu tiên cho cơ nghiệp của dòng tộc tại vùng đất mới.
               </p>
@@ -112,7 +112,7 @@ function HomePage() {
               <StatCard icon={Users} label="Thành viên" value={data.stats.totalPersons.toString()} to="/tree" />
               <StatCard icon={TreePine} label="Thế hệ" value={`${data.stats.generations} đời`} to="/tree" />
               <StatCard icon={BookOpen} label="Bài viết" value={data.featuredPosts.length.toString()} to="/posts" />
-              <StatCard icon={Calendar} label="Ngày giỗ" value={`${data.upcomingAnniversaries.length} sắp tới`} to="/anniversaries" />
+              <StatCard icon={Calendar} label="Ngày giỗ sắp tới" value={data.upcomingAnniversaries.length.toString()} to="/anniversaries" />
             </div>
           </div>
         </section>

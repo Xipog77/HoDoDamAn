@@ -22,6 +22,7 @@ db/                     # Database schema + client (Drizzle ORM)
   schema.ts             # All table definitions (users, persons, marriages, posts, anniversaries, etc.)
   client.ts             # Drizzle client using standard postgres driver
   migrate.ts            # Custom migration runner (applied on Docker startup)
+  seed.ts               # Database reset and initial admin account seeding script
   migrations/           # Auto-generated SQL migrations (drizzle-kit generate)
 
 src/
@@ -129,10 +130,18 @@ src/
 - **Branch filtering**: Tree can be filtered by `branch` field to avoid UI overload with 9+ generations.
 - **Dual calendar**: Events support both Solar and Lunar date types with automatic conversion for the calendar grid display.
 
-## Migration Management
+## Migration & Seeding Management
 
+### Migrations
 After schema changes:
 ```bash
 DATABASE_URL="postgresql://..." npx drizzle-kit generate
 ```
 Migrations are applied automatically by the startup script (`npm run migrate`) in the Docker container.
+
+### Database Reset & Seeding
+To completely reset database tables (restarting ID sequences) and initialize the default SUPER_ADMIN user:
+```bash
+npm run db:seed  # or docker compose exec web npm run db:seed
+```
+This runs `db/seed.ts` which uses Drizzle's `TRUNCATE ... CASCADE` followed by inserting the admin user configured via `ADMIN_ACC` and `ADMIN_PASS` environment variables in `.env` (defaulting to `admin` / `admin123`).

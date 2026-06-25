@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:15-alpine
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword
@@ -18,6 +19,7 @@ services:
   web:
     build:
       context: .
+    restart: always
     ports:
       - "3005:3000"
     environment:

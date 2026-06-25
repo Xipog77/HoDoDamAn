@@ -7,9 +7,16 @@ import { getTokenFromCookies, verifyToken } from '@/lib/auth'
 export const Route = createFileRoute('/api/persons/$id')({
   server: {
     handlers: {
-  GET: async ({ params }) => {
+  GET: async ({ params, request }) => {
+    const token = getTokenFromCookies(request.headers.get('cookie'))
+    const payload = token ? await verifyToken(token) : null
+    if (!payload || (payload.status !== 'ACTIVE' && !['ADMIN', 'SUPER_ADMIN'].includes(payload.role))) {
+      return Response.json({ error: 'Bạn cần đăng nhập bằng tài khoản thành viên hoạt động để xem thông tin' }, { status: 403 })
+    }
+
     try {
       const id = parseInt(params.id)
+      if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
       const person = await db.query.persons.findFirst({ where: eq(persons.id, id) })
       if (!person) return Response.json({ error: 'Không tìm thấy hồ sơ' }, { status: 404 })
 
@@ -47,6 +54,7 @@ export const Route = createFileRoute('/api/persons/$id')({
     const token = getTokenFromCookies(request.headers.get('cookie'))
     const payload = token ? await verifyToken(token) : null
     const id = parseInt(params.id)
+    if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
 
     if (!payload) {
       return Response.json({ error: 'Không có quyền truy cập' }, { status: 403 })
@@ -88,6 +96,7 @@ export const Route = createFileRoute('/api/persons/$id')({
 
     try {
       const id = parseInt(params.id)
+      if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
       await db.delete(persons).where(eq(persons.id, id))
       return Response.json({ success: true })
     } catch (e) {

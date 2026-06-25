@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
-import { persons } from '~/db/schema'
+import { persons, users } from '~/db/schema'
 import { getUpcomingDeathAnniversaries } from '@/lib/lunar-calendar'
 import { notifications, posts } from '~/db/schema'
 import { eq, desc } from 'drizzle-orm'
@@ -16,12 +16,20 @@ export const Route = createFileRoute('/api/homepage/data')({
         db.query.persons.findMany(),
       ])
 
+      // Enrich featured posts with author names
+      const enrichedPosts = await Promise.all(
+        featuredPosts.slice(0, 3).map(async post => {
+          const author = await db.query.users.findFirst({ where: eq(users.id, post.authorId) })
+          return { ...post, authorName: author?.displayName || 'Admin' }
+        })
+      )
+
       const upcoming = getUpcomingDeathAnniversaries(
         allPersons.map(p => ({ id: p.id, name: p.name, dod: p.dod, dodLunar: p.dodLunar }))
       )
 
       return Response.json({
-        featuredPosts: featuredPosts.slice(0, 3),
+        featuredPosts: enrichedPosts,
         notifications: allNotifications.slice(0, 5),
         upcomingAnniversaries: upcoming.slice(0, 5),
         stats: {

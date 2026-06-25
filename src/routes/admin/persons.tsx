@@ -177,6 +177,10 @@ function AdminPersons() {
     if (!file) return
     const formData = new FormData()
     formData.append('file', file)
+    formData.append('type', 'portrait')
+    if (selectedId) {
+      formData.append('personId', selectedId.toString())
+    }
     
     try {
       const res = await fetch('/api/media', { method: 'POST', body: formData })
@@ -262,6 +266,7 @@ function AdminPersons() {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('personId', selectedId.toString())
+    formData.append('type', 'archive')
     if (caption.trim()) {
       formData.append('caption', caption.trim())
     }
