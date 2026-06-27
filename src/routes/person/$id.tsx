@@ -55,7 +55,7 @@ function PersonPage() {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: 'Mô tả chi tiết cuộc đời, sự nghiệp, câu chuyện về người này...' }),
+      Placeholder.configure({ placeholder: 'Mô tả chi tiết sự nghiệp, công đức, sự nghiệp, câu chuyện về người này...' }),
       Image.configure({ inline: false, allowBase64: true }),
     ],
     content: '',
@@ -81,7 +81,7 @@ function PersonPage() {
         loadData()
       } else {
         const err = await res.json()
-        alert(err.error || 'Lỗi khi lưu cuộc đời')
+        alert(err.error || 'Lỗi khi lưu sự nghiệp, công đức')
       }
     } catch (e) {
       console.error(e)
@@ -263,7 +263,7 @@ function PersonPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Profile Header — Full Width */}
       <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden mb-6">
-        <div 
+        <div
           className="h-32 sm:h-40 bg-cover bg-center bg-no-repeat bg-fixed relative"
           style={{
             backgroundImage: `url("${profileCovers[person.id % profileCovers.length] || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1200'}")`
@@ -339,14 +339,14 @@ function PersonPage() {
             <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-stone-100 p-6">
               <div className="flex items-center justify-between mb-4 pb-2 border-b border-stone-100">
                 <h2 className="font-serif font-bold text-lg text-wood-900 flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-gold-600" /> Cuộc đời
+                  <BookOpen className="w-5 h-5 text-gold-600" /> Sự nghiệp, công đức
                 </h2>
                 {(isAdmin || (user && user.personId === person.id)) && !isEditingBio && (
                   <button
                     onClick={() => setIsEditingBio(true)}
                     className="text-xs bg-gold-50 text-gold-700 hover:bg-gold-100 border border-gold-200 px-3 py-1.5 rounded-lg flex items-center gap-1 font-medium transition-colors font-sans"
                   >
-                    <Edit3 className="w-3.5 h-3.5" /> Chỉnh sửa cuộc đời
+                    <Edit3 className="w-3.5 h-3.5" /> Chỉnh sửa sự nghiệp, công đức
                   </button>
                 )}
               </div>
@@ -431,7 +431,7 @@ function PersonPage() {
                 ) : (
                   <div className="text-center py-8 text-stone-400 font-sans">
                     <BookOpen className="w-10 h-10 mx-auto mb-2 text-stone-200" />
-                    <p className="text-sm">Chưa có thông tin chi tiết cuộc đời.</p>
+                    <p className="text-sm">Chưa có thông tin chi tiết sự nghiệp, công đức.</p>
                     <button
                       onClick={() => setIsEditingBio(true)}
                       className="mt-2 text-xs text-gold-600 hover:text-gold-500 font-semibold underline"
@@ -724,13 +724,13 @@ function PersonPage() {
         const currentImage = imagesOnly[lightboxIndex]
 
         return (
-          <div 
-            className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4 select-none" 
+          <div
+            className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4 select-none"
             onClick={() => setLightboxIndex(null)}
           >
             {/* Close Button */}
-            <button 
-              onClick={() => setLightboxIndex(null)} 
+            <button
+              onClick={() => setLightboxIndex(null)}
               className="absolute top-4 right-4 text-white bg-black/50 p-2 rounded-full hover:bg-black/70 z-10 transition-colors"
             >
               <X className="w-6 h-6" />
@@ -764,12 +764,12 @@ function PersonPage() {
 
             {/* Image & Info Container */}
             <div className="flex flex-col items-center max-w-full max-h-[85vh] relative" onClick={e => e.stopPropagation()}>
-              <img 
-                src={currentImage.url} 
-                alt={currentImage.caption || currentImage.filename} 
-                className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl" 
+              <img
+                src={currentImage.url}
+                alt={currentImage.caption || currentImage.filename}
+                className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl"
               />
-              
+
               {/* Index & Caption */}
               <div className="mt-4 text-center text-white max-w-md px-4">
                 <span className="text-xs bg-white/10 px-2 py-1 rounded-full font-mono">

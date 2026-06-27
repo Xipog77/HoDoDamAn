@@ -31,5 +31,12 @@ services:
       db:
         condition: service_healthy
 
+  cloudflare-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: cf_tunnel_container
+    restart: always
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=eyJhIjoiYmE3YTE4NDE3ODNjMzIzOTNhN2RiOWMzNzA3NDViYjIiLCJ0IjoiMGVjMjA1YTYtN2Y4MS00MGJmLTgyOWQtNmExZDUwYzE3NDliIiwicyI6Ik1UTTNOREV5TkdVdE5XVTBPUzAwTWpabUxXRmhOMlF0TmpFellqZGtaakpsWVdKbSJ9
 volumes:
   pgdata:
