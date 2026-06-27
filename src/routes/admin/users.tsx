@@ -176,7 +176,7 @@ function AdminUsers() {
                 </select>
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Liên kết với Hồ sơ gia phả</label>
+                <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Liên kết với Hồ sơ tộc phả</label>
                 <SearchableSelect
                   options={personOptions}
                   value={personId || ''}
@@ -249,7 +249,7 @@ function AdminUsers() {
                 <th className="text-left px-4 py-3 text-stone-600 font-medium">Thành viên</th>
                 <th className="text-left px-4 py-3 text-stone-600 font-medium">Vai trò</th>
                 <th className="text-left px-4 py-3 text-stone-600 font-medium">Trạng thái</th>
-                <th className="text-left px-4 py-3 text-stone-600 font-medium w-80">Liên kết Hồ sơ gia phả</th>
+                <th className="text-left px-4 py-3 text-stone-600 font-medium w-80">Liên kết Hồ sơ tộc phả</th>
                 <th className="px-4 py-3 text-right" />
               </tr>
             </thead>

@@ -309,7 +309,7 @@ function PersonPage() {
                   )}
                 </div>
                 <Link to="/tree" className="text-sm text-gold-600 hover:text-gold-500 flex items-center gap-1 font-medium bg-gold-50 px-3 py-2 rounded-xl hover:bg-gold-100 transition-colors">
-                  ← Gia phả
+                  ← Tộc phả
                 </Link>
               </div>
             </div>

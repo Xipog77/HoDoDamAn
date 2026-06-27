@@ -187,3 +187,12 @@ export const anniversaries = pgTable('anniversaries', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
+
+export const systemFeedbacks = pgTable('system_feedbacks', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id'),
+  authorName: varchar('author_name', { length: 200 }).notNull(),
+  content: text('content').notNull(),
+  isResolved: boolean('is_resolved').default(false).notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})

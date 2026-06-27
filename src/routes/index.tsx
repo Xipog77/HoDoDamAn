@@ -64,42 +64,42 @@ function HomePage() {
 
   return (
     <div className="min-h-screen">
-      
+
       {/* Unified Hero & History Banner — Transparent over Background Image */}
       <section className="relative text-white py-20 overflow-hidden border-b border-gold-600/30">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
-          style={{ 
+          style={{
             backgroundImage: `url("${homepageBackgrounds[0] || 'https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?auto=format&fit=crop&q=80&w=1600'}")`,
-          }} 
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-wood-950/95 via-wood-950/90 to-wood-950/95" />
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(/pattern-trondong.svg)', backgroundSize: '200px' }} />
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto flex flex-col gap-6">
             <div className="inline-flex items-center gap-2 bg-gold-500/20 border border-gold-400/30 rounded-full px-4 py-1.5">
               <span className="text-gold-300 text-xs font-semibold tracking-wider uppercase font-sans">Lịch sử & Nguồn cội</span>
             </div>
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gold-400 drop-shadow-md">
-              Lịch sử Dòng tộc Đỗ Đàm An
+              Dòng tộc Đỗ Đàm An
             </h1>
             <div className="w-20 h-1 bg-gold-600 rounded" />
-            
+
             <div className="flex flex-col gap-5 text-stone-200 font-sans text-base leading-relaxed text-justify">
-              <p>
-                Khởi nguồn từ vùng đất Thanh Hóa ngàn năm văn hiến, cụ Khởi Tổ dòng họ Đỗ Đàm An đã thực hiện cuộc thiên di lịch sử vào thế kỷ 18. Với ý chí sắt đá, lòng dũng cảm phi thường và tầm nhìn xa trông rộng, cụ cùng hiền mẫu đã vượt qua trăm ngàn gian khó để khai sơn phá thạch, lập ấp và đặt nền móng đầu tiên cho cơ nghiệp của dòng tộc tại vùng đất mới.
-              </p>
-              <p>
-                Trải qua hơn hai trăm năm hưng thịnh và phát triển, qua 9 thế hệ tiếp nối, con cháu dòng họ Đỗ Đàm An luôn giữ vững truyền thống gia phong cao đẹp: lấy <strong>Trung Hiếu làm đầu, Cần Kiệm lập thân</strong>, lấy sự học và tri thức làm kim chỉ nam để vươn lên.
-              </p>
               <blockquote className="border-l-4 border-gold-500 pl-4 py-2 my-6 italic text-stone-200 bg-gold-500/10 font-serif rounded-r-lg">
-                "Cây có cội mới nảy cành xanh lá, nước có nguồn mới bể rộng sông sâu. Con cháu họ Đỗ Đàm An ngàn đời khắc cốt ghi tâm công ơn tiên tổ, cùng nhau đoàn kết xây dựng quê hương, làm rạng danh dòng tộc."
+                "Con người có tổ, có tông
+                <br />
+                Như cây có cội, như sông có nguồn."
               </blockquote>
               <p>
-                Hệ thống gia phả số này được xây dựng nhằm mục đích thiêng liêng: bảo tồn vẹn nguyên lịch sử dòng họ, ghi nhận công lao của các bậc tiền nhân, đồng thời là cầu nối vững chắc kết nối tình cảm thâm giao của tất cả con cháu nội ngoại trên khắp mọi miền Tổ quốc.
+                Từ bao đời nay, việc tìm hiểu nguồn cội, hướng về tiên tổ, tri ân công đức và phụng thờ tiên tổ là một truyền thống quý báu của dân tộc ta.
+              </p>
+              <p>
+                Đỗ Chi Tộc Đàm An truyền đức tổ đệ nhất Đỗ Phúc Mai đến nay đã được 9 đời. Ngay từ những ngày đầu khởi tổ, các bậc tiền nhân của chi tộc cùng với việc nuôi dạy cháu con nên người cũng đã luôn quan tâm đến việc ghi chép tộc phả, lịch sử tổ tiên để truyền lại cho hậu thế.
               </p>
             </div>
+
           </div>
         </div>
       </section>
@@ -237,9 +237,8 @@ function HomePage() {
             {slides.map((slide, idx) => (
               <div
                 key={slide.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                  idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                }`}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                  }`}
               >
                 <img
                   src={slide.imageUrl}
@@ -248,7 +247,7 @@ function HomePage() {
                 />
                 {/* Overlay Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-wood-950/90 via-wood-950/30 to-transparent" />
-                
+
                 {/* Slide text details */}
                 {(slide.title || slide.description) && (
                   <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10 md:p-14 text-white max-w-4xl">
@@ -292,9 +291,8 @@ function HomePage() {
                   <button
                     key={idx}
                     onClick={() => setCurrentSlide(idx)}
-                    className={`w-2.5 h-2.5 rounded-full transition-all ${
-                      idx === currentSlide ? 'bg-gold-500 w-6' : 'bg-white/50 hover:bg-white/80'
-                    }`}
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${idx === currentSlide ? 'bg-gold-500 w-6' : 'bg-white/50 hover:bg-white/80'
+                      }`}
                   />
                 ))}
               </div>

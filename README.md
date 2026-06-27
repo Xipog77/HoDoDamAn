@@ -4,7 +4,7 @@ Một nền tảng quản lý thông tin dòng họ hiện đại, được xây
 
 ## 🌟 Các tính năng nổi bật
 
-- **Gia Phả Tương Tác**: Ứng dụng React Flow kết hợp thuật toán Dagre.js để hiển thị gia phả trực quan, hỗ trợ lên đến 9+ đời. Tính năng mở rộng/thu gọn thông minh giúp dễ dàng xem chi tiết vợ/chồng và con cái.
+- **Tộc Phả Tương Tác**: Ứng dụng React Flow kết hợp thuật toán Dagre.js để hiển thị tộc phả trực quan, hỗ trợ lên đến 9+ đời. Tính năng mở rộng/thu gọn thông minh giúp dễ dàng xem chi tiết vợ/chồng và con cái.
 - **Hồ Sơ Chi Tiết**: Mỗi thành viên có hồ sơ riêng biệt với tiểu sử chi tiết (TipTap rich text), ảnh chân dung, album ảnh và "Bức tường Ký ức" (Memory Wall) để con cháu gửi lời tri ân.
 - **Lịch Sự Kiện Song Song**: Xem lịch tháng hiển thị cả ngày Dương lịch và Âm lịch. Ngày có sự kiện phát sáng nổi bật. Hỗ trợ sự kiện giỗ, kỷ niệm, và sự kiện đặc biệt — diễn ra hàng năm hoặc chỉ 1 lần.
 - **Bài Viết & Tin Tức**: Hệ thống bài viết với trình soạn thảo TipTap phong phú, hỗ trợ chèn ảnh, liên kết và định dạng văn bản.
@@ -12,7 +12,7 @@ Một nền tảng quản lý thông tin dòng họ hiện đại, được xây
 - **Bảo Mật & Phân Quyền**: Quy trình đăng ký cần xét duyệt (PENDING → ACTIVE).
 - **Hồ Sơ Cá Nhân**: Người dùng đã liên kết hồ sơ có thể truy cập nhanh trang cá nhân từ dropdown tài khoản.
 - **Điều Chỉnh Cỡ Chữ**: Tính năng tăng/giảm cỡ chữ trên thanh menu, thuận tiện cho người lớn tuổi.
-- **Bảng Điều Khiển Admin**: Công cụ toàn diện để quản lý thành viên, hồ sơ, quan hệ gia phả, bài viết, quỹ họ, sự kiện và thông báo.
+- **Bảng Điều Khiển Admin**: Công cụ toàn diện để quản lý thành viên, hồ sơ, quan hệ tộc phả, bài viết, quỹ họ, sự kiện và thông báo.
 
 ## 🎨 Thiết kế (Design)
 

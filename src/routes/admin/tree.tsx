@@ -159,7 +159,7 @@ function AdminTree() {
     <div>
       <div className="flex items-center gap-3 mb-6">
         <Network className="w-6 h-6 text-gold-600" />
-        <h1 className="font-serif text-2xl font-bold text-wood-900">Quản lý Cấu trúc Gia phả</h1>
+        <h1 className="font-serif text-2xl font-bold text-wood-900">Quản lý Cấu trúc Tộc phả</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

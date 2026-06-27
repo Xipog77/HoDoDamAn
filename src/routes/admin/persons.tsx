@@ -156,7 +156,7 @@ function AdminPersons() {
   }
 
   const handleDelete = async (id: number) => {
-    if (confirm('Bạn có chắc chắn muốn xóa hồ sơ này? Các liên kết quan hệ trong gia phả sẽ bị lỗi.')) {
+    if (confirm('Bạn có chắc chắn muốn xóa hồ sơ này? Các liên kết quan hệ trong tộc phả sẽ bị lỗi.')) {
       const res = await fetch(`/api/persons/${id}`, { method: 'DELETE' })
       if (res.ok) {
         if (selectedId === id) setSelectedId(null)
@@ -482,7 +482,7 @@ function AdminPersons() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Tiểu sử tóm tắt (Hiển thị trên Cây gia phả)</label>
+                    <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Tiểu sử tóm tắt (Hiển thị trên Cây tộc phả)</label>
                     <textarea value={biography} onChange={e => setBiography(e.target.value)} rows={2} placeholder="Nội dung ngắn gọn..."
                       className="w-full px-3 py-2.5 border border-stone-200 rounded-xl text-sm focus:ring-2 focus:ring-gold-300 outline-none resize-none font-sans" />
                   </div>

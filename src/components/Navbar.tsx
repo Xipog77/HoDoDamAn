@@ -2,13 +2,20 @@
 import { useState, useEffect } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useAuth } from './AuthProvider'
-import { Menu, X, TreePine, Users, BookOpen, DollarSign, LogIn, LogOut, User, Shield, Calendar, UserCircle, Settings } from 'lucide-react'
+import { Menu, X, TreePine, Users, BookOpen, DollarSign, LogIn, LogOut, User, Shield, Calendar, UserCircle, Settings, MessageSquare } from 'lucide-react'
 
 export function Navbar() {
   const { user, logout, isAdmin } = useAuth()
   const [open, setOpen] = useState(false)
   const [showUser, setShowUser] = useState(false)
   const [fontSizeScale, setFontSizeScale] = useState(100)
+
+  // Feedback states
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false)
+  const [feedbackContent, setFeedbackContent] = useState('')
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false)
+  const [feedbackSuccess, setFeedbackSuccess] = useState(false)
+  const [feedbackError, setFeedbackError] = useState('')
 
   useEffect(() => {
     const saved = localStorage.getItem('familytree-font-scale')
@@ -26,9 +33,33 @@ export function Navbar() {
     document.documentElement.style.fontSize = `${newScale}%`
   }
 
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!feedbackContent.trim()) return
+    setFeedbackSubmitting(true)
+    setFeedbackError('')
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: feedbackContent }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setFeedbackError(data.error || 'Có lỗi xảy ra')
+      } else {
+        setFeedbackSuccess(true)
+      }
+    } catch (err) {
+      setFeedbackError('Không thể kết nối đến máy chủ')
+    } finally {
+      setFeedbackSubmitting(false)
+    }
+  }
+
   const navLinks = [
     { to: '/', label: 'Trang chủ', icon: TreePine },
-    { to: '/tree', label: 'Gia phả', icon: Users },
+    { to: '/tree', label: 'Tộc phả', icon: Users },
     { to: '/posts', label: 'Bài đăng', icon: BookOpen },
     { to: '/anniversaries', label: 'Sự kiện', icon: Calendar },
     { to: '/fund', label: 'Quỹ họ', icon: DollarSign },
@@ -132,6 +163,13 @@ export function Navbar() {
                       Cài đặt
                     </Link>
                     <button
+                      onClick={() => { setShowUser(false); setShowFeedbackModal(true); setFeedbackSuccess(false); setFeedbackError(''); setFeedbackContent('') }}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:text-gold-400 hover:bg-wood-700 transition-colors border-b border-wood-700/50 text-left"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      Báo lỗi / Góp ý
+                    </button>
+                    <button
                       onClick={() => { setShowUser(false); logout() }}
                       className="w-full flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:text-crimson-400 hover:bg-wood-700 transition-colors"
                     >
@@ -188,6 +226,104 @@ export function Navbar() {
           </div>
         )}
       </div>
+
+      {/* Feedback Modal */}
+      {showFeedbackModal && (
+        <div className="fixed inset-0 z-[100] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border border-stone-200 w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="bg-wood-900 text-white px-6 py-4 flex items-center justify-between border-b border-gold-600/20">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-gold-400 animate-pulse" />
+                <h3 className="font-serif text-lg font-bold text-gold-300">Báo lỗi / Góp ý</h3>
+              </div>
+              <button
+                onClick={() => setShowFeedbackModal(false)}
+                className="text-stone-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleFeedbackSubmit} className="p-6">
+              {feedbackSuccess ? (
+                <div className="text-center py-6">
+                  <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h4 className="font-serif text-lg font-bold text-stone-900 mb-2">Gửi góp ý thành công!</h4>
+                  <p className="text-sm text-stone-500 font-sans leading-relaxed mb-6">
+                    Cảm ơn bạn đã phản hồi. Ý kiến đóng góp sẽ được gửi trực tiếp đến Ban quản trị dòng họ để cải thiện hệ thống.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowFeedbackModal(false)}
+                    className="w-full bg-wood-900 hover:bg-wood-800 text-white font-medium py-2.5 rounded-xl transition-colors font-sans"
+                  >
+                    Đóng
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1 font-sans">
+                      Người gửi
+                    </label>
+                    <div className="bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-stone-600 text-sm font-medium">
+                      {user?.displayName} (@{user?.username})
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="feedbackContent" className="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1 font-sans">
+                      Nội dung ý kiến / Báo cáo lỗi
+                    </label>
+                    <textarea
+                      id="feedbackContent"
+                      rows={5}
+                      required
+                      value={feedbackContent}
+                      onChange={(e) => setFeedbackContent(e.target.value)}
+                      placeholder="Mô tả lỗi hoặc viết ý kiến đóng góp của bạn tại đây..."
+                      className="w-full border border-stone-200 rounded-xl p-3 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500 transition-all font-sans resize-none"
+                    />
+                  </div>
+
+                  {feedbackError && (
+                    <div className="text-xs text-crimson-600 bg-crimson-50 border border-crimson-100 rounded-lg p-2.5 font-sans">
+                      {feedbackError}
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowFeedbackModal(false)}
+                      className="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium py-2.5 rounded-xl transition-colors font-sans text-sm"
+                    >
+                      Hủy
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={feedbackSubmitting || !feedbackContent.trim()}
+                      className="flex-1 bg-gold-600 hover:bg-gold-500 disabled:bg-stone-200 disabled:text-stone-400 text-white font-medium py-2.5 rounded-xl transition-colors font-sans text-sm flex items-center justify-center gap-1.5"
+                    >
+                      {feedbackSubmitting ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        'Gửi góp ý'
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </form>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }

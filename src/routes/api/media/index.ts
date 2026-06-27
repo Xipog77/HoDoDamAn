@@ -3,6 +3,7 @@ import { db } from '~/db/client'
 import { media } from '~/db/schema'
 import { eq, desc } from 'drizzle-orm'
 import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { checkDiskSpace } from '@/lib/system'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -32,6 +33,15 @@ export const Route = createFileRoute('/api/media/')({
     const payload = token ? await verifyToken(token) : null
     if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
       return Response.json({ error: 'Không có quyền' }, { status: 403 })
+    }
+
+    // Check disk space safety
+    const diskInfo = checkDiskSpace()
+    if (diskInfo && diskInfo.isCritical) {
+      return Response.json(
+        { error: `Tải lên bị chặn: Dung lượng máy chủ gần đầy (chỉ còn ${diskInfo.availableGb} GB trống). Vui lòng dọn dẹp hệ thống.` },
+        { status: 507 }
+      )
     }
 
     try {

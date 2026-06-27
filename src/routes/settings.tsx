@@ -420,7 +420,7 @@ function SettingsPage() {
               </div>
 
               <div>
-                <h3 className="font-serif text-sm font-bold text-wood-850 mb-3 border-b border-stone-100 pb-1">Quyền riêng tư (Hiển thị trong gia phả)</h3>
+                <h3 className="font-serif text-sm font-bold text-wood-850 mb-3 border-b border-stone-100 pb-1">Quyền riêng tư (Hiển thị trong tộc phả)</h3>
                 <div className="bg-stone-50/50 p-4 rounded-xl border border-stone-100 space-y-3">
                   <div className="flex items-center gap-3">
                     <input
@@ -431,7 +431,7 @@ function SettingsPage() {
                       className="w-4 h-4 accent-gold-600 cursor-pointer"
                     />
                     <label htmlFor="vis_phone" className="text-xs text-stone-600 font-sans cursor-pointer">
-                      Công khai <strong>Số điện thoại</strong> cho các thành viên khác xem trong gia phả.
+                      Công khai <strong>Số điện thoại</strong> cho các thành viên khác xem trong tộc phả.
                     </label>
                   </div>
                   <div className="flex items-center gap-3">
@@ -443,7 +443,7 @@ function SettingsPage() {
                       className="w-4 h-4 accent-gold-600 cursor-pointer"
                     />
                     <label htmlFor="vis_email" className="text-xs text-stone-600 font-sans cursor-pointer">
-                      Công khai <strong>Địa chỉ Email</strong> cho các thành viên khác xem trong gia phả.
+                      Công khai <strong>Địa chỉ Email</strong> cho các thành viên khác xem trong tộc phả.
                     </label>
                   </div>
                   <div className="flex items-center gap-3">
@@ -455,7 +455,7 @@ function SettingsPage() {
                       className="w-4 h-4 accent-gold-600 cursor-pointer"
                     />
                     <label htmlFor="vis_social" className="text-xs text-stone-600 font-sans cursor-pointer">
-                      Công khai <strong>Mạng xã hội</strong> cho các thành viên khác xem trong gia phả.
+                      Công khai <strong>Mạng xã hội</strong> cho các thành viên khác xem trong tộc phả.
                     </label>
                   </div>
                 </div>

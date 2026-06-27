@@ -8,8 +8,8 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Gia Phả Họ Đỗ Đàm An' },
-      { name: 'description', content: 'Hệ thống quản lý gia phả Họ Đỗ Đàm An - kết nối các thế hệ' },
+      { title: 'Tộc Phả Họ Đỗ Đàm An' },
+      { name: 'description', content: 'Hệ thống quản lý tộc phả Họ Đỗ Đàm An - kết nối các thế hệ' },
     ],
     links: [
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -46,7 +46,7 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 text-center">
         <div className="font-serif text-gold-500 text-xl mb-2">Họ Đỗ Đàm An</div>
         <p className="text-sm font-sans mb-4">Kết nối các thế hệ, lưu giữ ký ức, tôn vinh nguồn cội.</p>
-        <p className="text-xs text-stone-500">© {new Date().getFullYear()} Gia Phả Họ Đỗ Đàm An. Mọi quyền được bảo lưu.</p>
+        <p className="text-xs text-stone-500">© {new Date().getFullYear()} Tộc Phả Họ Đỗ Đàm An. Mọi quyền được bảo lưu.</p>
       </div>
     </footer>
   )

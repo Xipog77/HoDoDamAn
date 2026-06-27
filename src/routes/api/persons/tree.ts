@@ -75,7 +75,7 @@ export const Route = createFileRoute('/api/persons/tree')({
       return Response.json({ nodes, edges, totalPersons: allPersons.length })
     } catch (e) {
       console.error(e)
-      return Response.json({ error: 'Lỗi khi tải dữ liệu cây gia phả' }, { status: 500 })
+      return Response.json({ error: 'Lỗi khi tải dữ liệu cây tộc phả' }, { status: 500 })
     }
   },
     }

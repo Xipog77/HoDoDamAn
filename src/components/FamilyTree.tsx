@@ -220,7 +220,7 @@ function FamilyTreeContent({ branch }: { branch: string }) {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-gold-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-stone-500 font-sans">Đang tải cây gia phả...</p>
+          <p className="text-stone-500 font-sans">Đang tải cây tộc phả...</p>
         </div>
       </div>
     )
@@ -230,7 +230,7 @@ function FamilyTreeContent({ branch }: { branch: string }) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <p className="text-stone-500 font-sans">Chưa có dữ liệu gia phả</p>
+          <p className="text-stone-500 font-sans">Chưa có dữ liệu tộc phả</p>
         </div>
       </div>
     )
