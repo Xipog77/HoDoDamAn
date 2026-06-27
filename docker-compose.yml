@@ -23,8 +23,8 @@ services:
     ports:
       - "3005:3000"
     environment:
-      DATABASE_URL: postgres://postgres:postgrespassword@db:5432/familytree
-      JWT_SECRET: "your-super-secret-jwt-key"
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - ./uploads:/app/uploads
     depends_on:
