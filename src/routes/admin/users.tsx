@@ -37,8 +37,21 @@ function AdminUsers() {
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('MEMBER')
   const [personId, setPersonId] = useState<number | null>(null)
+  const [email, setEmail] = useState('')
+  const [sendEmail, setSendEmail] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [creating, setCreating] = useState(false)
+
+  const generateRandomPassword = () => {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%'
+    let generated = ''
+    for (let i = 0; i < 10; i++) {
+      generated += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    setPassword(generated)
+    setShowPassword(true) // Show so the admin can see/copy it
+  }
 
   const load = () => {
     Promise.all([
@@ -84,6 +97,8 @@ function AdminUsers() {
           password,
           role,
           personId,
+          email,
+          sendEmail,
         }),
       })
       const data = await res.json()
@@ -94,6 +109,9 @@ function AdminUsers() {
         setUsername('')
         setDisplayName('')
         setPassword('')
+        setEmail('')
+        setSendEmail(false)
+        setShowPassword(false)
         setRole('MEMBER')
         setPersonId(null)
         load()
@@ -163,8 +181,8 @@ function AdminUsers() {
                   className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Mật khẩu *</label>
-                <input required type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Tối thiểu 6 ký tự"
+                <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Email liên hệ</label>
+                <input type="email" value={email} onChange={e => { setEmail(e.target.value); if (!e.target.value) setSendEmail(false) }} placeholder="VD: nguyenvanb@gmail.com"
                   className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
               </div>
               <div>
@@ -176,6 +194,21 @@ function AdminUsers() {
                 </select>
               </div>
               <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Mật khẩu *</label>
+                <div className="relative">
+                  <input required type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Tối thiểu 6 ký tự"
+                    className="w-full pl-3 pr-24 py-2.5 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-xs text-stone-500 hover:text-stone-800 font-sans px-2 py-1 hover:bg-stone-100 rounded-lg">
+                      {showPassword ? 'Ẩn' : 'Hiện'}
+                    </button>
+                    <button type="button" onClick={generateRandomPassword} className="text-xs bg-gold-50 text-gold-700 border border-gold-200 hover:bg-gold-100 font-medium font-sans px-2.5 py-1 rounded-lg transition-colors">
+                      Tự sinh
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="sm:col-span-2">
                 <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Liên kết với Hồ sơ tộc phả</label>
                 <SearchableSelect
                   options={personOptions}
@@ -184,6 +217,14 @@ function AdminUsers() {
                   placeholder="Tìm kiếm và chọn hồ sơ trong dòng họ..."
                 />
               </div>
+              {email && (
+                <div className="sm:col-span-2 flex items-center gap-2 mt-1 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+                  <input type="checkbox" id="send_email_chk" checked={sendEmail} onChange={e => setSendEmail(e.target.checked)} className="rounded text-gold-600 focus:ring-gold-500 accent-gold-600 w-4 h-4" />
+                  <label htmlFor="send_email_chk" className="text-xs text-stone-600 font-sans cursor-pointer select-none">
+                    Gửi thông tin đăng nhập và mật khẩu vừa tạo tới email <strong>{email}</strong>
+                  </label>
+                </div>
+              )}
             </div>
 
             <div className="flex gap-3 pt-2">

@@ -44,8 +44,10 @@ function AdminPersons() {
   // Form State
   const [name, setName] = useState('')
   const [gender, setGender] = useState('MALE')
+  const [fatherId, setFatherId] = useState<number | null>(null)
   const [dob, setDob] = useState('')
   const [dod, setDod] = useState('')
+  const [dodLunar, setDodLunar] = useState('')
   const [biography, setBiography] = useState('')
   const [isDeceased, setIsDeceased] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState('')
@@ -109,8 +111,10 @@ function AdminPersons() {
       const { person } = await res.json()
       setName(person.name)
       setGender(person.gender)
+      setFatherId(person.fatherId || null)
       setDob(person.dob || '')
       setDod(person.dod || '')
+      setDodLunar(person.dodLunar || '')
       setBiography(person.biography || '')
       setAvatarUrl(person.avatarUrl || '')
       setIsDeceased(person.isDeceased || false)
@@ -141,8 +145,10 @@ function AdminPersons() {
     setShowAddForm(true)
     setName('')
     setGender('MALE')
+    setFatherId(null)
     setDob('')
     setDod('')
+    setDodLunar('')
     setBiography('')
     setAvatarUrl('')
     setIsDeceased(false)
@@ -296,6 +302,8 @@ function AdminPersons() {
       fullBiography: editor?.getHTML() || null,
       dob: dob || null,
       dod: dod || null,
+      dodLunar: dodLunar || null,
+      fatherId: fatherId || null,
       isDeceased,
       avatarUrl: avatarUrl || null,
       phone: phone || null,
@@ -332,6 +340,15 @@ function AdminPersons() {
   const filteredPersons = useMemo(() => {
     return persons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
   }, [persons, search])
+
+  const fatherOptions = useMemo(() => {
+    return persons
+      .filter(p => p.gender === 'MALE' && p.id !== selectedId)
+      .map(p => ({
+        value: p.id,
+        label: `${p.name} (Đời ${p.generation || '?'}${p.branch ? ` - ${p.branch}` : ''})`
+      }))
+  }, [persons, selectedId])
 
   return (
     <div>
@@ -469,14 +486,42 @@ function AdminPersons() {
                         </select>
                       </div>
                       <div>
+                        <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Cha</label>
+                        <SearchableSelect
+                          options={fatherOptions}
+                          value={fatherId || ''}
+                          onChange={val => setFatherId(val ? Number(val) : null)}
+                          placeholder="Chọn cha..."
+                        />
+                      </div>
+                      <div>
                         <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Ngày sinh (Dương lịch)</label>
                         <input type="date" value={dob} onChange={e => setDob(e.target.value)}
                           className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Ngày mất (Nếu đã khuất)</label>
-                        <input type="date" value={dod} onChange={e => setDod(e.target.value)}
-                          className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
+                        <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Ngày mất (Dương lịch)</label>
+                        <input type="date" value={dod} onChange={e => setDod(e.target.value)} disabled={!isDeceased}
+                          className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans disabled:opacity-50 disabled:bg-stone-50" />
+                      </div>
+                      <div className="flex items-center gap-2 pt-2">
+                        <input type="checkbox" id="isDeceased" checked={isDeceased} onChange={e => {
+                          setIsDeceased(e.target.checked)
+                          if (!e.target.checked) {
+                            setDod('')
+                            setDodLunar('')
+                          }
+                        }} className="w-4 h-4 accent-gold-600 rounded" />
+                        <label htmlFor="isDeceased" className="text-sm font-medium text-stone-600 font-sans cursor-pointer">Đã mất (Khuất)</label>
+                      </div>
+                      <div>
+                        {isDeceased && (
+                          <>
+                            <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Ngày mất (Âm lịch)</label>
+                            <input type="text" value={dodLunar} onChange={e => setDodLunar(e.target.value)} placeholder="VD: 15/08 hoặc 15/08/1954"
+                              className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -582,10 +627,7 @@ function AdminPersons() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" id="isDeceased" checked={isDeceased} onChange={e => setIsDeceased(e.target.checked)} className="w-4 h-4 accent-gold-600" />
-                    <label htmlFor="isDeceased" className="text-sm text-stone-600 font-sans">Đã mất (Khuất)</label>
-                  </div>
+
 
                   <div className="flex gap-3 pt-2">
                     <button type="submit" disabled={saving}
