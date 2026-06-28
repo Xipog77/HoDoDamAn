@@ -21,7 +21,7 @@ function AdminTree() {
   const [persons, setPersons] = useState<Person[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<number | null>(null)
-  
+
   const [form, setForm] = useState({
     fatherId: '' as string | number,
     generation: '',
@@ -62,7 +62,7 @@ function AdminTree() {
         generation: selectedPerson.generation?.toString() || '1',
         branch: selectedPerson.branch || '',
       })
-      
+
       // Fetch full details (spouses, children)
       fetch(`/api/persons/${selectedId}`)
         .then(r => r.json())
@@ -85,7 +85,7 @@ function AdminTree() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     })
-    alert('Đã lưu cấu trúc nhánh/đời thành công!')
+    alert('Đã cập nhật thành công!')
     load()
   }
 
@@ -126,7 +126,7 @@ function AdminTree() {
     if (!selectedPerson) return
     const isFather = selectedPerson.gender === 'MALE'
     const payload = isFather ? { fatherId: selectedPerson.id } : { motherId: selectedPerson.id }
-    
+
     const res = await fetch(`/api/persons/${childId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -143,7 +143,7 @@ function AdminTree() {
     if (!selectedPerson) return
     const isFather = selectedPerson.gender === 'MALE'
     const payload = isFather ? { fatherId: null } : { motherId: null }
-    
+
     const res = await fetch(`/api/persons/${childId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -166,18 +166,18 @@ function AdminTree() {
         {/* Left Column: Select Person */}
         <div className="lg:col-span-1 bg-white rounded-2xl border border-stone-100 shadow-sm p-4 overflow-hidden flex flex-col h-[calc(100vh-140px)]">
           <h2 className="font-serif font-semibold text-wood-900 mb-4">Danh sách Thành viên</h2>
-          
+
           <div className="relative mb-4">
             <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input 
-              type="text" 
-              placeholder="Tìm kiếm..." 
+            <input
+              type="text"
+              placeholder="Tìm kiếm..."
               className="w-full pl-9 pr-4 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans"
               onChange={(e) => {
                 const term = e.target.value.toLowerCase()
                 document.querySelectorAll('.person-item').forEach(el => {
                   const txt = (el as HTMLElement).innerText.toLowerCase()
-                  ;(el as HTMLElement).style.display = txt.includes(term) ? 'flex' : 'none'
+                    ; (el as HTMLElement).style.display = txt.includes(term) ? 'flex' : 'none'
                 })
               }}
             />
@@ -188,9 +188,8 @@ function AdminTree() {
               <button
                 key={p.id}
                 onClick={() => setSelectedId(p.id)}
-                className={`person-item w-full flex flex-col text-left px-3 py-2 rounded-lg transition-colors ${
-                  selectedId === p.id ? 'bg-gold-50 border border-gold-200' : 'hover:bg-stone-50 border border-transparent'
-                }`}
+                className={`person-item w-full flex flex-col text-left px-3 py-2 rounded-lg transition-colors ${selectedId === p.id ? 'bg-gold-50 border border-gold-200' : 'hover:bg-stone-50 border border-transparent'
+                  }`}
               >
                 <span className={`font-serif font-bold text-sm leading-snug truncate ${selectedId === p.id ? 'text-gold-800' : 'text-wood-900'}`}>{p.name}</span>
                 <span className="text-xs text-stone-400 font-sans">Đời {p.generation} • {p.branch || 'Chưa xếp nhánh'}</span>
@@ -208,17 +207,17 @@ function AdminTree() {
             </div>
           ) : (
             <div className="space-y-6">
-              
+
               {/* Base Info */}
               <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6">
                 <h2 className="font-serif font-bold text-xl text-wood-900 mb-1">{selectedPerson.name}</h2>
                 <p className="text-sm text-stone-500 font-sans mb-6">Cập nhật gốc rễ và nhánh của thành viên này.</p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Father Autocomplete */}
                   <div>
                     <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Người Cha</label>
-                    <SearchableSelect 
+                    <SearchableSelect
                       options={persons.filter(p => p.gender === 'MALE' && p.id !== selectedId).map(p => ({ value: p.id, label: `${p.name} (Đời ${p.generation})` }))}
                       value={form.fatherId}
                       onChange={(val) => {
@@ -256,7 +255,7 @@ function AdminTree() {
 
                 <div className="mt-4 flex justify-end">
                   <button onClick={saveBaseRelations} className="bg-gold-600 hover:bg-gold-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors font-sans">
-                    Lưu gốc rễ
+                    Lưu
                   </button>
                 </div>
               </div>
@@ -264,7 +263,7 @@ function AdminTree() {
               {/* Spouses */}
               <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6">
                 <h3 className="font-serif font-semibold text-wood-900 mb-4">Vợ / Chồng</h3>
-                
+
                 {spouses.length > 0 && (
                   <div className="space-y-2 mb-4">
                     {spouses.map(s => (
@@ -280,7 +279,7 @@ function AdminTree() {
 
                 <div className="flex items-end gap-2">
                   <div className="flex-1">
-                    <SearchableSelect 
+                    <SearchableSelect
                       options={persons.filter(p => p.gender !== selectedPerson.gender && !spouses.find(s => s.id === p.id)).map(p => ({ value: p.id, label: `${p.name} (Đời ${p.generation})` }))}
                       value=""
                       onChange={val => {
@@ -295,7 +294,7 @@ function AdminTree() {
               {/* Children */}
               <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 mb-8">
                 <h3 className="font-serif font-semibold text-wood-900 mb-4">Con cái</h3>
-                
+
                 {children.length > 0 && (
                   <div className="space-y-2 mb-4">
                     {children.map(c => (
@@ -311,7 +310,7 @@ function AdminTree() {
 
                 <div className="flex items-end gap-2">
                   <div className="flex-1">
-                    <SearchableSelect 
+                    <SearchableSelect
                       options={persons.filter(p => p.id !== selectedId && !children.find(c => c.id === p.id)).map(p => ({ value: p.id, label: `${p.name} (Đời ${p.generation})` }))}
                       value=""
                       onChange={val => {
