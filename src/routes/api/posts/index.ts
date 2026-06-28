@@ -12,7 +12,19 @@ export const Route = createFileRoute('/api/posts/')({
       const url = new URL(request.url)
       const featured = url.searchParams.get('featured') === 'true'
 
-      let allPosts = await db.query.posts.findMany({ orderBy: [desc(posts.createdAt)] })
+      let allPosts = await db.query.posts.findMany({
+        columns: {
+          id: true,
+          title: true,
+          excerpt: true,
+          authorId: true,
+          isFeatured: true,
+          coverImage: true,
+          createdAt: true,
+          updatedAt: true
+        },
+        orderBy: [desc(posts.createdAt)]
+      })
       if (featured) allPosts = allPosts.filter(p => p.isFeatured)
 
       // Add author names

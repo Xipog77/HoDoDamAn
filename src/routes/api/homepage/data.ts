@@ -11,7 +11,20 @@ export const Route = createFileRoute('/api/homepage/data')({
   GET: async () => {
     try {
       const [featuredPosts, allNotifications, allPersons] = await Promise.all([
-        db.query.posts.findMany({ where: eq(posts.isFeatured, true), orderBy: [desc(posts.createdAt)] }),
+        db.query.posts.findMany({
+          columns: {
+            id: true,
+            title: true,
+            excerpt: true,
+            authorId: true,
+            isFeatured: true,
+            coverImage: true,
+            createdAt: true,
+            updatedAt: true
+          },
+          where: eq(posts.isFeatured, true),
+          orderBy: [desc(posts.createdAt)]
+        }),
         db.query.notifications.findMany({ where: eq(notifications.isActive, true), orderBy: [desc(notifications.createdAt)] }),
         db.query.persons.findMany(),
       ])

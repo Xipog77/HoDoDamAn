@@ -3,6 +3,7 @@ import { db } from '~/db/client'
 import { persons } from '~/db/schema'
 import { eq } from 'drizzle-orm'
 import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { syncPersonDeathAnniversary } from '@/lib/sync-anniversaries'
 
 export const Route = createFileRoute('/api/persons/')({
   server: {
@@ -61,6 +62,7 @@ export const Route = createFileRoute('/api/persons/')({
       }
 
       const [person] = await db.insert(persons).values(body).returning()
+      await syncPersonDeathAnniversary(person)
       return Response.json({ person }, { status: 201 })
     } catch (e) {
       console.error(e)

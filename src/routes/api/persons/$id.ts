@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
-import { persons, marriages, memoryWall } from '~/db/schema'
+import { persons, marriages, memoryWall, anniversaries } from '~/db/schema'
 import { eq } from 'drizzle-orm'
 import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { syncPersonDeathAnniversary } from '@/lib/sync-anniversaries'
 
 async function updateDescendantsGeneration(parentId: number, parentGeneration: number, visited = new Set<number>()) {
   if (visited.has(parentId)) return
@@ -119,6 +120,10 @@ export const Route = createFileRoute('/api/persons/$id')({
 
       const updated = await db.update(persons).set(updateData).where(eq(persons.id, id)).returning()
 
+      if (updated[0]) {
+        await syncPersonDeathAnniversary(updated[0])
+      }
+
       if (isAdmin && currentPerson && finalGeneration !== null && finalGeneration !== currentPerson.generation) {
         await updateDescendantsGeneration(id, finalGeneration)
       }
@@ -140,6 +145,7 @@ export const Route = createFileRoute('/api/persons/$id')({
     try {
       const id = parseInt(params.id)
       if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
+      await db.delete(anniversaries).where(eq(anniversaries.personId, id))
       await db.delete(persons).where(eq(persons.id, id))
       return Response.json({ success: true })
     } catch (e) {

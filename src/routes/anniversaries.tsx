@@ -138,50 +138,8 @@ function AnniversariesPage() {
     })
   }
 
-  // Add deceased members' death anniversaries
-  const deceased = persons.filter(p => p.isDeceased)
-  for (const p of deceased) {
-    if (!p.dod && !p.dodLunar) continue
-
-    let day = 1
-    let month = 1
-    let dateType: 'SOLAR' | 'LUNAR' = 'SOLAR'
-
-    if (p.dodLunar) {
-      dateType = 'LUNAR'
-      const parsed = parseLunarDate(p.dodLunar)
-      if (parsed) {
-        day = parsed.day
-        month = parsed.month
-      } else if (p.dod) {
-        const parts = p.dod.split('-')
-        if (parts.length >= 3) {
-          day = parseInt(parts[2], 10)
-          month = parseInt(parts[1], 10)
-        }
-      }
-    } else if (p.dod) {
-      const parts = p.dod.split('-')
-      if (parts.length >= 3) {
-        day = parseInt(parts[2], 10)
-        month = parseInt(parts[1], 10)
-      }
-    }
-
-    compiledEvents.push({
-      key: `person-${p.id}`,
-      title: `Ngày giỗ cụ ${p.name}`,
-      type: 'DEATH',
-      dateType,
-      day,
-      month,
-      description: p.biography || `Ngày giỗ của cụ ${p.name} thuộc đời thứ ${p.generation} dòng họ Đỗ Đàm An.`,
-      personId: p.id,
-      postId: null, // Deceased profiles aren't linked directly to posts in this context
-      personName: p.name,
-      daysUntil: calculateDaysUntil(month, day),
-    })
-  }
+  // Death anniversaries are now synchronized to the anniversaries database table directly
+  // and loaded via the /api/anniversaries endpoint.
 
   // MONTH NAVIGATION LOGIC
   const handlePrevMonth = () => {
