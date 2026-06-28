@@ -5,6 +5,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import ImageExtension from '@tiptap/extension-image'
+import { SearchableSelect } from '@/components/SearchableSelect'
 
 export const Route = createFileRoute('/admin/persons')({
   component: AdminPersons,
