@@ -6,6 +6,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import ImageExtension from '@tiptap/extension-image'
 import { SearchableSelect } from '@/components/SearchableSelect'
+import { lunarToSolar } from '@/lib/lunar-calendar'
 
 export const Route = createFileRoute('/admin/persons')({
   component: AdminPersons,
@@ -288,6 +289,27 @@ function AdminPersons() {
     }
   }
 
+  const handleDodLunarBlur = () => {
+    if (!dodLunar) return
+    const match = dodLunar.trim().match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/)
+    if (match) {
+      const day = parseInt(match[1], 10)
+      const month = parseInt(match[2], 10)
+      const year = parseInt(match[3], 10)
+      
+      const formattedLunar = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`
+      setDodLunar(formattedLunar)
+      
+      const solarDate = lunarToSolar(day, month, year)
+      if (solarDate) {
+        const yyyy = solarDate.getFullYear()
+        const mm = String(solarDate.getMonth() + 1).padStart(2, '0')
+        const dd = String(solarDate.getDate()).padStart(2, '0')
+        setDod(`${yyyy}-${mm}-${dd}`)
+      }
+    }
+  }
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
@@ -519,7 +541,7 @@ function AdminPersons() {
                         {isDeceased && (
                           <>
                             <label className="block text-xs font-medium text-stone-600 mb-1 font-sans">Ngày mất (Âm lịch)</label>
-                            <input type="text" value={dodLunar} onChange={e => setDodLunar(e.target.value)} placeholder="VD: 15/08 hoặc 15/08/1954"
+                            <input type="text" value={dodLunar} onChange={e => setDodLunar(e.target.value)} onBlur={handleDodLunarBlur} placeholder="VD: 15/08 hoặc 15/08/1954"
                               className="w-full px-3 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans" />
                           </>
                         )}

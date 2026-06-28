@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { persons } from '~/db/schema'
+import { eq } from 'drizzle-orm'
 import { getTokenFromCookies, verifyToken } from '@/lib/auth'
 
 export const Route = createFileRoute('/api/persons/')({
@@ -43,6 +44,22 @@ export const Route = createFileRoute('/api/persons/')({
 
     try {
       const body = await request.json()
+
+      // Automatically calculate generation and inherit branch from father if set
+      if (body.fatherId) {
+        const father = await db.query.persons.findFirst({ where: eq(persons.id, body.fatherId) })
+        if (father) {
+          body.generation = father.generation + 1
+          if (!body.branch) {
+            body.branch = father.branch
+          }
+        }
+      } else {
+        if (body.generation === undefined) {
+          body.generation = 1
+        }
+      }
+
       const [person] = await db.insert(persons).values(body).returning()
       return Response.json({ person }, { status: 201 })
     } catch (e) {
