@@ -1,5 +1,6 @@
 {
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["src/**/*", "db/**/*"],
+  "exclude": ["node_modules", "dist", "BACK-UP", ".agents"],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",

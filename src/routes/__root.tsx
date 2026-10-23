@@ -1,4 +1,4 @@
-import { HeadContent, Scripts, createRootRoute, Outlet } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { AuthProvider } from '../components/AuthProvider'
 import { Navbar } from '../components/Navbar'
 import '../styles.css'

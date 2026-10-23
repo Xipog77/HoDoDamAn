@@ -15,6 +15,14 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'          # Giới hạn tối đa 1.5 nhân CPU
+          memory: 1024M        # Giới hạn tối đa 1GB RAM cho Database
+        reservations:
+          cpus: '0.2'          # Đảm bảo giữ tối thiểu 0.2 CPU cho DB
+          memory: 256M         # Đảm bảo luôn giữ tối thiểu 256MB RAM cho DB
 
   web:
     build:
@@ -35,6 +43,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'          # Giới hạn tối đa 1.5 nhân CPU
+          memory: 1024M        # Giới hạn tối đa 1GB RAM cho Web App
+        reservations:
+          cpus: '0.3'          # Đảm bảo giữ tối thiểu 0.3 CPU cho Web
+          memory: 256M         # Đảm bảo luôn giữ tối thiểu 256MB RAM cho Web
 
   cloudflare-tunnel:
     image: cloudflare/cloudflared:latest
@@ -43,5 +59,15 @@ services:
     command: tunnel --no-autoupdate run
     environment:
       - TUNNEL_TOKEN=eyJhIjoiYmE3YTE4NDE3ODNjMzIzOTNhN2RiOWMzNzA3NDViYjIiLCJ0IjoiMGVjMjA1YTYtN2Y4MS00MGJmLTgyOWQtNmExZDUwYzE3NDliIiwicyI6Ik1UTTNOREV5TkdVdE5XVTBPUzAwTWpabUxXRmhOMlF0TmpFellqZGtaakpsWVdKbSJ9
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
 volumes:
   pgdata:
+

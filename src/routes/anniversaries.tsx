@@ -21,15 +21,6 @@ interface Anniversary {
   year: number | null
 }
 
-interface Person {
-  id: number
-  name: string
-  dod: string | null
-  dodLunar: string | null
-  generation: number
-  biography: string | null
-  isDeceased: boolean | null
-}
 
 interface CompiledEvent {
   key: string
@@ -49,7 +40,6 @@ interface CompiledEvent {
 
 function AnniversariesPage() {
   const [customEvents, setCustomEvents] = useState<Anniversary[]>([])
-  const [persons, setPersons] = useState<Person[]>([])
   const [loading, setLoading] = useState(true)
 
   // Calendar State
@@ -63,13 +53,10 @@ function AnniversariesPage() {
   const [activeView, setActiveView] = useState<'GRID' | 'LIST'>('GRID')
 
   useEffect(() => {
-    Promise.all([
-      fetch('/api/anniversaries').then(r => r.json()),
-      fetch('/api/persons').then(r => r.json())
-    ])
-      .then(([annData, persData]) => {
+    fetch('/api/anniversaries')
+      .then(r => r.json())
+      .then(annData => {
         setCustomEvents(annData.anniversaries || [])
-        setPersons(persData.persons || [])
       })
       .catch(console.error)
       .finally(() => setLoading(false))
@@ -90,17 +77,6 @@ function AnniversariesPage() {
     )
   }
 
-  // Parse Lunar Date labels helper
-  const parseLunarDate = (lunarStr: string): { day: number; month: number } | null => {
-    const match = lunarStr.match(/(\d+)\/(\d+)/) || lunarStr.match(/ngày\s+(\d+)\s+tháng\s+(\d+)/i)
-    if (match) {
-      return {
-        day: parseInt(match[1], 10),
-        month: parseInt(match[2], 10),
-      }
-    }
-    return null
-  }
 
   // Calculate days until helper (approximating lunar month/day as solar day/month for simple countdown)
   const calculateDaysUntil = (month: number, day: number): number => {
@@ -613,7 +589,7 @@ function AnniversariesPage() {
                         {ev.postId && (
                           <div className="flex-shrink-0 flex items-center">
                             <Link
-                              to="/news/$id"
+                              to="/posts/$id"
                               params={{ id: ev.postId.toString() }}
                               className="inline-flex items-center gap-1.5 bg-gold-600 hover:bg-gold-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all hover:-translate-y-0.5"
                             >
@@ -683,7 +659,7 @@ function AnniversariesPage() {
                           )}
                           {ev.postId && (
                             <Link 
-                              to="/news/$id" 
+                              to="/posts/$id" 
                               params={{ id: ev.postId.toString() }}
                               className="inline-flex items-center gap-0.5 text-gold-600 hover:text-gold-500 font-medium font-semibold"
                             >

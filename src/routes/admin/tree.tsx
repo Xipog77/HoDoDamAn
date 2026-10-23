@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState, useMemo } from 'react'
-import { Network, Search, X, Plus, User } from 'lucide-react'
+import { Network, Search, X } from 'lucide-react'
 import { SearchableSelect } from '@/components/SearchableSelect'
 
 export const Route = createFileRoute('/admin/tree')({

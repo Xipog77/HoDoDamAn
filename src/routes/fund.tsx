@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowUpCircle, ArrowDownCircle, DollarSign, TrendingUp, User, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '../components/AuthProvider'
 

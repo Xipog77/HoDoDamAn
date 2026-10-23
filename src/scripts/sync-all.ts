@@ -1,6 +1,5 @@
 import 'dotenv/config'
 import { db } from '../../db/client'
-import { persons } from '../../db/schema'
 import { syncPersonDeathAnniversary } from '../lib/sync-anniversaries'
 
 async function run() {

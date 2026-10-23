@@ -118,8 +118,8 @@ export function FamilyTree({ branch = '' }: { branch?: string }) {
 }
 
 function FamilyTreeContent({ branch }: { branch: string }) {
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
   const [loading, setLoading] = useState(true)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [rawData, setRawData] = useState<{ nodes: Node[]; edges: Edge[] }>({ nodes: [], edges: [] })

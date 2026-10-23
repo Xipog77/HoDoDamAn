@@ -10,24 +10,33 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TreeRouteImport } from './routes/tree'
-import { Route as PostsRouteImport } from './routes/posts'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FundRouteImport } from './routes/fund'
+import { Route as AnniversariesRouteImport } from './routes/anniversaries'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PostsIndexRouteImport } from './routes/posts/index'
 import { Route as PostsIdRouteImport } from './routes/posts/$id'
 import { Route as PersonIdRouteImport } from './routes/person/$id'
+import { Route as ApiFeedbackRouteImport } from './routes/api/feedback'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminTreeRouteImport } from './routes/admin/tree'
-import { Route as AdminPostsRouteImport } from './routes/admin/posts'
 import { Route as AdminPersonsRouteImport } from './routes/admin/persons'
 import { Route as AdminNotificationsRouteImport } from './routes/admin/notifications'
 import { Route as AdminFundRouteImport } from './routes/admin/fund'
+import { Route as AdminFeedbackRouteImport } from './routes/admin/feedback'
+import { Route as AdminCarouselRouteImport } from './routes/admin/carousel'
+import { Route as AdminAnniversariesRouteImport } from './routes/admin/anniversaries'
 import { Route as ApiPostsIndexRouteImport } from './routes/api/posts/index'
 import { Route as ApiPersonsIndexRouteImport } from './routes/api/persons/index'
 import { Route as ApiNotificationsIndexRouteImport } from './routes/api/notifications/index'
 import { Route as ApiMediaIndexRouteImport } from './routes/api/media/index'
 import { Route as ApiFundIndexRouteImport } from './routes/api/fund/index'
+import { Route as ApiCommentsIndexRouteImport } from './routes/api/comments/index'
+import { Route as ApiCarouselIndexRouteImport } from './routes/api/carousel/index'
+import { Route as ApiAnniversariesIndexRouteImport } from './routes/api/anniversaries/index'
+import { Route as AdminPostsIndexRouteImport } from './routes/admin/posts/index'
 import { Route as ApiPostsIdRouteImport } from './routes/api/posts/$id'
 import { Route as ApiPersonsTreeRouteImport } from './routes/api/persons/tree'
 import { Route as ApiPersonsMarriagesRouteImport } from './routes/api/persons/marriages'
@@ -35,20 +44,30 @@ import { Route as ApiPersonsIdRouteImport } from './routes/api/persons/$id'
 import { Route as ApiMemoriesPersonIdRouteImport } from './routes/api/memories/$personId'
 import { Route as ApiMediaIdRouteImport } from './routes/api/media/$id'
 import { Route as ApiHomepageDataRouteImport } from './routes/api/homepage/data'
+import { Route as ApiFundIdRouteImport } from './routes/api/fund/$id'
+import { Route as ApiCommentsIdRouteImport } from './routes/api/comments/$id'
+import { Route as ApiCarouselIdRouteImport } from './routes/api/carousel/$id'
+import { Route as ApiAuthSettingsRouteImport } from './routes/api/auth/settings'
 import { Route as ApiAuthRegisterRouteImport } from './routes/api/auth/register'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
+import { Route as ApiAnniversariesIdRouteImport } from './routes/api/anniversaries/$id'
 import { Route as ApiAdminUsersRouteImport } from './routes/api/admin/users'
+import { Route as ApiAdminStatusRouteImport } from './routes/api/admin/status'
+import { Route as ApiAdminFeedbackRouteImport } from './routes/api/admin/feedback'
+import { Route as ApiAdminBackupRouteImport } from './routes/api/admin/backup'
+import { Route as AdminPostsNewRouteImport } from './routes/admin/posts/new'
+import { Route as AdminPostsIdRouteImport } from './routes/admin/posts/$id'
 
 const TreeRoute = TreeRouteImport.update({
   id: '/tree',
   path: '/tree',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PostsRoute = PostsRouteImport.update({
-  id: '/posts',
-  path: '/posts',
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -61,6 +80,11 @@ const FundRoute = FundRouteImport.update({
   path: '/fund',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnniversariesRoute = AnniversariesRouteImport.update({
+  id: '/anniversaries',
+  path: '/anniversaries',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -71,14 +95,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PostsIndexRoute = PostsIndexRouteImport.update({
+  id: '/posts/',
+  path: '/posts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PostsIdRoute = PostsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => PostsRoute,
+  id: '/posts/$id',
+  path: '/posts/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PersonIdRoute = PersonIdRouteImport.update({
   id: '/person/$id',
   path: '/person/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiFeedbackRoute = ApiFeedbackRouteImport.update({
+  id: '/api/feedback',
+  path: '/api/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -89,11 +123,6 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
 const AdminTreeRoute = AdminTreeRouteImport.update({
   id: '/tree',
   path: '/tree',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPostsRoute = AdminPostsRouteImport.update({
-  id: '/posts',
-  path: '/posts',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPersonsRoute = AdminPersonsRouteImport.update({
@@ -109,6 +138,21 @@ const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
 const AdminFundRoute = AdminFundRouteImport.update({
   id: '/fund',
   path: '/fund',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCarouselRoute = AdminCarouselRouteImport.update({
+  id: '/carousel',
+  path: '/carousel',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnniversariesRoute = AdminAnniversariesRouteImport.update({
+  id: '/anniversaries',
+  path: '/anniversaries',
   getParentRoute: () => AdminRoute,
 } as any)
 const ApiPostsIndexRoute = ApiPostsIndexRouteImport.update({
@@ -135,6 +179,26 @@ const ApiFundIndexRoute = ApiFundIndexRouteImport.update({
   id: '/api/fund/',
   path: '/api/fund/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCommentsIndexRoute = ApiCommentsIndexRouteImport.update({
+  id: '/api/comments/',
+  path: '/api/comments/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarouselIndexRoute = ApiCarouselIndexRouteImport.update({
+  id: '/api/carousel/',
+  path: '/api/carousel/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAnniversariesIndexRoute = ApiAnniversariesIndexRouteImport.update({
+  id: '/api/anniversaries/',
+  path: '/api/anniversaries/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPostsIndexRoute = AdminPostsIndexRouteImport.update({
+  id: '/posts/',
+  path: '/posts/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const ApiPostsIdRoute = ApiPostsIdRouteImport.update({
   id: '/api/posts/$id',
@@ -171,6 +235,26 @@ const ApiHomepageDataRoute = ApiHomepageDataRouteImport.update({
   path: '/api/homepage/data',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFundIdRoute = ApiFundIdRouteImport.update({
+  id: '/api/fund/$id',
+  path: '/api/fund/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCommentsIdRoute = ApiCommentsIdRouteImport.update({
+  id: '/api/comments/$id',
+  path: '/api/comments/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarouselIdRoute = ApiCarouselIdRouteImport.update({
+  id: '/api/carousel/$id',
+  path: '/api/carousel/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSettingsRoute = ApiAuthSettingsRouteImport.update({
+  id: '/api/auth/settings',
+  path: '/api/auth/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthRegisterRoute = ApiAuthRegisterRouteImport.update({
   id: '/api/auth/register',
   path: '/api/auth/register',
@@ -191,32 +275,77 @@ const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
   path: '/api/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAnniversariesIdRoute = ApiAnniversariesIdRouteImport.update({
+  id: '/api/anniversaries/$id',
+  path: '/api/anniversaries/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminUsersRoute = ApiAdminUsersRouteImport.update({
   id: '/api/admin/users',
   path: '/api/admin/users',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminStatusRoute = ApiAdminStatusRouteImport.update({
+  id: '/api/admin/status',
+  path: '/api/admin/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminFeedbackRoute = ApiAdminFeedbackRouteImport.update({
+  id: '/api/admin/feedback',
+  path: '/api/admin/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminBackupRoute = ApiAdminBackupRouteImport.update({
+  id: '/api/admin/backup',
+  path: '/api/admin/backup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPostsNewRoute = AdminPostsNewRouteImport.update({
+  id: '/posts/new',
+  path: '/posts/new',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPostsIdRoute = AdminPostsIdRouteImport.update({
+  id: '/posts/$id',
+  path: '/posts/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/anniversaries': typeof AnniversariesRoute
   '/fund': typeof FundRoute
   '/login': typeof LoginRoute
-  '/posts': typeof PostsRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/tree': typeof TreeRoute
+  '/admin/anniversaries': typeof AdminAnniversariesRoute
+  '/admin/carousel': typeof AdminCarouselRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/fund': typeof AdminFundRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/persons': typeof AdminPersonsRoute
-  '/admin/posts': typeof AdminPostsRoute
   '/admin/tree': typeof AdminTreeRoute
   '/admin/users': typeof AdminUsersRoute
+  '/api/feedback': typeof ApiFeedbackRoute
   '/person/$id': typeof PersonIdRoute
   '/posts/$id': typeof PostsIdRoute
+  '/posts/': typeof PostsIndexRoute
+  '/admin/posts/$id': typeof AdminPostsIdRoute
+  '/admin/posts/new': typeof AdminPostsNewRoute
+  '/api/admin/backup': typeof ApiAdminBackupRoute
+  '/api/admin/feedback': typeof ApiAdminFeedbackRoute
+  '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
+  '/api/anniversaries/$id': typeof ApiAnniversariesIdRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
+  '/api/auth/settings': typeof ApiAuthSettingsRoute
+  '/api/carousel/$id': typeof ApiCarouselIdRoute
+  '/api/comments/$id': typeof ApiCommentsIdRoute
+  '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
@@ -224,6 +353,10 @@ export interface FileRoutesByFullPath {
   '/api/persons/marriages': typeof ApiPersonsMarriagesRoute
   '/api/persons/tree': typeof ApiPersonsTreeRoute
   '/api/posts/$id': typeof ApiPostsIdRoute
+  '/admin/posts/': typeof AdminPostsIndexRoute
+  '/api/anniversaries/': typeof ApiAnniversariesIndexRoute
+  '/api/carousel/': typeof ApiCarouselIndexRoute
+  '/api/comments/': typeof ApiCommentsIndexRoute
   '/api/fund/': typeof ApiFundIndexRoute
   '/api/media/': typeof ApiMediaIndexRoute
   '/api/notifications/': typeof ApiNotificationsIndexRoute
@@ -233,23 +366,38 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/anniversaries': typeof AnniversariesRoute
   '/fund': typeof FundRoute
   '/login': typeof LoginRoute
-  '/posts': typeof PostsRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/tree': typeof TreeRoute
+  '/admin/anniversaries': typeof AdminAnniversariesRoute
+  '/admin/carousel': typeof AdminCarouselRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/fund': typeof AdminFundRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/persons': typeof AdminPersonsRoute
-  '/admin/posts': typeof AdminPostsRoute
   '/admin/tree': typeof AdminTreeRoute
   '/admin/users': typeof AdminUsersRoute
+  '/api/feedback': typeof ApiFeedbackRoute
   '/person/$id': typeof PersonIdRoute
   '/posts/$id': typeof PostsIdRoute
+  '/posts': typeof PostsIndexRoute
+  '/admin/posts/$id': typeof AdminPostsIdRoute
+  '/admin/posts/new': typeof AdminPostsNewRoute
+  '/api/admin/backup': typeof ApiAdminBackupRoute
+  '/api/admin/feedback': typeof ApiAdminFeedbackRoute
+  '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
+  '/api/anniversaries/$id': typeof ApiAnniversariesIdRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
+  '/api/auth/settings': typeof ApiAuthSettingsRoute
+  '/api/carousel/$id': typeof ApiCarouselIdRoute
+  '/api/comments/$id': typeof ApiCommentsIdRoute
+  '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
@@ -257,6 +405,10 @@ export interface FileRoutesByTo {
   '/api/persons/marriages': typeof ApiPersonsMarriagesRoute
   '/api/persons/tree': typeof ApiPersonsTreeRoute
   '/api/posts/$id': typeof ApiPostsIdRoute
+  '/admin/posts': typeof AdminPostsIndexRoute
+  '/api/anniversaries': typeof ApiAnniversariesIndexRoute
+  '/api/carousel': typeof ApiCarouselIndexRoute
+  '/api/comments': typeof ApiCommentsIndexRoute
   '/api/fund': typeof ApiFundIndexRoute
   '/api/media': typeof ApiMediaIndexRoute
   '/api/notifications': typeof ApiNotificationsIndexRoute
@@ -267,23 +419,38 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/anniversaries': typeof AnniversariesRoute
   '/fund': typeof FundRoute
   '/login': typeof LoginRoute
-  '/posts': typeof PostsRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/tree': typeof TreeRoute
+  '/admin/anniversaries': typeof AdminAnniversariesRoute
+  '/admin/carousel': typeof AdminCarouselRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/fund': typeof AdminFundRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/persons': typeof AdminPersonsRoute
-  '/admin/posts': typeof AdminPostsRoute
   '/admin/tree': typeof AdminTreeRoute
   '/admin/users': typeof AdminUsersRoute
+  '/api/feedback': typeof ApiFeedbackRoute
   '/person/$id': typeof PersonIdRoute
   '/posts/$id': typeof PostsIdRoute
+  '/posts/': typeof PostsIndexRoute
+  '/admin/posts/$id': typeof AdminPostsIdRoute
+  '/admin/posts/new': typeof AdminPostsNewRoute
+  '/api/admin/backup': typeof ApiAdminBackupRoute
+  '/api/admin/feedback': typeof ApiAdminFeedbackRoute
+  '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
+  '/api/anniversaries/$id': typeof ApiAnniversariesIdRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
+  '/api/auth/settings': typeof ApiAuthSettingsRoute
+  '/api/carousel/$id': typeof ApiCarouselIdRoute
+  '/api/comments/$id': typeof ApiCommentsIdRoute
+  '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
@@ -291,6 +458,10 @@ export interface FileRoutesById {
   '/api/persons/marriages': typeof ApiPersonsMarriagesRoute
   '/api/persons/tree': typeof ApiPersonsTreeRoute
   '/api/posts/$id': typeof ApiPostsIdRoute
+  '/admin/posts/': typeof AdminPostsIndexRoute
+  '/api/anniversaries/': typeof ApiAnniversariesIndexRoute
+  '/api/carousel/': typeof ApiCarouselIndexRoute
+  '/api/comments/': typeof ApiCommentsIndexRoute
   '/api/fund/': typeof ApiFundIndexRoute
   '/api/media/': typeof ApiMediaIndexRoute
   '/api/notifications/': typeof ApiNotificationsIndexRoute
@@ -302,23 +473,38 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/anniversaries'
     | '/fund'
     | '/login'
-    | '/posts'
+    | '/settings'
     | '/tree'
+    | '/admin/anniversaries'
+    | '/admin/carousel'
+    | '/admin/feedback'
     | '/admin/fund'
     | '/admin/notifications'
     | '/admin/persons'
-    | '/admin/posts'
     | '/admin/tree'
     | '/admin/users'
+    | '/api/feedback'
     | '/person/$id'
     | '/posts/$id'
+    | '/posts/'
+    | '/admin/posts/$id'
+    | '/admin/posts/new'
+    | '/api/admin/backup'
+    | '/api/admin/feedback'
+    | '/api/admin/status'
     | '/api/admin/users'
+    | '/api/anniversaries/$id'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/register'
+    | '/api/auth/settings'
+    | '/api/carousel/$id'
+    | '/api/comments/$id'
+    | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
     | '/api/memories/$personId'
@@ -326,6 +512,10 @@ export interface FileRouteTypes {
     | '/api/persons/marriages'
     | '/api/persons/tree'
     | '/api/posts/$id'
+    | '/admin/posts/'
+    | '/api/anniversaries/'
+    | '/api/carousel/'
+    | '/api/comments/'
     | '/api/fund/'
     | '/api/media/'
     | '/api/notifications/'
@@ -335,23 +525,38 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/anniversaries'
     | '/fund'
     | '/login'
-    | '/posts'
+    | '/settings'
     | '/tree'
+    | '/admin/anniversaries'
+    | '/admin/carousel'
+    | '/admin/feedback'
     | '/admin/fund'
     | '/admin/notifications'
     | '/admin/persons'
-    | '/admin/posts'
     | '/admin/tree'
     | '/admin/users'
+    | '/api/feedback'
     | '/person/$id'
     | '/posts/$id'
+    | '/posts'
+    | '/admin/posts/$id'
+    | '/admin/posts/new'
+    | '/api/admin/backup'
+    | '/api/admin/feedback'
+    | '/api/admin/status'
     | '/api/admin/users'
+    | '/api/anniversaries/$id'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/register'
+    | '/api/auth/settings'
+    | '/api/carousel/$id'
+    | '/api/comments/$id'
+    | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
     | '/api/memories/$personId'
@@ -359,6 +564,10 @@ export interface FileRouteTypes {
     | '/api/persons/marriages'
     | '/api/persons/tree'
     | '/api/posts/$id'
+    | '/admin/posts'
+    | '/api/anniversaries'
+    | '/api/carousel'
+    | '/api/comments'
     | '/api/fund'
     | '/api/media'
     | '/api/notifications'
@@ -368,23 +577,38 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/anniversaries'
     | '/fund'
     | '/login'
-    | '/posts'
+    | '/settings'
     | '/tree'
+    | '/admin/anniversaries'
+    | '/admin/carousel'
+    | '/admin/feedback'
     | '/admin/fund'
     | '/admin/notifications'
     | '/admin/persons'
-    | '/admin/posts'
     | '/admin/tree'
     | '/admin/users'
+    | '/api/feedback'
     | '/person/$id'
     | '/posts/$id'
+    | '/posts/'
+    | '/admin/posts/$id'
+    | '/admin/posts/new'
+    | '/api/admin/backup'
+    | '/api/admin/feedback'
+    | '/api/admin/status'
     | '/api/admin/users'
+    | '/api/anniversaries/$id'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/register'
+    | '/api/auth/settings'
+    | '/api/carousel/$id'
+    | '/api/comments/$id'
+    | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
     | '/api/memories/$personId'
@@ -392,6 +616,10 @@ export interface FileRouteTypes {
     | '/api/persons/marriages'
     | '/api/persons/tree'
     | '/api/posts/$id'
+    | '/admin/posts/'
+    | '/api/anniversaries/'
+    | '/api/carousel/'
+    | '/api/comments/'
     | '/api/fund/'
     | '/api/media/'
     | '/api/notifications/'
@@ -402,16 +630,28 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AnniversariesRoute: typeof AnniversariesRoute
   FundRoute: typeof FundRoute
   LoginRoute: typeof LoginRoute
-  PostsRoute: typeof PostsRouteWithChildren
+  SettingsRoute: typeof SettingsRoute
   TreeRoute: typeof TreeRoute
+  ApiFeedbackRoute: typeof ApiFeedbackRoute
   PersonIdRoute: typeof PersonIdRoute
+  PostsIdRoute: typeof PostsIdRoute
+  PostsIndexRoute: typeof PostsIndexRoute
+  ApiAdminBackupRoute: typeof ApiAdminBackupRoute
+  ApiAdminFeedbackRoute: typeof ApiAdminFeedbackRoute
+  ApiAdminStatusRoute: typeof ApiAdminStatusRoute
   ApiAdminUsersRoute: typeof ApiAdminUsersRoute
+  ApiAnniversariesIdRoute: typeof ApiAnniversariesIdRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiAuthRegisterRoute: typeof ApiAuthRegisterRoute
+  ApiAuthSettingsRoute: typeof ApiAuthSettingsRoute
+  ApiCarouselIdRoute: typeof ApiCarouselIdRoute
+  ApiCommentsIdRoute: typeof ApiCommentsIdRoute
+  ApiFundIdRoute: typeof ApiFundIdRoute
   ApiHomepageDataRoute: typeof ApiHomepageDataRoute
   ApiMediaIdRoute: typeof ApiMediaIdRoute
   ApiMemoriesPersonIdRoute: typeof ApiMemoriesPersonIdRoute
@@ -419,6 +659,9 @@ export interface RootRouteChildren {
   ApiPersonsMarriagesRoute: typeof ApiPersonsMarriagesRoute
   ApiPersonsTreeRoute: typeof ApiPersonsTreeRoute
   ApiPostsIdRoute: typeof ApiPostsIdRoute
+  ApiAnniversariesIndexRoute: typeof ApiAnniversariesIndexRoute
+  ApiCarouselIndexRoute: typeof ApiCarouselIndexRoute
+  ApiCommentsIndexRoute: typeof ApiCommentsIndexRoute
   ApiFundIndexRoute: typeof ApiFundIndexRoute
   ApiMediaIndexRoute: typeof ApiMediaIndexRoute
   ApiNotificationsIndexRoute: typeof ApiNotificationsIndexRoute
@@ -435,11 +678,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TreeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/posts': {
-      id: '/posts'
-      path: '/posts'
-      fullPath: '/posts'
-      preLoaderRoute: typeof PostsRouteImport
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -456,6 +699,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FundRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/anniversaries': {
+      id: '/anniversaries'
+      path: '/anniversaries'
+      fullPath: '/anniversaries'
+      preLoaderRoute: typeof AnniversariesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -470,18 +720,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/posts/': {
+      id: '/posts/'
+      path: '/posts'
+      fullPath: '/posts/'
+      preLoaderRoute: typeof PostsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/posts/$id': {
       id: '/posts/$id'
-      path: '/$id'
+      path: '/posts/$id'
       fullPath: '/posts/$id'
       preLoaderRoute: typeof PostsIdRouteImport
-      parentRoute: typeof PostsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/person/$id': {
       id: '/person/$id'
       path: '/person/$id'
       fullPath: '/person/$id'
       preLoaderRoute: typeof PersonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/feedback': {
+      id: '/api/feedback'
+      path: '/api/feedback'
+      fullPath: '/api/feedback'
+      preLoaderRoute: typeof ApiFeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/users': {
@@ -496,13 +760,6 @@ declare module '@tanstack/react-router' {
       path: '/tree'
       fullPath: '/admin/tree'
       preLoaderRoute: typeof AdminTreeRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/posts': {
-      id: '/admin/posts'
-      path: '/posts'
-      fullPath: '/admin/posts'
-      preLoaderRoute: typeof AdminPostsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/persons': {
@@ -524,6 +781,27 @@ declare module '@tanstack/react-router' {
       path: '/fund'
       fullPath: '/admin/fund'
       preLoaderRoute: typeof AdminFundRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/feedback': {
+      id: '/admin/feedback'
+      path: '/feedback'
+      fullPath: '/admin/feedback'
+      preLoaderRoute: typeof AdminFeedbackRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/carousel': {
+      id: '/admin/carousel'
+      path: '/carousel'
+      fullPath: '/admin/carousel'
+      preLoaderRoute: typeof AdminCarouselRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/anniversaries': {
+      id: '/admin/anniversaries'
+      path: '/anniversaries'
+      fullPath: '/admin/anniversaries'
+      preLoaderRoute: typeof AdminAnniversariesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/api/posts/': {
@@ -560,6 +838,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/fund/'
       preLoaderRoute: typeof ApiFundIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/comments/': {
+      id: '/api/comments/'
+      path: '/api/comments'
+      fullPath: '/api/comments/'
+      preLoaderRoute: typeof ApiCommentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/carousel/': {
+      id: '/api/carousel/'
+      path: '/api/carousel'
+      fullPath: '/api/carousel/'
+      preLoaderRoute: typeof ApiCarouselIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/anniversaries/': {
+      id: '/api/anniversaries/'
+      path: '/api/anniversaries'
+      fullPath: '/api/anniversaries/'
+      preLoaderRoute: typeof ApiAnniversariesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/posts/': {
+      id: '/admin/posts/'
+      path: '/posts'
+      fullPath: '/admin/posts/'
+      preLoaderRoute: typeof AdminPostsIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/api/posts/$id': {
       id: '/api/posts/$id'
@@ -610,6 +916,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHomepageDataRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/fund/$id': {
+      id: '/api/fund/$id'
+      path: '/api/fund/$id'
+      fullPath: '/api/fund/$id'
+      preLoaderRoute: typeof ApiFundIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/comments/$id': {
+      id: '/api/comments/$id'
+      path: '/api/comments/$id'
+      fullPath: '/api/comments/$id'
+      preLoaderRoute: typeof ApiCommentsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/carousel/$id': {
+      id: '/api/carousel/$id'
+      path: '/api/carousel/$id'
+      fullPath: '/api/carousel/$id'
+      preLoaderRoute: typeof ApiCarouselIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/settings': {
+      id: '/api/auth/settings'
+      path: '/api/auth/settings'
+      fullPath: '/api/auth/settings'
+      preLoaderRoute: typeof ApiAuthSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/register': {
       id: '/api/auth/register'
       path: '/api/auth/register'
@@ -638,6 +972,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/anniversaries/$id': {
+      id: '/api/anniversaries/$id'
+      path: '/api/anniversaries/$id'
+      fullPath: '/api/anniversaries/$id'
+      preLoaderRoute: typeof ApiAnniversariesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/users': {
       id: '/api/admin/users'
       path: '/api/admin/users'
@@ -645,52 +986,99 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/status': {
+      id: '/api/admin/status'
+      path: '/api/admin/status'
+      fullPath: '/api/admin/status'
+      preLoaderRoute: typeof ApiAdminStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/feedback': {
+      id: '/api/admin/feedback'
+      path: '/api/admin/feedback'
+      fullPath: '/api/admin/feedback'
+      preLoaderRoute: typeof ApiAdminFeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/backup': {
+      id: '/api/admin/backup'
+      path: '/api/admin/backup'
+      fullPath: '/api/admin/backup'
+      preLoaderRoute: typeof ApiAdminBackupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/posts/new': {
+      id: '/admin/posts/new'
+      path: '/posts/new'
+      fullPath: '/admin/posts/new'
+      preLoaderRoute: typeof AdminPostsNewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/posts/$id': {
+      id: '/admin/posts/$id'
+      path: '/posts/$id'
+      fullPath: '/admin/posts/$id'
+      preLoaderRoute: typeof AdminPostsIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
+  AdminAnniversariesRoute: typeof AdminAnniversariesRoute
+  AdminCarouselRoute: typeof AdminCarouselRoute
+  AdminFeedbackRoute: typeof AdminFeedbackRoute
   AdminFundRoute: typeof AdminFundRoute
   AdminNotificationsRoute: typeof AdminNotificationsRoute
   AdminPersonsRoute: typeof AdminPersonsRoute
-  AdminPostsRoute: typeof AdminPostsRoute
   AdminTreeRoute: typeof AdminTreeRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminPostsIdRoute: typeof AdminPostsIdRoute
+  AdminPostsNewRoute: typeof AdminPostsNewRoute
+  AdminPostsIndexRoute: typeof AdminPostsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnniversariesRoute: AdminAnniversariesRoute,
+  AdminCarouselRoute: AdminCarouselRoute,
+  AdminFeedbackRoute: AdminFeedbackRoute,
   AdminFundRoute: AdminFundRoute,
   AdminNotificationsRoute: AdminNotificationsRoute,
   AdminPersonsRoute: AdminPersonsRoute,
-  AdminPostsRoute: AdminPostsRoute,
   AdminTreeRoute: AdminTreeRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminPostsIdRoute: AdminPostsIdRoute,
+  AdminPostsNewRoute: AdminPostsNewRoute,
+  AdminPostsIndexRoute: AdminPostsIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
-interface PostsRouteChildren {
-  PostsIdRoute: typeof PostsIdRoute
-}
-
-const PostsRouteChildren: PostsRouteChildren = {
-  PostsIdRoute: PostsIdRoute,
-}
-
-const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  AnniversariesRoute: AnniversariesRoute,
   FundRoute: FundRoute,
   LoginRoute: LoginRoute,
-  PostsRoute: PostsRouteWithChildren,
+  SettingsRoute: SettingsRoute,
   TreeRoute: TreeRoute,
+  ApiFeedbackRoute: ApiFeedbackRoute,
   PersonIdRoute: PersonIdRoute,
+  PostsIdRoute: PostsIdRoute,
+  PostsIndexRoute: PostsIndexRoute,
+  ApiAdminBackupRoute: ApiAdminBackupRoute,
+  ApiAdminFeedbackRoute: ApiAdminFeedbackRoute,
+  ApiAdminStatusRoute: ApiAdminStatusRoute,
   ApiAdminUsersRoute: ApiAdminUsersRoute,
+  ApiAnniversariesIdRoute: ApiAnniversariesIdRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiAuthRegisterRoute: ApiAuthRegisterRoute,
+  ApiAuthSettingsRoute: ApiAuthSettingsRoute,
+  ApiCarouselIdRoute: ApiCarouselIdRoute,
+  ApiCommentsIdRoute: ApiCommentsIdRoute,
+  ApiFundIdRoute: ApiFundIdRoute,
   ApiHomepageDataRoute: ApiHomepageDataRoute,
   ApiMediaIdRoute: ApiMediaIdRoute,
   ApiMemoriesPersonIdRoute: ApiMemoriesPersonIdRoute,
@@ -698,6 +1086,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPersonsMarriagesRoute: ApiPersonsMarriagesRoute,
   ApiPersonsTreeRoute: ApiPersonsTreeRoute,
   ApiPostsIdRoute: ApiPostsIdRoute,
+  ApiAnniversariesIndexRoute: ApiAnniversariesIndexRoute,
+  ApiCarouselIndexRoute: ApiCarouselIndexRoute,
+  ApiCommentsIndexRoute: ApiCommentsIndexRoute,
   ApiFundIndexRoute: ApiFundIndexRoute,
   ApiMediaIndexRoute: ApiMediaIndexRoute,
   ApiNotificationsIndexRoute: ApiNotificationsIndexRoute,

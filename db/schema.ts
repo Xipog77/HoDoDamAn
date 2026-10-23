@@ -7,7 +7,6 @@ import {
   boolean,
   timestamp,
   jsonb,
-  real,
   pgEnum,
 } from 'drizzle-orm/pg-core'
 

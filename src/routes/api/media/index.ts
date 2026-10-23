@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { media } from '~/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { desc } from 'drizzle-orm'
 import { getTokenFromCookies, verifyToken } from '@/lib/auth'
 import { checkDiskSpace } from '@/lib/system'
 import * as fs from 'fs'

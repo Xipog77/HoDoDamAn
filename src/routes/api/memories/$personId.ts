@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { memoryWall } from '~/db/schema'
-import { eq } from 'drizzle-orm'
 import { getTokenFromCookies, verifyToken } from '@/lib/auth'
 
 export const Route = createFileRoute('/api/memories/$personId')({

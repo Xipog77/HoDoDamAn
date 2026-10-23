@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState, useCallback, useMemo } from 'react'
-import { TreePine, Plus, X, Edit2, Trash2, Search, User, ImageIcon, FileText, Upload, Link2, Trash } from 'lucide-react'
+import { TreePine, Plus, X, Edit2, Trash2, Search, User, ImageIcon, Upload, Link2, Trash } from 'lucide-react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'

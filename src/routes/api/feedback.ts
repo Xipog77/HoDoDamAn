@@ -24,7 +24,7 @@ export const Route = createFileRoute('/api/feedback')({
 
           const [entry] = await db.insert(systemFeedbacks).values({
             userId: payload.userId,
-            authorName: payload.displayName,
+            authorName: (payload as any).displayName || payload.username || 'Thành viên',
             content: content.trim(),
             isResolved: false,
           }).returning()

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { postComments, users, persons } from '~/db/schema'
-import { eq, desc, asc } from 'drizzle-orm'
+import { eq, asc } from 'drizzle-orm'
 import { getTokenFromCookies, verifyToken } from '@/lib/auth'
 
 export const Route = createFileRoute('/api/comments/')({

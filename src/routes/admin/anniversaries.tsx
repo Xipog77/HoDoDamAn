@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState, useMemo } from 'react'
-import { Calendar, Plus, X, Trash2, Search, User, BookOpen } from 'lucide-react'
+import { Calendar, Plus, X, Trash2, Search } from 'lucide-react'
 import { SearchableSelect } from '@/components/SearchableSelect'
 import { lunarToSolar } from '@/lib/lunar-calendar'
 

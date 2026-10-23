@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState, useMemo } from 'react'
-import { Users, CheckCircle, XCircle, Clock, Link2, Plus, X, Search, Shield } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, Link2, Plus, X, Shield } from 'lucide-react'
 import { SearchableSelect } from '@/components/SearchableSelect'
 
 export const Route = createFileRoute('/admin/users')({

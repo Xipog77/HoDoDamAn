@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { FamilyTree } from '../components/FamilyTree'
 import { useState } from 'react'
-import { TreePine, Filter, Search, Info } from 'lucide-react'
+import { TreePine, Filter, Info } from 'lucide-react'
 
 export const Route = createFileRoute('/tree')({
   component: TreePage,

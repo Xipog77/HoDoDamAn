@@ -1,8 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
-import { persons, users } from '~/db/schema'
+import { users, notifications, posts } from '~/db/schema'
 import { getUpcomingDeathAnniversaries } from '@/lib/lunar-calendar'
-import { notifications, posts } from '~/db/schema'
 import { eq, desc } from 'drizzle-orm'
 
 export const Route = createFileRoute('/api/homepage/data')({

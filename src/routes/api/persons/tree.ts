@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
-import { persons, marriages } from '~/db/schema'
 import { getTokenFromCookies, verifyToken } from '@/lib/auth'
 
 export const Route = createFileRoute('/api/persons/tree')({
@@ -54,7 +53,7 @@ export const Route = createFileRoute('/api/persons/tree')({
             branch: person.branch,
             biography: person.biography,
             isDeceased: person.isDeceased,
-            spouses: spouses.map(s => s ? { id: s.id, name: s.name, avatarUrl: s.avatarUrl } : null).filter(Boolean),
+            spouses: spouses.filter((s): s is NonNullable<typeof s> => s !== null).map(s => ({ id: s.id, name: s.name, avatarUrl: s.avatarUrl })),
             children: children.map(c => ({ id: c.id, name: c.name, avatarUrl: c.avatarUrl, gender: c.gender })),
           },
           position: { x: 0, y: 0 },
