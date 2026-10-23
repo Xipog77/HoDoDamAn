@@ -33,8 +33,15 @@ function HomePage() {
   useEffect(() => {
     // Fetch homepage details
     fetch('/api/homepage/data')
-      .then(r => r.json())
-      .then(setData)
+      .then(async r => {
+        if (!r.ok) return null
+        return r.json()
+      })
+      .then(d => {
+        if (d && d.stats) {
+          setData(d)
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false))
 
@@ -105,14 +112,14 @@ function HomePage() {
       </section>
 
       {/* Stats */}
-      {data && (
+      {data?.stats && (
         <section className="bg-white border-b border-stone-100 py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-              <StatCard icon={Users} label="Thành viên" value={data.stats.totalPersons.toString()} to="/tree" />
-              <StatCard icon={TreePine} label="Thế hệ" value={`${data.stats.generations} đời`} to="/tree" />
-              <StatCard icon={BookOpen} label="Bài viết" value={data.featuredPosts.length.toString()} to="/posts" />
-              <StatCard icon={Calendar} label="Ngày giỗ sắp tới" value={data.upcomingAnniversaries.length.toString()} to="/anniversaries" />
+              <StatCard icon={Users} label="Thành viên" value={(data.stats.totalPersons ?? 0).toString()} to="/tree" />
+              <StatCard icon={TreePine} label="Thế hệ" value={`${data.stats.generations ?? 1} đời`} to="/tree" />
+              <StatCard icon={BookOpen} label="Bài viết" value={(data.featuredPosts?.length ?? 0).toString()} to="/posts" />
+              <StatCard icon={Calendar} label="Ngày giỗ sắp tới" value={(data.upcomingAnniversaries?.length ?? 0).toString()} to="/anniversaries" />
             </div>
           </div>
         </section>
