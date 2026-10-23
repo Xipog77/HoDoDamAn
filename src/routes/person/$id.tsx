@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState, useCallback } from 'react'
-import { User, Calendar, Heart, MessageSquare, Edit3, Send, MapPin, BookOpen, Image as ImageIcon, X, Plus, ExternalLink, Trash2, Phone, Mail, Briefcase, Home, Globe, ChevronLeft, ChevronRight } from 'lucide-react'
+import { User, Calendar, Heart, MessageSquare, Edit3, Send, MapPin, BookOpen, Image as ImageIcon, X, Plus, ExternalLink, Trash2, Phone, Mail, Briefcase, Home, Globe, ChevronLeft, ChevronRight, TreePine, FileEdit, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -51,6 +51,22 @@ function PersonPage() {
 
   const [isEditingBio, setIsEditingBio] = useState(false)
   const [savingBio, setSavingBio] = useState(false)
+
+  // Edit request states
+  const [showRequestModal, setShowRequestModal] = useState(false)
+  const [requestSubmitting, setRequestSubmitting] = useState(false)
+  const [requestSuccess, setRequestSuccess] = useState(false)
+  const [requestForm, setRequestForm] = useState({
+    dob: '',
+    dod: '',
+    dodLunar: '',
+    birthplace: '',
+    burialPlace: '',
+    residence: '',
+    occupation: '',
+    biography: '',
+    note: '',
+  })
 
   const editor = useEditor({
     extensions: [
@@ -189,6 +205,54 @@ function PersonPage() {
     loadMedia()
   }
 
+  const submitEditRequest = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setRequestSubmitting(true)
+    try {
+      const changes: Record<string, string> = {}
+      if (requestForm.dob !== (data?.person.dob || '')) changes.dob = requestForm.dob
+      if (requestForm.dod !== (data?.person.dod || '')) changes.dod = requestForm.dod
+      if (requestForm.dodLunar !== (data?.person.dodLunar || '')) changes.dodLunar = requestForm.dodLunar
+      if (requestForm.birthplace !== (data?.person.birthplace || '')) changes.birthplace = requestForm.birthplace
+      if (requestForm.burialPlace !== (data?.person.burialPlace || '')) changes.burialPlace = requestForm.burialPlace
+      if (requestForm.residence !== (data?.person.residence || '')) changes.residence = requestForm.residence
+      if (requestForm.occupation !== (data?.person.occupation || '')) changes.occupation = requestForm.occupation
+      if (requestForm.biography !== (data?.person.biography || '')) changes.biography = requestForm.biography
+
+      if (Object.keys(changes).length === 0 && !requestForm.note.trim()) {
+        alert('Bạn chưa thay đổi thông tin nào hoặc chưa nhập ghi chú.')
+        setRequestSubmitting(false)
+        return
+      }
+
+      const res = await fetch('/api/persons/request-edit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          personId: id,
+          changes: Object.keys(changes).length > 0 ? changes : { noteOnly: true },
+          note: requestForm.note,
+        }),
+      })
+
+      if (res.ok) {
+        setRequestSuccess(true)
+        setTimeout(() => {
+          setShowRequestModal(false)
+          setRequestSuccess(false)
+        }, 2200)
+      } else {
+        const err = await res.json()
+        alert(err.error || 'Có lỗi xảy ra khi gửi đề xuất.')
+      }
+    } catch (err) {
+      console.error(err)
+      alert('Không thể kết nối đến máy chủ.')
+    } finally {
+      setRequestSubmitting(false)
+    }
+  }
+
   if (authLoading || loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -308,9 +372,33 @@ function PersonPage() {
                     <p className="text-stone-600 text-sm font-sans italic mt-3 bg-stone-50 px-4 py-2 rounded-xl border-l-4 border-gold-500 max-w-2xl">{person.biography}</p>
                   )}
                 </div>
-                <Link to="/tree" className="text-sm text-gold-600 hover:text-gold-500 flex items-center gap-1 font-medium bg-gold-50 px-3 py-2 rounded-xl hover:bg-gold-100 transition-colors">
-                  ← Tộc phả
-                </Link>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setRequestForm({
+                        dob: person.dob || '',
+                        dod: person.dod || '',
+                        dodLunar: person.dodLunar || '',
+                        birthplace: person.birthplace || '',
+                        burialPlace: person.burialPlace || '',
+                        residence: person.residence || '',
+                        occupation: person.occupation || '',
+                        biography: person.biography || '',
+                        note: '',
+                      })
+                      setShowRequestModal(true)
+                    }}
+                    className="text-xs bg-wood-50 text-wood-800 hover:bg-wood-100 border border-wood-200 px-3 py-2 rounded-xl flex items-center gap-1.5 font-medium transition-colors font-sans shadow-2xs"
+                    title="Đề xuất bổ sung, đính chính thông tin cho người thân"
+                  >
+                    <FileEdit className="w-3.5 h-3.5 text-gold-600" />
+                    <span className="hidden sm:inline">Đề xuất chỉnh sửa</span>
+                    <span className="sm:hidden">Đề xuất</span>
+                  </button>
+                  <Link to="/tree" className="text-sm text-gold-600 hover:text-gold-500 flex items-center gap-1 font-medium bg-gold-50 px-3 py-2 rounded-xl hover:bg-gold-100 transition-colors">
+                    ← Tộc phả
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -547,6 +635,15 @@ function PersonPage() {
                   <p className="text-xs text-stone-400 italic font-sans sm:col-span-2">Chưa cập nhật thông tin gia đình</p>
                 )}
               </div>
+
+              {/* Mini Family Tree Lineage */}
+              <MiniFamilyTree
+                person={person}
+                father={father}
+                mother={mother}
+                spouses={spouses}
+                children={children}
+              />
             </div>
           </div>
         </div>
@@ -785,6 +882,166 @@ function PersonPage() {
           </div>
         )
       })()}
+
+      {/* Edit Request Modal */}
+      {showRequestModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl border border-stone-200 max-w-2xl w-full my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-gradient-to-r from-wood-900 to-wood-800 text-white px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileEdit className="w-5 h-5 text-gold-400" />
+                <h3 className="font-serif font-bold text-lg">Đề xuất chỉnh sửa thông tin</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowRequestModal(false)}
+                className="text-stone-300 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {requestSuccess ? (
+              <div className="p-8 text-center space-y-4">
+                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-10 h-10" />
+                </div>
+                <h4 className="font-serif font-bold text-xl text-wood-900">Gửi đề xuất thành công!</h4>
+                <p className="text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
+                  Cảm ơn đóng góp của bạn. Ban Quản trị sẽ đối chiếu tư liệu tộc phả và phê duyệt cập nhật trong thời gian sớm nhất.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={submitEditRequest} className="p-6 space-y-4 font-sans text-sm max-h-[75vh] overflow-y-auto">
+                <div className="bg-gold-50 border border-gold-200 text-gold-900 rounded-xl p-3 text-xs leading-relaxed">
+                  Đề xuất cập nhật tư liệu cho: <span className="font-bold text-wood-950 font-serif text-sm">{person.name}</span> (Đời {person.generation}). Các mục để trống hoặc giữ nguyên sẽ không bị thay đổi.
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-medium text-stone-700 mb-1 text-xs">Ngày sinh (Dương lịch)</label>
+                    <input
+                      type="text"
+                      placeholder="VD: 15/08/1945"
+                      value={requestForm.dob}
+                      onChange={e => setRequestForm({ ...requestForm, dob: e.target.value })}
+                      className="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs focus:ring-2 focus:ring-gold-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-stone-700 mb-1 text-xs">Nơi sinh / Nguyên quán</label>
+                    <input
+                      type="text"
+                      placeholder="VD: Đàm Xuyên, Bạch Đằng"
+                      value={requestForm.birthplace}
+                      onChange={e => setRequestForm({ ...requestForm, birthplace: e.target.value })}
+                      className="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs focus:ring-2 focus:ring-gold-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-stone-700 mb-1 text-xs">Ngày mất (Dương lịch)</label>
+                    <input
+                      type="text"
+                      placeholder="VD: 20/11/2010"
+                      value={requestForm.dod}
+                      onChange={e => setRequestForm({ ...requestForm, dod: e.target.value })}
+                      className="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs focus:ring-2 focus:ring-gold-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-stone-700 mb-1 text-xs">Ngày giỗ (Âm lịch)</label>
+                    <input
+                      type="text"
+                      placeholder="VD: 15/10 hoặc 15 tháng 10"
+                      value={requestForm.dodLunar}
+                      onChange={e => setRequestForm({ ...requestForm, dodLunar: e.target.value })}
+                      className="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs focus:ring-2 focus:ring-gold-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-stone-700 mb-1 text-xs">Nơi an táng / Mộ phần</label>
+                    <input
+                      type="text"
+                      placeholder="VD: Nghĩa trang quê nhà Đàm Xuyên"
+                      value={requestForm.burialPlace}
+                      onChange={e => setRequestForm({ ...requestForm, burialPlace: e.target.value })}
+                      className="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs focus:ring-2 focus:ring-gold-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-stone-700 mb-1 text-xs">Nơi cư trú</label>
+                    <input
+                      type="text"
+                      placeholder="VD: Bạch Đằng, Tiên Lãng, Hải Phòng"
+                      value={requestForm.residence}
+                      onChange={e => setRequestForm({ ...requestForm, residence: e.target.value })}
+                      className="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs focus:ring-2 focus:ring-gold-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block font-medium text-stone-700 mb-1 text-xs">Nghề nghiệp / Chức vụ / Học vị</label>
+                    <input
+                      type="text"
+                      placeholder="VD: Giáo viên, Kỹ sư, Cán bộ..."
+                      value={requestForm.occupation}
+                      onChange={e => setRequestForm({ ...requestForm, occupation: e.target.value })}
+                      className="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs focus:ring-2 focus:ring-gold-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block font-medium text-stone-700 mb-1 text-xs">Tóm tắt tiểu sử / Ghi chú cuộc đời</label>
+                    <textarea
+                      rows={2}
+                      placeholder="Tóm tắt ngắn gọn cuộc đời, đóng góp..."
+                      value={requestForm.biography}
+                      onChange={e => setRequestForm({ ...requestForm, biography: e.target.value })}
+                      className="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs focus:ring-2 focus:ring-gold-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block font-medium text-stone-700 mb-1 text-xs">
+                      Ghi chú / Nguồn thông tin gửi Ban Quản trị <span className="text-crimson-600">*</span>
+                    </label>
+                    <textarea
+                      rows={2}
+                      required
+                      placeholder="VD: Tôi là con trai thứ hai, xin đính chính lại ngày giỗ theo gia phả lưu truyền tại nhà..."
+                      value={requestForm.note}
+                      onChange={e => setRequestForm({ ...requestForm, note: e.target.value })}
+                      className="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs focus:ring-2 focus:ring-gold-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-stone-200 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowRequestModal(false)}
+                    className="px-4 py-2 border border-stone-300 text-stone-700 rounded-xl hover:bg-stone-50 font-medium transition-colors text-xs"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={requestSubmitting}
+                    className="px-5 py-2 bg-gold-600 hover:bg-gold-500 text-white rounded-xl font-medium shadow-sm transition-all hover:shadow-md disabled:opacity-50 text-xs flex items-center gap-1.5"
+                  >
+                    {requestSubmitting ? 'Đang gửi...' : 'Gửi đề xuất'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -813,5 +1070,116 @@ function PersonLink({ person, compact = false }: { person: { id: number; name: s
       )}
       <span className={`${compact ? 'text-xs' : 'text-sm'} text-wood-800 font-medium font-serif`}>{person.name}</span>
     </Link>
+  )
+}
+
+function MiniFamilyTree({
+  person,
+  father,
+  mother,
+  spouses,
+  children,
+}: {
+  person: { id: number; name: string; avatarUrl: string | null; gender: string; birthYear: number | null; deathYear: number | null; generation: number }
+  father: { id: number; name: string; avatarUrl: string | null } | null
+  mother: { id: number; name: string; avatarUrl: string | null } | null
+  spouses: Array<{ id: number; name: string; avatarUrl: string | null }>
+  children: Array<{ id: number; name: string; avatarUrl: string | null; gender: string }>
+}) {
+  return (
+    <div className="bg-gradient-to-b from-stone-50 to-parchment/50 rounded-2xl border border-stone-200/80 p-4 mt-6 font-sans">
+      <div className="flex items-center justify-between mb-3 border-b border-stone-200/60 pb-2">
+        <h3 className="font-serif font-bold text-xs sm:text-sm text-wood-900 flex items-center gap-1.5">
+          <TreePine className="w-4 h-4 text-gold-600" /> Sơ đồ liên kết gia đình 3 thế hệ
+        </h3>
+        <span className="text-[10px] sm:text-xs font-semibold text-gold-700 bg-gold-100 px-2 py-0.5 rounded-full">
+          Đời thứ {person.generation}
+        </span>
+      </div>
+
+      <div className="flex flex-col items-center gap-3">
+        {/* Parents */}
+        {(father || mother) && (
+          <div className="flex flex-col items-center w-full">
+            <span className="text-[10px] uppercase font-bold text-stone-400 mb-1.5 tracking-wider">Bậc Tiền Nhân</span>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {father && (
+                <Link to="/person/$id" params={{ id: father.id.toString() }} className="flex items-center gap-2 bg-white border border-stone-200 hover:border-gold-400 rounded-xl px-3 py-1.5 shadow-xs transition-all hover:scale-105">
+                  <div className="w-6 h-6 rounded-full bg-wood-100 flex items-center justify-center text-[11px] font-bold text-wood-800">
+                    {father.avatarUrl ? <img src={father.avatarUrl} alt="" className="w-6 h-6 rounded-full object-cover" /> : father.name.charAt(0)}
+                  </div>
+                  <div>
+                    <span className="text-xs font-serif font-bold text-wood-900 block truncate max-w-[120px]">{father.name}</span>
+                    <span className="text-[9px] text-stone-400">Thân phụ</span>
+                  </div>
+                </Link>
+              )}
+
+              {mother && (
+                <Link to="/person/$id" params={{ id: mother.id.toString() }} className="flex items-center gap-2 bg-white border border-stone-200 hover:border-crimson-300 rounded-xl px-3 py-1.5 shadow-xs transition-all hover:scale-105">
+                  <div className="w-6 h-6 rounded-full bg-crimson-100 flex items-center justify-center text-[11px] font-bold text-crimson-800">
+                    {mother.avatarUrl ? <img src={mother.avatarUrl} alt="" className="w-6 h-6 rounded-full object-cover" /> : mother.name.charAt(0)}
+                  </div>
+                  <div>
+                    <span className="text-xs font-serif font-bold text-wood-900 block truncate max-w-[120px]">{mother.name}</span>
+                    <span className="text-[9px] text-stone-400">Thân mẫu</span>
+                  </div>
+                </Link>
+              )}
+            </div>
+            <div className="w-0.5 h-3 bg-gold-400/60 my-0.5" />
+          </div>
+        )}
+
+        {/* Current Generation: Self & Spouses */}
+        <div className="flex flex-col items-center w-full">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="flex items-center gap-2 bg-gold-50 border-2 border-gold-500 rounded-xl px-3 py-1.5 shadow-sm">
+              <div className="w-7 h-7 rounded-full bg-gold-600 flex items-center justify-center text-white text-xs font-bold font-serif">
+                {person.avatarUrl ? <img src={person.avatarUrl} alt="" className="w-7 h-7 rounded-full object-cover" /> : person.name.charAt(0)}
+              </div>
+              <div>
+                <span className="text-xs font-serif font-bold text-wood-950 block truncate max-w-[130px]">{person.name}</span>
+                <span className="text-[9px] font-semibold text-gold-700">Đương sự (Đời {person.generation})</span>
+              </div>
+            </div>
+
+            {spouses.map(s => (
+              <div key={s.id} className="flex items-center gap-1">
+                <span className="text-xs text-crimson-400 font-bold">♥</span>
+                <Link to="/person/$id" params={{ id: s.id.toString() }} className="flex items-center gap-2 bg-crimson-50/70 border border-crimson-200 hover:border-crimson-400 rounded-xl px-2.5 py-1.5 shadow-xs transition-all hover:scale-105">
+                  <div className="w-6 h-6 rounded-full bg-crimson-200 flex items-center justify-center text-[11px] font-bold text-crimson-800">
+                    {s.avatarUrl ? <img src={s.avatarUrl} alt="" className="w-6 h-6 rounded-full object-cover" /> : s.name.charAt(0)}
+                  </div>
+                  <div>
+                    <span className="text-xs font-serif font-bold text-wood-900 block truncate max-w-[110px]">{s.name}</span>
+                    <span className="text-[9px] text-crimson-600">Phu nhân</span>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          {children.length > 0 && <div className="w-0.5 h-3 bg-gold-400/60 my-0.5" />}
+        </div>
+
+        {/* Children */}
+        {children.length > 0 && (
+          <div className="flex flex-col items-center w-full">
+            <span className="text-[10px] uppercase font-bold text-stone-400 mb-1.5 tracking-wider">Hậu Duệ ({children.length} con)</span>
+            <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-full">
+              {children.map(c => (
+                <Link key={c.id} to="/person/$id" params={{ id: c.id.toString() }} className="flex items-center gap-1.5 bg-white border border-stone-200 hover:border-gold-300 rounded-lg px-2.5 py-1 text-xs transition-all hover:scale-105 shadow-2xs">
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${c.gender === 'FEMALE' ? 'bg-crimson-100 text-crimson-700' : 'bg-wood-100 text-wood-700'}`}>
+                    {c.avatarUrl ? <img src={c.avatarUrl} alt="" className="w-5 h-5 rounded-full object-cover" /> : c.name.charAt(0)}
+                  </div>
+                  <span className="font-serif font-medium text-wood-800 text-[11px] truncate max-w-[100px]">{c.name}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

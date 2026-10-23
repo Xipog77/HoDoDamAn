@@ -147,3 +147,18 @@ body {
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Print Styles for Tree & Documents */
+@media print {
+  nav, footer, .no-print, .react-flow__controls, .react-flow__minimap {
+    display: none !important;
+  }
+  body, html {
+    background: white !important;
+    height: auto !important;
+  }
+  @page {
+    size: landscape;
+    margin: 1cm;
+  }
+}
+

@@ -21,6 +21,7 @@ function AdminTree() {
   const [persons, setPersons] = useState<Person[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const [form, setForm] = useState({
     fatherId: '' as string | number,
@@ -53,6 +54,12 @@ function AdminTree() {
     const branches = new Set(persons.map(p => p.branch).filter(Boolean))
     return Array.from(branches) as string[]
   }, [persons])
+
+  const filteredPersons = useMemo(() => {
+    if (!searchTerm.trim()) return persons
+    const term = searchTerm.toLowerCase()
+    return persons.filter(p => p.name.toLowerCase().includes(term) || (p.branch && p.branch.toLowerCase().includes(term)))
+  }, [persons, searchTerm])
 
   // Load detailed relations when selected
   useEffect(() => {
@@ -171,20 +178,15 @@ function AdminTree() {
             <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Tìm kiếm..."
+              placeholder="Tìm kiếm theo tên hoặc chi..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2 border border-stone-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-gold-300 font-sans"
-              onChange={(e) => {
-                const term = e.target.value.toLowerCase()
-                document.querySelectorAll('.person-item').forEach(el => {
-                  const txt = (el as HTMLElement).innerText.toLowerCase()
-                    ; (el as HTMLElement).style.display = txt.includes(term) ? 'flex' : 'none'
-                })
-              }}
             />
           </div>
 
           <div className="flex-1 overflow-y-auto space-y-1 pr-2">
-            {persons.map(p => (
+            {filteredPersons.map(p => (
               <button
                 key={p.id}
                 onClick={() => setSelectedId(p.id)}

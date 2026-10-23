@@ -1,56 +1,71 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { FamilyTree } from '../components/FamilyTree'
 import { useState } from 'react'
-import { TreePine, Filter, Info } from 'lucide-react'
+import { TreePine, Info } from 'lucide-react'
 
 export const Route = createFileRoute('/tree')({
   component: TreePage,
 })
 
 function TreePage() {
-  const [branch, setBranch] = useState('')
-  const [showInfo, setShowInfo] = useState(true)
+  const [showInfo, setShowInfo] = useState(false)
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">
       {/* Header */}
-      <div className="bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between gap-4 flex-shrink-0">
-        <div className="flex items-center gap-2">
-          <TreePine className="w-5 h-5 text-gold-600" />
-          <h1 className="font-serif font-bold text-wood-900 text-lg">Tộc phả</h1>
+      <div className="no-print bg-white border-b border-stone-200 px-4 py-2.5 flex items-center justify-between gap-4 flex-shrink-0 shadow-sm z-10">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-gold-100 flex items-center justify-center">
+            <TreePine className="w-4 h-4 text-gold-700" />
+          </div>
+          <div>
+            <h1 className="font-serif font-bold text-wood-900 text-base leading-tight">Phả Đồ Tộc Họ Đỗ Đàm An</h1>
+            <p className="text-[11px] text-stone-500 font-sans hidden sm:block">9 đời truyền nối • Khởi tổ Đỗ Phúc Mai</p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="relative">
-            <Filter className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Lọc theo chi..."
-              value={branch}
-              onChange={e => setBranch(e.target.value)}
-              className="pl-9 pr-3 py-1.5 text-xs border border-stone-200 rounded-lg focus:ring-2 focus:ring-gold-300 focus:border-gold-400 outline-none w-28 xs:w-40 sm:w-44 font-sans"
-            />
-          </div>
           <button
             onClick={() => setShowInfo(!showInfo)}
-            className={`p-2 rounded-lg transition-colors ${showInfo ? 'bg-gold-100 text-gold-700' : 'text-stone-500 hover:bg-stone-100'}`}
+            className={`p-1.5 rounded-xl border text-xs font-sans flex items-center gap-1 transition-colors ${
+              showInfo
+                ? 'bg-gold-50 border-gold-300 text-gold-800'
+                : 'bg-stone-50 border-stone-200 text-stone-500 hover:bg-stone-100'
+            }`}
+            title="Hướng dẫn thao tác phả đồ"
           >
             <Info className="w-4 h-4" />
+            <span className="hidden sm:inline">Hướng dẫn</span>
           </button>
         </div>
       </div>
 
       {/* Info panel */}
       {showInfo && (
-        <div className="bg-gold-50 border-b border-gold-100 px-4 py-2 flex items-center gap-4 text-xs text-stone-600 font-sans flex-shrink-0">
-          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-gold-500 inline-block" /> Hover vào node để xem đường kết nối</span>
-          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-wood-600 inline-block" /> Click vào thẻ để xem thông tin chi tiết</span>
+        <div className="no-print bg-gold-50 border-b border-gold-200/80 px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-600 font-sans flex-shrink-0 animate-in fade-in duration-200">
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-gold-500 inline-block" /> Di chuột / Click vào người để xem liên kết và chi tiết
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-wood-700 inline-block" /> Dùng con lăn chuột hoặc chụm ngón tay để phóng to/thu nhỏ
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block" /> Bấm nút "In phả đồ" để xuất trang in ấn hoặc lưu PDF
+            </span>
+          </div>
+          <button
+            onClick={() => setShowInfo(false)}
+            className="text-[11px] text-gold-700 hover:text-gold-900 underline font-medium"
+          >
+            Đóng
+          </button>
         </div>
       )}
 
       {/* Tree */}
       <div className="flex-1 relative">
-        <FamilyTree branch={branch} />
+        <FamilyTree />
       </div>
     </div>
   )

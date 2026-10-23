@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { useAuth } from '../components/AuthProvider'
-import { Shield, Users, TreePine, BookOpen, DollarSign, Bell, UserCircle, Calendar, Image as ImageIcon, Download, MessageSquare } from 'lucide-react'
+import { Shield, Users, TreePine, BookOpen, DollarSign, Bell, UserCircle, Calendar, Image as ImageIcon, Download, MessageSquare, FileEdit } from 'lucide-react'
 
 export const Route = createFileRoute('/admin')({
   component: AdminLayout,
@@ -33,6 +33,7 @@ function AdminLayout() {
   const adminLinks = [
     { to: '/admin/users', label: 'Quản lý thành viên', shortLabel: 'Thành viên', icon: Users },
     { to: '/admin/persons', label: 'Quản lý hồ sơ', shortLabel: 'Hồ sơ', icon: UserCircle },
+    { to: '/admin/requests', label: 'Duyệt yêu cầu sửa', shortLabel: 'Duyệt sửa', icon: FileEdit },
     { to: '/admin/tree', label: 'Quản lý gia phả', shortLabel: 'Gia phả', icon: TreePine },
     { to: '/admin/posts', label: 'Quản lý bài viết', shortLabel: 'Bài viết', icon: BookOpen },
     { to: '/admin/fund', label: 'Quản lý quỹ họ', shortLabel: 'Quỹ họ', icon: DollarSign },
