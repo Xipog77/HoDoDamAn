@@ -194,8 +194,8 @@ export function formatLunarDate(day: number, month: number): string {
 export function parseLunarDate(str: string | null | undefined): { day: number; month: number } | null {
   if (!str) return null
   const s = str.trim().toLowerCase()
-  if (s.includes('tháng giêng') || s.includes('tháng 1')) {
-    const match = s.match(/(\d+)/)
+  if (s.includes('tháng giêng') || s.match(/tháng\s+1\b/)) {
+    const match = s.match(/(?:ngày\s+)?(\d+)/)
     if (match) return { day: parseInt(match[1], 10), month: 1 }
   }
   const slashParts = s.split('/')
@@ -206,7 +206,7 @@ export function parseLunarDate(str: string | null | undefined): { day: number; m
       return { day: d, month: m }
     }
   }
-  const matchAny = s.match(/ngày\s+(\d+)\s+tháng\s+(\d+)/i)
+  const matchAny = s.match(/(?:ngày\s+)?(\d+)\s+tháng\s+(\d+)/i)
   if (matchAny) {
     return { day: parseInt(matchAny[1], 10), month: parseInt(matchAny[2], 10) }
   }

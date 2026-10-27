@@ -109,42 +109,38 @@ export function PostsPage() {
       <div className="flex flex-wrap items-center gap-2 mb-8 border-b border-stone-200/80 pb-4">
         <button
           onClick={() => setSelectedCategory('ALL')}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${
-            selectedCategory === 'ALL'
+          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${selectedCategory === 'ALL'
               ? 'bg-wood-800 text-gold-300 shadow-sm'
               : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70'
-          }`}
+            }`}
         >
           Tất cả ({posts.length})
         </button>
         <button
           onClick={() => setSelectedCategory('FEATURED')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${
-            selectedCategory === 'FEATURED'
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${selectedCategory === 'FEATURED'
               ? 'bg-gold-600 text-white shadow-sm'
               : 'bg-gold-50 text-gold-700 hover:bg-gold-100'
-          }`}
+            }`}
         >
           <Sparkles className="w-3.5 h-3.5" />
           Bài viết nổi bật
         </button>
         <button
           onClick={() => setSelectedCategory('HISTORY')}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${
-            selectedCategory === 'HISTORY'
+          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${selectedCategory === 'HISTORY'
               ? 'bg-wood-800 text-gold-300 shadow-sm'
               : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70'
-          }`}
+            }`}
         >
-          Lịch sử & Nguồn cội
+          Giới thiệu
         </button>
         <button
           onClick={() => setSelectedCategory('NEWS')}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${
-            selectedCategory === 'NEWS'
+          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${selectedCategory === 'NEWS'
               ? 'bg-wood-800 text-gold-300 shadow-sm'
               : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70'
-          }`}
+            }`}
         >
           Sự kiện & Hoạt động
         </button>
@@ -257,11 +253,10 @@ export function PostsPage() {
                         {showEllipsis && <span className="px-2 text-stone-400 text-xs">...</span>}
                         <button
                           onClick={() => setCurrentPage(p)}
-                          className={`w-9 h-9 rounded-xl text-xs font-semibold font-sans transition-all shadow-sm ${
-                            currentPage === p
+                          className={`w-9 h-9 rounded-xl text-xs font-semibold font-sans transition-all shadow-sm ${currentPage === p
                               ? 'bg-gold-600 text-white'
                               : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'
-                          }`}
+                            }`}
                         >
                           {p}
                         </button>

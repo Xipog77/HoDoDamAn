@@ -89,7 +89,7 @@ function HomePage() {
               <span className="text-gold-300 text-xs font-semibold tracking-wider uppercase font-sans">Lịch sử & Nguồn cội</span>
             </div>
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gold-400 drop-shadow-md">
-              Dòng tộc Đỗ Đàm An
+              Dòng họ Đỗ Đàm An
             </h1>
             <div className="w-20 h-1 bg-gold-600 rounded" />
 
@@ -119,7 +119,7 @@ function HomePage() {
               <StatCard icon={Users} label="Thành viên" value={(data.stats.totalPersons ?? 0).toString()} to="/tree" />
               <StatCard icon={TreePine} label="Thế hệ" value={`${data.stats.generations ?? 1} đời`} to="/tree" />
               <StatCard icon={BookOpen} label="Bài viết" value={(data.featuredPosts?.length ?? 0).toString()} to="/posts" />
-              <StatCard icon={Calendar} label="Ngày giỗ sắp tới" value={(data.upcomingAnniversaries?.length ?? 0).toString()} to="/anniversaries" />
+              <StatCard icon={Calendar} label="Ngày giỗ" value={(data.upcomingAnniversaries?.length ?? 0).toString()} to="/anniversaries" />
             </div>
           </div>
         </section>
@@ -198,7 +198,7 @@ function HomePage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-crimson-600" />
-                  <h3 className="font-serif font-semibold text-wood-900">Ngày giỗ sắp tới</h3>
+                  <h3 className="font-serif font-semibold text-wood-900">Ngày giỗ</h3>
                 </div>
                 <Link to="/anniversaries" className="text-xs text-gold-600 hover:text-gold-500 font-medium">
                   Xem lịch

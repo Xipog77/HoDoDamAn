@@ -220,7 +220,7 @@ function FamilyTreeContent({ initialBranch }: { initialBranch: string }) {
     if (rawData.nodes.length === 0) return
 
     const laid = layoutWithDagre(rawData.nodes, rawData.edges)
-    
+
     let minX = Infinity
     let maxX = -Infinity
     let minY = Infinity
@@ -255,9 +255,9 @@ function FamilyTreeContent({ initialBranch }: { initialBranch: string }) {
     setEdges(rawData.edges.map(e => ({
       ...e,
       markerEnd: { type: MarkerType.ArrowClosed, color: '#8B4513', width: 16, height: 16 },
-      style: { 
-        stroke: e.source === selectedNodeId || e.target === selectedNodeId ? '#CA9A3A' : '#8B4513', 
-        strokeWidth: e.source === selectedNodeId || e.target === selectedNodeId ? 3.5 : 1.5 
+      style: {
+        stroke: e.source === selectedNodeId || e.target === selectedNodeId ? '#CA9A3A' : '#8B4513',
+        strokeWidth: e.source === selectedNodeId || e.target === selectedNodeId ? 3.5 : 1.5
       },
       animated: e.source === selectedNodeId || e.target === selectedNodeId
     })))
@@ -368,7 +368,7 @@ function FamilyTreeContent({ initialBranch }: { initialBranch: string }) {
         <button
           onClick={handlePrint}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-gold-600 hover:bg-gold-500 text-white rounded-xl text-xs font-semibold shadow-sm transition-all hover:scale-105 font-sans"
-          title="In phả đồ hoặc lưu PDF khổ lớn"
+          title="In phả đồ"
         >
           <Printer className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">In phả đồ</span>
@@ -437,7 +437,7 @@ function FamilyTreeContent({ initialBranch }: { initialBranch: string }) {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="p-5 flex-1">
               <div className="flex items-center gap-4 mb-6">
                 {selectedPersonData.avatarUrl ? (
@@ -514,7 +514,7 @@ function FamilyTreeContent({ initialBranch }: { initialBranch: string }) {
                 </div>
               )}
             </div>
-            
+
             <div className="p-4 border-t border-stone-100 bg-stone-50 mt-auto sticky bottom-0">
               <Link
                 to="/person/$id"
