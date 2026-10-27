@@ -299,7 +299,7 @@ function FamilyTreeContent({ initialBranch }: { initialBranch: string }) {
           <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Tìm người trên cây..."
+            placeholder="Tìm người"
             value={searchTerm}
             onFocus={() => setShowSearchDropdown(true)}
             onChange={e => {

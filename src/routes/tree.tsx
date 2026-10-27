@@ -19,19 +19,18 @@ function TreePage() {
             <TreePine className="w-4 h-4 text-gold-700" />
           </div>
           <div>
-            <h1 className="font-serif font-bold text-wood-900 text-base leading-tight">Phả Đồ Tộc Họ Đỗ Đàm An</h1>
-            <p className="text-[11px] text-stone-500 font-sans hidden sm:block">9 đời truyền nối • Khởi tổ Đỗ Phúc Mai</p>
+            <h1 className="font-serif font-bold text-wood-900 text-base leading-tight">Phả đồ Họ tộc Đỗ Đàm An</h1>
+            <p className="text-[11px] text-stone-500 font-sans hidden sm:block">Hải Hậu • Ninh Bình</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowInfo(!showInfo)}
-            className={`p-1.5 rounded-xl border text-xs font-sans flex items-center gap-1 transition-colors ${
-              showInfo
-                ? 'bg-gold-50 border-gold-300 text-gold-800'
-                : 'bg-stone-50 border-stone-200 text-stone-500 hover:bg-stone-100'
-            }`}
+            className={`p-1.5 rounded-xl border text-xs font-sans flex items-center gap-1 transition-colors ${showInfo
+              ? 'bg-gold-50 border-gold-300 text-gold-800'
+              : 'bg-stone-50 border-stone-200 text-stone-500 hover:bg-stone-100'
+              }`}
             title="Hướng dẫn thao tác phả đồ"
           >
             <Info className="w-4 h-4" />

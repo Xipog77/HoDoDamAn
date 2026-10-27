@@ -86,7 +86,7 @@ function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto bg-wood-900/75 backdrop-blur-md border border-gold-500/30 rounded-2xl sm:rounded-3xl p-6 sm:p-10 shadow-2xl flex flex-col gap-6">
             <div className="inline-flex items-center gap-2 bg-gold-500/20 border border-gold-400/30 rounded-full px-4 py-1.5 self-start">
-              <span className="text-gold-300 text-xs font-semibold tracking-wider uppercase font-sans">Lịch sử & Nguồn cội</span>
+              <span className="text-gold-300 text-xs font-semibold tracking-wider uppercase font-sans">Giới thiệu</span>
             </div>
             <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gold-400 drop-shadow-md">
               Dòng họ Đỗ Đàm An

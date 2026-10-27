@@ -100,7 +100,7 @@ export function PostsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="font-serif text-3xl font-bold text-wood-900">Bài Đăng Dòng Họ</h1>
+            <h1 className="font-serif text-3xl font-bold text-wood-900">Bài viết</h1>
             <span className="bg-gold-100 text-gold-800 text-xs font-semibold px-2.5 py-0.5 rounded-full font-sans">
               {posts.length} bài
             </span>
@@ -127,8 +127,8 @@ export function PostsPage() {
         <button
           onClick={() => setSelectedCategory('ALL')}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${selectedCategory === 'ALL'
-              ? 'bg-wood-800 text-gold-300 shadow-sm'
-              : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70'
+            ? 'bg-wood-800 text-gold-300 shadow-sm'
+            : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70'
             }`}
         >
           Tất cả ({posts.length})
@@ -136,8 +136,8 @@ export function PostsPage() {
         <button
           onClick={() => setSelectedCategory('FEATURED')}
           className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${selectedCategory === 'FEATURED'
-              ? 'bg-gold-600 text-white shadow-sm'
-              : 'bg-gold-50 text-gold-700 hover:bg-gold-100'
+            ? 'bg-gold-600 text-white shadow-sm'
+            : 'bg-gold-50 text-gold-700 hover:bg-gold-100'
             }`}
         >
           <Sparkles className="w-3.5 h-3.5" />
@@ -146,8 +146,8 @@ export function PostsPage() {
         <button
           onClick={() => setSelectedCategory('HISTORY')}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${selectedCategory === 'HISTORY'
-              ? 'bg-wood-800 text-gold-300 shadow-sm'
-              : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70'
+            ? 'bg-wood-800 text-gold-300 shadow-sm'
+            : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70'
             }`}
         >
           Giới thiệu
@@ -155,11 +155,11 @@ export function PostsPage() {
         <button
           onClick={() => setSelectedCategory('NEWS')}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors font-sans ${selectedCategory === 'NEWS'
-              ? 'bg-wood-800 text-gold-300 shadow-sm'
-              : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70'
+            ? 'bg-wood-800 text-gold-300 shadow-sm'
+            : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70'
             }`}
         >
-          Sự kiện & Hoạt động
+          Sự kiện
         </button>
       </div>
 
@@ -247,7 +247,7 @@ export function PostsPage() {
           {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-10 pt-6 border-t border-stone-200">
               <span className="text-xs text-stone-500 font-sans">
-                Hiển thị bài {(currentPage - 1) * POSTS_PER_PAGE + 1} - {Math.min(currentPage * POSTS_PER_PAGE, filtered.length)} trên tổng số {filtered.length} bài viết
+                Hiển thị {(currentPage - 1) * POSTS_PER_PAGE + 1} - {Math.min(currentPage * POSTS_PER_PAGE, filtered.length)} trên tổng số {filtered.length} bài viết
               </span>
 
               <div className="flex items-center gap-1.5">
@@ -271,8 +271,8 @@ export function PostsPage() {
                         <button
                           onClick={() => handlePageChange(p)}
                           className={`w-9 h-9 rounded-xl text-xs font-semibold font-sans transition-all shadow-sm cursor-pointer ${currentPage === p
-                              ? 'bg-gold-600 text-white'
-                              : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'
+                            ? 'bg-gold-600 text-white'
+                            : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'
                             }`}
                         >
                           {p}

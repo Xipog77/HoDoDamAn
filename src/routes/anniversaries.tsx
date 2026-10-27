@@ -47,7 +47,7 @@ function AnniversariesPage() {
   const [currentYear, setCurrentYear] = useState(todayDate.getFullYear())
   const [currentMonth, setCurrentMonth] = useState(todayDate.getMonth() + 1) // 1-12
   const [selectedDay, setSelectedDay] = useState<number | null>(todayDate.getDate())
-  
+
   const [searchQuery, setSearchQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState<string>('ALL')
   const [activeView, setActiveView] = useState<'GRID' | 'LIST'>('GRID')
@@ -83,12 +83,12 @@ function AnniversariesPage() {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const currentYear = today.getFullYear()
-    
+
     let target = new Date(currentYear, month - 1, day)
     if (target < today) {
       target = new Date(currentYear + 1, month - 1, day)
     }
-    
+
     const diff = target.getTime() - today.getTime()
     return Math.ceil(diff / (1000 * 60 * 60 * 24))
   }
@@ -143,7 +143,7 @@ function AnniversariesPage() {
 
   const daysInCurrentMonth = getDaysInMonth(currentYear, currentMonth)
   const daysInPrevMonth = getDaysInMonth(currentYear, currentMonth === 1 ? 12 : currentMonth - 1)
-  
+
   // Day of week index of 1st day of month (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
   const firstDayOfWeek = new Date(currentYear, currentMonth - 1, 1).getDay()
   // Padding count from Monday (0 to 6 days)
@@ -237,24 +237,24 @@ function AnniversariesPage() {
   // List View filtering
   const filteredEventsForList = compiledEvents.filter(ev => {
     if (ev.month !== currentMonth) return false
-    
+
     // If it is a one-time event, only show it in its designated year
     if (ev.isRecurring === false && ev.year !== currentYear) {
       return false
     }
-    
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase()
       const inTitle = ev.title.toLowerCase().includes(q)
       const inDesc = ev.description?.toLowerCase().includes(q) || false
       if (!inTitle && !inDesc) return false
     }
-    
+
     if (typeFilter !== 'ALL') {
       if (typeFilter === 'DEATH' && ev.type !== 'DEATH') return false
       if (typeFilter === 'COMMEMORATION' && ev.type !== 'COMMEMORATION' && ev.type !== 'OTHER') return false
     }
-    
+
     return true
   }).sort((a, b) => a.day - b.day)
 
@@ -268,16 +268,16 @@ function AnniversariesPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      
+
       {/* Page Title & Navigation Banner */}
       <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="font-serif text-3xl font-bold text-wood-900 flex items-center gap-2">
             <CalendarIcon className="w-8 h-8 text-gold-600" />
-            Sự Kiện & Ngày Giỗ
+            Sự Kiện
           </h1>
           <p className="text-stone-500 text-sm font-sans mt-1">
-            Giao diện lịch tháng thông minh hiển thị song song ngày Dương lịch (trên) và ngày Âm lịch (dưới).
+            Sự kiện và ngày lễ của dòng họ.
           </p>
         </div>
 
@@ -285,21 +285,19 @@ function AnniversariesPage() {
         <div className="flex bg-stone-100 p-1 rounded-xl border border-stone-200">
           <button
             onClick={() => setActiveView('GRID')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeView === 'GRID'
-                ? 'bg-wood-800 text-white shadow'
-                : 'text-stone-600 hover:text-stone-900'
-            }`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'GRID'
+              ? 'bg-wood-800 text-white shadow'
+              : 'text-stone-600 hover:text-stone-900'
+              }`}
           >
             Lịch tháng
           </button>
           <button
             onClick={() => setActiveView('LIST')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeView === 'LIST'
-                ? 'bg-wood-800 text-white shadow'
-                : 'text-stone-600 hover:text-stone-900'
-            }`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'LIST'
+              ? 'bg-wood-800 text-white shadow'
+              : 'text-stone-600 hover:text-stone-900'
+              }`}
           >
             Danh sách sự kiện
           </button>
@@ -308,10 +306,10 @@ function AnniversariesPage() {
 
       {/* Main Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        
+
         {/* Left column: Sidebar controls & search */}
         <div className="lg:col-span-1 space-y-6">
-          
+
           {/* Quick Search */}
           <div className="bg-white rounded-2xl shadow-sm border border-stone-150 p-4">
             <h3 className="font-serif font-bold text-wood-900 text-sm border-b border-stone-100 pb-2 mb-3">
@@ -337,34 +335,31 @@ function AnniversariesPage() {
             <div className="space-y-2">
               <button
                 onClick={() => setTypeFilter('ALL')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-sans transition-colors ${
-                  typeFilter === 'ALL'
-                    ? 'bg-wood-50 text-wood-900 font-semibold'
-                    : 'text-stone-600 hover:bg-stone-50'
-                }`}
+                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-sans transition-colors ${typeFilter === 'ALL'
+                  ? 'bg-wood-50 text-wood-900 font-semibold'
+                  : 'text-stone-600 hover:bg-stone-50'
+                  }`}
               >
                 Tất cả sự kiện
               </button>
               <button
                 onClick={() => setTypeFilter('DEATH')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-sans transition-colors flex items-center justify-between ${
-                  typeFilter === 'DEATH'
-                    ? 'bg-crimson-50 text-crimson-800 font-semibold'
-                    : 'text-stone-600 hover:bg-stone-50'
-                }`}
+                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-sans transition-colors flex items-center justify-between ${typeFilter === 'DEATH'
+                  ? 'bg-crimson-50 text-crimson-800 font-semibold'
+                  : 'text-stone-600 hover:bg-stone-50'
+                  }`}
               >
                 <span>Ngày giỗ</span>
                 <span className="w-2 h-2 rounded-full bg-crimson-500" />
               </button>
               <button
                 onClick={() => setTypeFilter('COMMEMORATION')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-sans transition-colors flex items-center justify-between ${
-                  typeFilter === 'COMMEMORATION'
-                    ? 'bg-emerald-50 text-emerald-800 font-semibold'
-                    : 'text-stone-600 hover:bg-stone-50'
-                }`}
+                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-sans transition-colors flex items-center justify-between ${typeFilter === 'COMMEMORATION'
+                  ? 'bg-emerald-50 text-emerald-800 font-semibold'
+                  : 'text-stone-600 hover:bg-stone-50'
+                  }`}
               >
-                <span>Kỷ niệm / Hội họ</span>
+                <span>Kỷ niệm</span>
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
               </button>
             </div>
@@ -373,19 +368,19 @@ function AnniversariesPage() {
           {/* Legend */}
           <div className="bg-white rounded-2xl shadow-sm border border-stone-150 p-4 text-xs space-y-2 text-stone-600 font-sans">
             <h3 className="font-serif font-bold text-wood-900 border-b border-stone-100 pb-2 mb-3 text-sm">
-              Chú giải bản đồ lịch
+              Chú giải
             </h3>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded bg-white border-2 border-gold-400 shadow-[0_0_6px_rgba(217,119,6,0.35)] block" />
-              <span>Ngày có sự kiện dòng họ (phát sáng)</span>
+              <span>Ngày có sự kiện</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-crimson-500 block" />
-              <span>Ký hiệu Ngày Giỗ cụ</span>
+              <span>Ngày Giỗ</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 block" />
-              <span>Ký hiệu Lễ Kỷ niệm / Hội họp</span>
+              <span>Lễ Kỷ niệm</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-blue-500 block" />
@@ -396,10 +391,10 @@ function AnniversariesPage() {
 
         {/* Right column: Main Calendar Grid or List */}
         <div className="lg:col-span-3 space-y-6">
-          
+
           {/* Calendar Controller Bar */}
           <div className="bg-white rounded-2xl shadow-sm border border-stone-150 p-4 flex flex-wrap items-center justify-between gap-4">
-            
+
             {/* Prev/Next Month buttons */}
             <div className="flex items-center gap-1.5">
               <button
@@ -409,7 +404,7 @@ function AnniversariesPage() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              
+
               {/* Dropdown Selectors */}
               <div className="flex items-center gap-2">
                 <select
@@ -451,7 +446,7 @@ function AnniversariesPage() {
             <>
               {/* 7-column Calendar Grid */}
               <div className="bg-white rounded-2xl shadow-sm border border-stone-150 p-6 overflow-hidden">
-                
+
                 {/* Weekdays header */}
                 <div className="grid grid-cols-7 border-b border-stone-100 pb-3 mb-2 text-center text-xs font-bold font-sans text-stone-500 uppercase tracking-wider">
                   <div>T2</div>
@@ -506,7 +501,7 @@ function AnniversariesPage() {
                               )
                             })}
                           </div>
-                          
+
                           {/* Solar date (top right) */}
                           <span className={`text-sm font-bold font-sans ${isSelected ? 'text-white' : 'text-stone-800'}`}>
                             {cell.dayNumber}
@@ -515,9 +510,8 @@ function AnniversariesPage() {
 
                         {/* Lunar date (bottom) */}
                         <div className="text-right">
-                          <span className={`text-[9px] font-sans block ${
-                            isSelected ? 'text-gold-300 font-semibold' : 'text-stone-400'
-                          }`}>
+                          <span className={`text-[9px] font-sans block ${isSelected ? 'text-gold-300 font-semibold' : 'text-stone-400'
+                            }`}>
                             {cell.lunarDay === 1 ? `${cell.lunarDay}/${cell.lunarMonth}` : cell.lunarDay}
                           </span>
                         </div>
@@ -648,8 +642,8 @@ function AnniversariesPage() {
                         <div className="flex flex-wrap items-center gap-4 text-xs font-sans text-stone-400">
                           <span>Ngày {ev.day} tháng {ev.month} ({ev.dateType === 'LUNAR' ? 'Âm lịch' : 'Dương lịch'})</span>
                           {ev.personId && (
-                            <Link 
-                              to="/person/$id" 
+                            <Link
+                              to="/person/$id"
                               params={{ id: ev.personId.toString() }}
                               className="inline-flex items-center gap-0.5 text-gold-600 hover:text-gold-500 font-medium"
                             >
@@ -658,8 +652,8 @@ function AnniversariesPage() {
                             </Link>
                           )}
                           {ev.postId && (
-                            <Link 
-                              to="/posts/$id" 
+                            <Link
+                              to="/posts/$id"
                               params={{ id: ev.postId.toString() }}
                               className="inline-flex items-center gap-0.5 text-gold-600 hover:text-gold-500 font-medium font-semibold"
                             >

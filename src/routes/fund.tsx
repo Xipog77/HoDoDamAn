@@ -121,8 +121,8 @@ function FundPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-wood-900">Quỹ Dòng Họ</h1>
-          <p className="text-stone-500 text-sm font-sans mt-1">Minh bạch thu chi — đoàn kết xây dựng từ đường và việc dòng tộc</p>
+          <h1 className="font-serif text-3xl font-bold text-wood-900">Quỹ Họ Đỗ Đàm An</h1>
+          <p className="text-stone-500 text-sm font-sans mt-1">Thông tin về thu - chi Quỹ họ</p>
         </div>
 
         {/* Search bar */}
@@ -163,7 +163,7 @@ function FundPage() {
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${total >= 0 ? 'bg-gold-100' : 'bg-crimson-100'}`}>
               <TrendingUp className={`w-5 h-5 ${total >= 0 ? 'text-gold-700' : 'text-crimson-600'}`} />
             </div>
-            <span className="text-sm text-stone-500 font-sans">Hiện còn tồn quỹ</span>
+            <span className="text-sm text-stone-500 font-sans">Hiện còn</span>
           </div>
           <p className={`font-serif text-2xl font-bold ${total >= 0 ? 'text-gold-700' : 'text-crimson-700'}`}>{fmt(total)}</p>
         </div>
@@ -194,20 +194,20 @@ function FundPage() {
               onClick={() => setShowQrModal(true)}
               className="mt-2.5 text-xs text-gold-300 hover:text-gold-200 flex items-center gap-1 font-medium font-sans"
             >
-              <QrCode className="w-3.5 h-3.5" /> Bấm xem mã QR lớn
+              <QrCode className="w-3.5 h-3.5" /> Bấm xem QR
             </button>
           </div>
 
           {/* Bank Info */}
           <div className="flex-1 text-center md:text-left space-y-3 font-sans">
             <div className="inline-flex items-center gap-1.5 bg-gold-500/20 text-gold-300 text-xs px-3 py-1 rounded-full border border-gold-400/30 font-medium">
-              <Building2 className="w-3.5 h-3.5" /> Thông tin Đóng góp & Công đức Dòng họ
+              <Building2 className="w-3.5 h-3.5" /> Thông tin Công đức.
             </div>
 
             <h3 className="font-serif text-xl sm:text-2xl font-bold text-gold-400">
-              Ngân hàng Nông nghiệp & PTNT (Agribank)
+              Ngân hàng Nông nghiệp & PTNT
             </h3>
-            <p className="text-xs text-stone-300">Chi nhánh Tỉnh Quảng Ninh</p>
+            <p className="text-xs text-stone-300">Agribank - Chi nhánh Tỉnh Quảng Ninh</p>
 
             <div className="bg-wood-800/80 border border-wood-700/60 rounded-xl p-4 max-w-xl">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
@@ -231,9 +231,9 @@ function FundPage() {
               </div>
 
               <div className="mt-3 pt-3 border-t border-wood-700/60 text-xs text-stone-300">
-                <span className="text-gold-400 font-semibold">Cú pháp chuyển khoản gợi ý: </span>
+                <span className="text-gold-400 font-semibold">Cú pháp chuyển khoản: </span>
                 <span className="bg-wood-900 px-2 py-0.5 rounded font-mono text-stone-200">
-                  [Họ Tên] - Dong gop Quy Ho Do
+                  [Họ Tên] - [Nội dung Công đức]
                 </span>
               </div>
             </div>
@@ -248,7 +248,7 @@ function FundPage() {
       {/* Transaction list */}
       <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
-          <h2 className="font-serif font-semibold text-wood-900 text-lg">Lịch sử thu chi & công đức</h2>
+          <h2 className="font-serif font-semibold text-wood-900 text-lg">Ghi nhận công đức</h2>
           <span className="text-xs text-stone-400 font-sans">Cập nhật tự động</span>
         </div>
         {loading && records.length === 0 ? (

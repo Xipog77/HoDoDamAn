@@ -73,7 +73,7 @@ function AdminFeedback() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="font-serif text-2xl font-bold text-wood-900">Ý kiến đóng góp & Báo lỗi</h1>
+        <h1 className="font-serif text-2xl font-bold text-wood-900">Ý kiến</h1>
         <p className="text-stone-500 text-xs font-sans mt-0.5">
           Xem các ý kiến đóng góp, báo lỗi từ thành viên và giám sát dung lượng máy chủ.
         </p>
@@ -81,21 +81,19 @@ function AdminFeedback() {
 
       {/* Disk Space Status */}
       {diskInfo && (
-        <div className={`p-5 rounded-2xl border font-sans text-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors ${
-          diskInfo.isCritical
+        <div className={`p-5 rounded-2xl border font-sans text-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors ${diskInfo.isCritical
             ? 'bg-crimson-50 border-crimson-200 text-crimson-800'
             : diskInfo.isLow
-            ? 'bg-amber-50 border-amber-200 text-amber-800'
-            : 'bg-white border-stone-100 shadow-sm text-stone-700'
-        }`}>
+              ? 'bg-amber-50 border-amber-200 text-amber-800'
+              : 'bg-white border-stone-100 shadow-sm text-stone-700'
+          }`}>
           <div className="flex items-start gap-3">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-              diskInfo.isCritical
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${diskInfo.isCritical
                 ? 'bg-crimson-100'
                 : diskInfo.isLow
-                ? 'bg-amber-100'
-                : 'bg-gold-50'
-            }`}>
+                  ? 'bg-amber-100'
+                  : 'bg-gold-50'
+              }`}>
               {diskInfo.isCritical || diskInfo.isLow ? (
                 <AlertTriangle className={`w-5 h-5 ${diskInfo.isCritical ? 'text-crimson-600 animate-bounce' : 'text-amber-600'}`} />
               ) : (
@@ -115,10 +113,9 @@ function AdminFeedback() {
           </div>
           <div className="flex items-center gap-2">
             <div className="w-full md:w-32 bg-stone-100 rounded-full h-2.5 overflow-hidden">
-              <div 
-                className={`h-full rounded-full transition-all duration-500 ${
-                  diskInfo.isCritical ? 'bg-crimson-600' : diskInfo.isLow ? 'bg-amber-500' : 'bg-gold-600'
-                }`}
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${diskInfo.isCritical ? 'bg-crimson-600' : diskInfo.isLow ? 'bg-amber-500' : 'bg-gold-600'
+                  }`}
                 style={{ width: `${diskInfo.capacityPercent}%` }}
               ></div>
             </div>
@@ -137,18 +134,16 @@ function AdminFeedback() {
         )}
 
         {!loading && feedbacks.map((fb: any) => (
-          <div 
-            key={fb.id} 
-            className={`bg-white rounded-xl border p-5 flex items-start gap-4 transition-all ${
-              fb.isResolved ? 'border-stone-100 opacity-60' : 'border-stone-200/80 shadow-sm'
-            }`}
+          <div
+            key={fb.id}
+            className={`bg-white rounded-xl border p-5 flex items-start gap-4 transition-all ${fb.isResolved ? 'border-stone-100 opacity-60' : 'border-stone-200/80 shadow-sm'
+              }`}
           >
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-              fb.isResolved ? 'bg-stone-100' : 'bg-gold-50'
-            }`}>
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${fb.isResolved ? 'bg-stone-100' : 'bg-gold-50'
+              }`}>
               <MessageSquare className={`w-4 h-4 ${fb.isResolved ? 'text-stone-400' : 'text-gold-600'}`} />
             </div>
-            
+
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-semibold text-stone-800 text-sm font-sans">{fb.authorName}</span>
