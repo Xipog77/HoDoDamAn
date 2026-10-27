@@ -80,21 +80,21 @@ function HomePage() {
             backgroundImage: `url("${homepageBackgrounds[0] || 'https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?auto=format&fit=crop&q=80&w=1600'}")`,
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-wood-950/95 via-wood-950/90 to-wood-950/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-wood-900/80 via-wood-900/65 to-wood-900/85" />
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(/pattern-trondong.svg)', backgroundSize: '200px' }} />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto flex flex-col gap-6">
-            <div className="inline-flex items-center gap-2 bg-gold-500/20 border border-gold-400/30 rounded-full px-4 py-1.5">
+          <div className="max-w-4xl mx-auto bg-wood-900/75 backdrop-blur-md border border-gold-500/30 rounded-2xl sm:rounded-3xl p-6 sm:p-10 shadow-2xl flex flex-col gap-6">
+            <div className="inline-flex items-center gap-2 bg-gold-500/20 border border-gold-400/30 rounded-full px-4 py-1.5 self-start">
               <span className="text-gold-300 text-xs font-semibold tracking-wider uppercase font-sans">Lịch sử & Nguồn cội</span>
             </div>
-            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gold-400 drop-shadow-md">
+            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gold-400 drop-shadow-md">
               Dòng họ Đỗ Đàm An
             </h1>
             <div className="w-20 h-1 bg-gold-600 rounded" />
 
             <div className="flex flex-col gap-5 text-stone-200 font-sans text-base leading-relaxed text-justify">
-              <blockquote className="border-l-4 border-gold-500 pl-4 py-2 my-6 italic text-stone-200 bg-gold-500/10 font-serif rounded-r-lg">
+              <blockquote className="border-l-4 border-gold-500 pl-4 py-2 my-2 italic text-stone-200 bg-gold-500/10 font-serif rounded-r-lg">
                 "Con người có tổ, có tông
                 <br />
                 Như cây có cội, như sông có nguồn."
@@ -106,7 +106,6 @@ function HomePage() {
                 Đỗ Chi Tộc Đàm An truyền đức tổ đệ nhất Đỗ Phúc Mai đến nay đã được 9 đời. Ngay từ những ngày đầu khởi tổ, các bậc tiền nhân của chi tộc cùng với việc nuôi dạy cháu con nên người cũng đã luôn quan tâm đến việc ghi chép tộc phả, lịch sử tổ tiên để truyền lại cho hậu thế.
               </p>
             </div>
-
           </div>
         </div>
       </section>

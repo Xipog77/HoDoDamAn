@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { BookOpen, Search, Calendar, User, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react'
 
 export const Route = createFileRoute('/posts/')({
@@ -69,6 +69,23 @@ export function PostsPage() {
   useEffect(() => {
     setCurrentPage(1)
   }, [selectedCategory, search])
+
+  // Auto-scroll smoothly to top of page when changing page
+  const isFirstRender = useRef(true)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [currentPage])
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage !== currentPage) {
+      setCurrentPage(newPage)
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   // Pagination slice
   const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE) || 1
@@ -236,8 +253,8 @@ export function PostsPage() {
               <div className="flex items-center gap-1.5">
                 <button
                   disabled={currentPage <= 1}
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  className="p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 disabled:opacity-40 disabled:hover:bg-white text-stone-600 transition-colors shadow-sm"
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                  className="p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 disabled:opacity-40 disabled:hover:bg-white text-stone-600 transition-colors shadow-sm cursor-pointer disabled:cursor-not-allowed"
                   title="Trang trước"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -252,8 +269,8 @@ export function PostsPage() {
                       <div key={p} className="flex items-center">
                         {showEllipsis && <span className="px-2 text-stone-400 text-xs">...</span>}
                         <button
-                          onClick={() => setCurrentPage(p)}
-                          className={`w-9 h-9 rounded-xl text-xs font-semibold font-sans transition-all shadow-sm ${currentPage === p
+                          onClick={() => handlePageChange(p)}
+                          className={`w-9 h-9 rounded-xl text-xs font-semibold font-sans transition-all shadow-sm cursor-pointer ${currentPage === p
                               ? 'bg-gold-600 text-white'
                               : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'
                             }`}
@@ -266,8 +283,8 @@ export function PostsPage() {
 
                 <button
                   disabled={currentPage >= totalPages}
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  className="p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 disabled:opacity-40 disabled:hover:bg-white text-stone-600 transition-colors shadow-sm"
+                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                  className="p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 disabled:opacity-40 disabled:hover:bg-white text-stone-600 transition-colors shadow-sm cursor-pointer disabled:cursor-not-allowed"
                   title="Trang tiếp"
                 >
                   <ChevronRight className="w-4 h-4" />
