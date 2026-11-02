@@ -37,6 +37,11 @@ const PORT = parseInt(process.env.PORT || '3000', 10)
  * Returns true if file was served, false otherwise.
  */
 function tryServeStatic(req, res) {
+  const isHead = req.method === 'HEAD'
+  if (req.method !== 'GET' && !isHead) {
+    return false
+  }
+
   const url = new URL(req.url, `http://localhost:${PORT}`)
   let filePath = join(CLIENT_DIR, url.pathname)
 
@@ -77,7 +82,11 @@ function tryServeStatic(req, res) {
     }
 
     res.writeHead(200, headers)
-    res.end(data)
+    if (isHead) {
+      res.end()
+    } else {
+      res.end(data)
+    }
     return true
   } catch {
     return false
@@ -88,12 +97,12 @@ const UPLOADS_DIR = join(__dirname, 'uploads')
 
 const server = createServer(async (req, res) => {
   // 1. Try serving static files from dist/client/
-  if (req.method === 'GET' && tryServeStatic(req, res)) {
+  if ((req.method === 'GET' || req.method === 'HEAD') && tryServeStatic(req, res)) {
     return
   }
 
   // 1b. Try serving uploaded files from /uploads/
-  if (req.method === 'GET' && req.url.startsWith('/uploads/')) {
+  if ((req.method === 'GET' || req.method === 'HEAD') && req.url.startsWith('/uploads/')) {
     const url = new URL(req.url, `http://localhost:${PORT}`)
     const filePath = join(UPLOADS_DIR, url.pathname.replace('/uploads/', ''))
     if (filePath.startsWith(UPLOADS_DIR) && existsSync(filePath) && statSync(filePath).isFile()) {
@@ -101,7 +110,11 @@ const server = createServer(async (req, res) => {
       const contentType = MIME_TYPES[ext] || 'application/octet-stream'
       const data = readFileSync(filePath)
       res.writeHead(200, { 'Content-Type': contentType, 'Content-Length': data.length, 'Cache-Control': 'public, max-age=86400' })
-      res.end(data)
+      if (req.method === 'HEAD') {
+        res.end()
+      } else {
+        res.end(data)
+      }
       return
     }
   }
