@@ -1,0 +1,41 @@
+{
+  "id": "dodaman-familytree-pwa",
+  "name": "Quản Lý Dòng Họ Đàm An",
+  "short_name": "Hộ độ Đàm An",
+  "description": "Hệ thống quản lý tộc phả Họ Đỗ Đàm An - kết nối các thế hệ, tra cứu phả đồ và nhận thông báo giỗ chạp, tin tức dòng họ.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f0e8",
+  "theme_color": "#4a240b",
+  "lang": "vi",
+  "dir": "ltr",
+  "categories": ["lifestyle", "social", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

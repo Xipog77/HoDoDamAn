@@ -13,6 +13,9 @@ function AdminNotifications() {
   const [form, setForm] = useState({ title: '', content: '', broadcast: false })
   const [saving, setSaving] = useState(false)
   const [lastBroadcastCount, setLastBroadcastCount] = useState<number | null>(null)
+  const [subscribersCount, setSubscribersCount] = useState<number | null>(null)
+  const [testingPush, setTestingPush] = useState(false)
+  const [testPushResult, setTestPushResult] = useState<string | null>(null)
 
   const load = () => {
     setLoading(true)
@@ -21,9 +24,43 @@ function AdminNotifications() {
       .then(d => setItems(d.notifications || []))
       .catch(console.error)
       .finally(() => setLoading(false))
+
+    // Load push subscribers count
+    fetch('/api/notifications/test-push')
+      .then(r => r.json())
+      .then(d => {
+        if (d.subscribersCount !== undefined) setSubscribersCount(d.subscribersCount)
+      })
+      .catch(console.error)
   }
 
   useEffect(load, [])
+
+  const handleTestPush = async () => {
+    setTestingPush(true)
+    setTestPushResult(null)
+    try {
+      const res = await fetch('/api/notifications/test-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Họ Đỗ Đàm An (Thử nghiệm)',
+          body: 'Thông báo đẩy PWA hoạt động hoàn hảo trên thiết bị của bạn! 🎉',
+          url: '/'
+        })
+      })
+      const d = await res.json()
+      if (d.success) {
+        setTestPushResult(`Đã gửi thông báo tới ${d.totalSent} thiết bị (${d.successCount} thành công, ${d.failureCount} lỗi).`)
+      } else {
+        setTestPushResult(d.error || 'Lỗi gửi thông báo thử.')
+      }
+    } catch (e: any) {
+      setTestPushResult('Lỗi kết nối máy chủ.')
+    } finally {
+      setTestingPush(false)
+    }
+  }
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -90,8 +127,46 @@ function AdminNotifications() {
       {lastBroadcastCount !== null && (
         <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-xl mb-6 flex items-center gap-3 font-sans text-sm animate-in fade-in duration-300">
           <Send className="w-5 h-5 flex-shrink-0" />
-          <span>Đã gửi thông báo tới <strong>{lastBroadcastCount}</strong> thành viên qua email/SĐT.</span>
+          <span>Đã gửi thông báo tới <strong>{lastBroadcastCount}</strong> thành viên qua email/SĐT và đẩy tới tất cả thiết bị PWA.</span>
           <button onClick={() => setLastBroadcastCount(null)} className="ml-auto text-emerald-500 hover:text-emerald-700">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* PWA Push Notification Status Card */}
+      <div className="bg-gradient-to-r from-wood-900 to-wood-950 border border-gold-500/30 rounded-2xl p-5 mb-6 shadow-md text-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-sans">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-gold-500/20 border border-gold-400/30 flex items-center justify-center text-gold-400 flex-shrink-0">
+            <Bell className="w-5 h-5 animate-pulse" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-serif font-bold text-gold-400 text-base">Hệ thống Thông báo đẩy PWA</span>
+              <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                Hoạt động
+              </span>
+            </div>
+            <p className="text-xs text-stone-300 mt-0.5">
+              Hiện có <strong className="text-gold-300 font-semibold">{subscribersCount !== null ? subscribersCount : '...'}</strong> thiết bị đã bật nhận thông báo đẩy trên điện thoại / máy tính.
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={handleTestPush}
+          disabled={testingPush}
+          className="self-start sm:self-auto bg-gold-600/90 hover:bg-gold-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-gold-400/30 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-sm"
+        >
+          <Send className="w-3.5 h-3.5" />
+          <span>{testingPush ? 'Đang gửi...' : 'Gửi thử thông báo'}</span>
+        </button>
+      </div>
+
+      {testPushResult && (
+        <div className="bg-gold-50 border border-gold-200 text-wood-900 text-xs font-sans p-3.5 rounded-xl mb-6 flex items-center justify-between animate-in fade-in">
+          <span>{testPushResult}</span>
+          <button onClick={() => setTestPushResult(null)} className="text-stone-400 hover:text-stone-600">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -128,10 +203,11 @@ function AdminNotifications() {
                   <span className="text-sm font-medium text-wood-800 font-sans flex items-center gap-2">
                     <Mail className="w-3.5 h-3.5 text-gold-600" />
                     <Phone className="w-3.5 h-3.5 text-gold-600" />
-                    Gửi qua Email / SĐT
+                    <Bell className="w-3.5 h-3.5 text-gold-600" />
+                    Gửi qua Email / SĐT & Thông báo đẩy (PWA Push)
                   </span>
                   <p className="text-xs text-stone-500 mt-1 font-sans leading-relaxed">
-                    Gửi thông báo này tới email và số điện thoại đã lưu của tất cả thành viên đang hoạt động (chỉ gửi cho những người đã bật nhận thông báo).
+                    Gửi thông báo tới email/SĐT của thành viên đang hoạt động, đồng thời phát thông báo đẩy tức thì tới màn hình điện thoại/máy tính của tất cả thiết bị đã bật nhận thông báo.
                   </p>
                 </div>
               </label>

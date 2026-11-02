@@ -41,7 +41,19 @@ export const Route = createFileRoute('/api/notifications/')({
           }
         }
       } catch (err) {
-        console.error('Broadcast error:', err)
+        console.error('Email broadcast error:', err)
+      }
+
+      // Also broadcast Web Push to all subscribed PWA devices
+      try {
+        const { broadcastPushNotification } = await import('@/lib/push-notifications')
+        await broadcastPushNotification({
+          title: n.title,
+          body: n.content,
+          url: '/'
+        })
+      } catch (pushErr) {
+        console.error('Web push broadcast error:', pushErr)
       }
     }
 

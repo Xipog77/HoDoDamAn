@@ -195,3 +195,15 @@ export const systemFeedbacks = pgTable('system_feedbacks', {
   isResolved: boolean('is_resolved').default(false).notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
+
+export const pushSubscriptions = pgTable('push_subscriptions', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id'),
+  endpoint: text('endpoint').notNull().unique(),
+  p256dh: text('p256dh').notNull(),
+  auth: text('auth').notNull(),
+  userAgent: text('user_agent'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+})
+

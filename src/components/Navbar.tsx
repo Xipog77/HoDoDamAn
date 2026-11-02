@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useAuth } from './AuthProvider'
 import { Menu, X, TreePine, Users, BookOpen, DollarSign, LogIn, LogOut, User, Shield, Calendar, UserCircle, Settings, MessageSquare } from 'lucide-react'
+import { NotificationBellButton } from './NotificationBellButton'
 
 export function Navbar() {
   const { user, logout, isAdmin } = useAuth()
@@ -126,6 +127,10 @@ export function Navbar() {
                 A+
               </button>
             </div>
+
+            {/* PWA Push Notification Bell */}
+            <NotificationBellButton />
+
             {user ? (
               <div className="relative">
                 <button

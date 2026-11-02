@@ -43,6 +43,10 @@ import { Route as ApiPersonsTreeRouteImport } from './routes/api/persons/tree'
 import { Route as ApiPersonsRequestEditRouteImport } from './routes/api/persons/request-edit'
 import { Route as ApiPersonsMarriagesRouteImport } from './routes/api/persons/marriages'
 import { Route as ApiPersonsIdRouteImport } from './routes/api/persons/$id'
+import { Route as ApiNotificationsVapidKeyRouteImport } from './routes/api/notifications/vapid-key'
+import { Route as ApiNotificationsUnsubscribeRouteImport } from './routes/api/notifications/unsubscribe'
+import { Route as ApiNotificationsTestPushRouteImport } from './routes/api/notifications/test-push'
+import { Route as ApiNotificationsSubscribeRouteImport } from './routes/api/notifications/subscribe'
 import { Route as ApiMemoriesPersonIdRouteImport } from './routes/api/memories/$personId'
 import { Route as ApiMediaIdRouteImport } from './routes/api/media/$id'
 import { Route as ApiHomepageDataRouteImport } from './routes/api/homepage/data'
@@ -233,6 +237,30 @@ const ApiPersonsIdRoute = ApiPersonsIdRouteImport.update({
   path: '/api/persons/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiNotificationsVapidKeyRoute =
+  ApiNotificationsVapidKeyRouteImport.update({
+    id: '/api/notifications/vapid-key',
+    path: '/api/notifications/vapid-key',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiNotificationsUnsubscribeRoute =
+  ApiNotificationsUnsubscribeRouteImport.update({
+    id: '/api/notifications/unsubscribe',
+    path: '/api/notifications/unsubscribe',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiNotificationsTestPushRoute =
+  ApiNotificationsTestPushRouteImport.update({
+    id: '/api/notifications/test-push',
+    path: '/api/notifications/test-push',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiNotificationsSubscribeRoute =
+  ApiNotificationsSubscribeRouteImport.update({
+    id: '/api/notifications/subscribe',
+    path: '/api/notifications/subscribe',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiMemoriesPersonIdRoute = ApiMemoriesPersonIdRouteImport.update({
   id: '/api/memories/$personId',
   path: '/api/memories/$personId',
@@ -369,6 +397,10 @@ export interface FileRoutesByFullPath {
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
+  '/api/notifications/subscribe': typeof ApiNotificationsSubscribeRoute
+  '/api/notifications/test-push': typeof ApiNotificationsTestPushRoute
+  '/api/notifications/unsubscribe': typeof ApiNotificationsUnsubscribeRoute
+  '/api/notifications/vapid-key': typeof ApiNotificationsVapidKeyRoute
   '/api/persons/$id': typeof ApiPersonsIdRoute
   '/api/persons/marriages': typeof ApiPersonsMarriagesRoute
   '/api/persons/request-edit': typeof ApiPersonsRequestEditRoute
@@ -424,6 +456,10 @@ export interface FileRoutesByTo {
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
+  '/api/notifications/subscribe': typeof ApiNotificationsSubscribeRoute
+  '/api/notifications/test-push': typeof ApiNotificationsTestPushRoute
+  '/api/notifications/unsubscribe': typeof ApiNotificationsUnsubscribeRoute
+  '/api/notifications/vapid-key': typeof ApiNotificationsVapidKeyRoute
   '/api/persons/$id': typeof ApiPersonsIdRoute
   '/api/persons/marriages': typeof ApiPersonsMarriagesRoute
   '/api/persons/request-edit': typeof ApiPersonsRequestEditRoute
@@ -480,6 +516,10 @@ export interface FileRoutesById {
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
+  '/api/notifications/subscribe': typeof ApiNotificationsSubscribeRoute
+  '/api/notifications/test-push': typeof ApiNotificationsTestPushRoute
+  '/api/notifications/unsubscribe': typeof ApiNotificationsUnsubscribeRoute
+  '/api/notifications/vapid-key': typeof ApiNotificationsVapidKeyRoute
   '/api/persons/$id': typeof ApiPersonsIdRoute
   '/api/persons/marriages': typeof ApiPersonsMarriagesRoute
   '/api/persons/request-edit': typeof ApiPersonsRequestEditRoute
@@ -537,6 +577,10 @@ export interface FileRouteTypes {
     | '/api/homepage/data'
     | '/api/media/$id'
     | '/api/memories/$personId'
+    | '/api/notifications/subscribe'
+    | '/api/notifications/test-push'
+    | '/api/notifications/unsubscribe'
+    | '/api/notifications/vapid-key'
     | '/api/persons/$id'
     | '/api/persons/marriages'
     | '/api/persons/request-edit'
@@ -592,6 +636,10 @@ export interface FileRouteTypes {
     | '/api/homepage/data'
     | '/api/media/$id'
     | '/api/memories/$personId'
+    | '/api/notifications/subscribe'
+    | '/api/notifications/test-push'
+    | '/api/notifications/unsubscribe'
+    | '/api/notifications/vapid-key'
     | '/api/persons/$id'
     | '/api/persons/marriages'
     | '/api/persons/request-edit'
@@ -647,6 +695,10 @@ export interface FileRouteTypes {
     | '/api/homepage/data'
     | '/api/media/$id'
     | '/api/memories/$personId'
+    | '/api/notifications/subscribe'
+    | '/api/notifications/test-push'
+    | '/api/notifications/unsubscribe'
+    | '/api/notifications/vapid-key'
     | '/api/persons/$id'
     | '/api/persons/marriages'
     | '/api/persons/request-edit'
@@ -692,6 +744,10 @@ export interface RootRouteChildren {
   ApiHomepageDataRoute: typeof ApiHomepageDataRoute
   ApiMediaIdRoute: typeof ApiMediaIdRoute
   ApiMemoriesPersonIdRoute: typeof ApiMemoriesPersonIdRoute
+  ApiNotificationsSubscribeRoute: typeof ApiNotificationsSubscribeRoute
+  ApiNotificationsTestPushRoute: typeof ApiNotificationsTestPushRoute
+  ApiNotificationsUnsubscribeRoute: typeof ApiNotificationsUnsubscribeRoute
+  ApiNotificationsVapidKeyRoute: typeof ApiNotificationsVapidKeyRoute
   ApiPersonsIdRoute: typeof ApiPersonsIdRoute
   ApiPersonsMarriagesRoute: typeof ApiPersonsMarriagesRoute
   ApiPersonsRequestEditRoute: typeof ApiPersonsRequestEditRoute
@@ -947,6 +1003,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPersonsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/notifications/vapid-key': {
+      id: '/api/notifications/vapid-key'
+      path: '/api/notifications/vapid-key'
+      fullPath: '/api/notifications/vapid-key'
+      preLoaderRoute: typeof ApiNotificationsVapidKeyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notifications/unsubscribe': {
+      id: '/api/notifications/unsubscribe'
+      path: '/api/notifications/unsubscribe'
+      fullPath: '/api/notifications/unsubscribe'
+      preLoaderRoute: typeof ApiNotificationsUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notifications/test-push': {
+      id: '/api/notifications/test-push'
+      path: '/api/notifications/test-push'
+      fullPath: '/api/notifications/test-push'
+      preLoaderRoute: typeof ApiNotificationsTestPushRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notifications/subscribe': {
+      id: '/api/notifications/subscribe'
+      path: '/api/notifications/subscribe'
+      fullPath: '/api/notifications/subscribe'
+      preLoaderRoute: typeof ApiNotificationsSubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/memories/$personId': {
       id: '/api/memories/$personId'
       path: '/api/memories/$personId'
@@ -1144,6 +1228,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHomepageDataRoute: ApiHomepageDataRoute,
   ApiMediaIdRoute: ApiMediaIdRoute,
   ApiMemoriesPersonIdRoute: ApiMemoriesPersonIdRoute,
+  ApiNotificationsSubscribeRoute: ApiNotificationsSubscribeRoute,
+  ApiNotificationsTestPushRoute: ApiNotificationsTestPushRoute,
+  ApiNotificationsUnsubscribeRoute: ApiNotificationsUnsubscribeRoute,
+  ApiNotificationsVapidKeyRoute: ApiNotificationsVapidKeyRoute,
   ApiPersonsIdRoute: ApiPersonsIdRoute,
   ApiPersonsMarriagesRoute: ApiPersonsMarriagesRoute,
   ApiPersonsRequestEditRoute: ApiPersonsRequestEditRoute,
@@ -1161,3 +1249,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

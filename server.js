@@ -55,16 +55,28 @@ function tryServeStatic(req, res) {
   }
 
   const ext = extname(filePath).toLowerCase()
-  const contentType = MIME_TYPES[ext] || 'application/octet-stream'
+  let contentType = MIME_TYPES[ext] || 'application/octet-stream'
+  if (url.pathname === '/manifest.json') {
+    contentType = 'application/manifest+json; charset=utf-8'
+  }
 
   try {
     const data = readFileSync(filePath)
-    res.writeHead(200, {
+    const headers = {
       'Content-Type': contentType,
       'Content-Length': data.length,
-      // Cache immutable assets (hashed filenames) for 1 year
-      ...(url.pathname.includes('/assets/') ? { 'Cache-Control': 'public, max-age=31536000, immutable' } : {}),
-    })
+    }
+
+    if (url.pathname.includes('/assets/')) {
+      headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+    } else if (url.pathname === '/sw.js') {
+      headers['Service-Worker-Allowed'] = '/'
+      headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    } else if (url.pathname === '/manifest.json') {
+      headers['Cache-Control'] = 'public, max-age=3600'
+    }
+
+    res.writeHead(200, headers)
     res.end(data)
     return true
   } catch {
