@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import nodemailer from 'nodemailer'
 
 interface Recipient {
@@ -7,9 +5,6 @@ interface Recipient {
   email?: string | null
   phone?: string | null
 }
-
-const LOG_DIR = '/app/uploads' // Path inside Docker container (mapped to host ./uploads)
-const LOG_FILE = path.join(LOG_DIR, 'notifications.log')
 
 function getTransporter() {
   const host = process.env.SMTP_HOST
@@ -51,23 +46,9 @@ export async function sendEmail(to: string, subject: string, html: string, text?
 }
 
 export async function sendNotification(recipient: Recipient, title: string, content: string) {
-  const timestamp = new Date().toISOString()
-  const logMessage = `
-[NOTIFICATION DISPATCH]
-Timestamp: ${timestamp}
-Recipient: ${recipient.displayName || 'Unknown'} (Email: ${recipient.email || 'N/A'}, Phone: ${recipient.phone || 'N/A'})
-Title: ${title}
-Content: ${content}
-----------------------------------------
-`
   try {
-    // Ensure uploads directory exists
-    if (!fs.existsSync(LOG_DIR)) {
-      fs.mkdirSync(LOG_DIR, { recursive: true })
-    }
-    // Append to file
-    fs.appendFileSync(LOG_FILE, logMessage, 'utf-8')
-    console.log(`[Notification Logged] to ${LOG_FILE} for ${recipient.displayName}`)
+    // Don't persist recipients' contact details: uploads/ is publicly served
+    console.log(`[Notification] "${title}" → ${recipient.displayName || 'Unknown'}`)
 
     // Attempt to send real email if SMTP configured
     if (recipient.email) {
