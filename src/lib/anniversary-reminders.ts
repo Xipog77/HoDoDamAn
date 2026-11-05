@@ -1,12 +1,15 @@
-import { sql } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import { db } from '~/db/client'
-import { anniversaryRemindersSent } from '~/db/schema'
+import { anniversaryRemindersSent, users } from '~/db/schema'
 import { lunarToSolar, nextOccurrence } from '@/lib/lunar-calendar'
 import { broadcastPushNotification } from '@/lib/push-notifications'
 import { sendEmail } from '@/lib/notifications'
 
-/** Days before the event to remind: 3 days ahead to prepare, and the day itself. */
-export const LEAD_DAYS = [3, 0]
+/**
+ * Days before an event on which admins are alerted. Admins then decide whether and
+ * how to announce it to the family (homepage, push, email) from /admin/notifications.
+ */
+export const LEAD_DAYS = [7, 3, 1]
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -58,28 +61,25 @@ function toIsoDate(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-function describe(r: DueReminder<AnniversaryLike>) {
-  const label = r.anniversary.type === 'DEATH' ? 'Ngày giỗ' : 'Sự kiện'
-  const when = r.daysBefore === 0 ? 'hôm nay' : `còn ${r.daysBefore} ngày`
-  const lunar = r.anniversary.dateType === 'LUNAR' ? ` (${r.anniversary.day}/${r.anniversary.month} âm lịch)` : ''
-  const date = r.occursOn.toLocaleDateString('vi-VN')
-  return {
-    title: `${label}: ${r.anniversary.title}`,
-    body: `${when[0].toUpperCase()}${when.slice(1)} — ${date}${lunar}`,
-    url: r.anniversary.personId ? `/person/${r.anniversary.personId}` : '/anniversaries',
-  }
+/** Vietnamese one-liner for an event, shared by the admin alert and the upcoming list. */
+export function describeEvent(a: AnniversaryLike, occursOn: Date, daysUntil: number) {
+  const label = a.type === 'DEATH' ? 'Giỗ' : 'Sự kiện'
+  const when = daysUntil === 0 ? 'hôm nay' : `còn ${daysUntil} ngày`
+  const lunar = a.dateType === 'LUNAR' ? ` (${a.day}/${a.month} âm lịch)` : ''
+  return `${label} ${a.title} — ${occursOn.toLocaleDateString('vi-VN')}${lunar}, ${when}`
 }
 
 /**
- * Send push + email reminders for events due today. Idempotent: each
- * (event, date, lead time) is recorded once, so running it hourly is safe.
+ * Alert admins (push to their own devices + email) about events coming up, so they
+ * can decide how to announce them. Nothing is sent to other members automatically.
+ * Idempotent: each (event, date, lead time) is claimed once, so running hourly is safe.
  */
-export async function runAnniversaryReminders(now = new Date()) {
+export async function runAdminEventAlerts(now = new Date()) {
   const today = todayInVietnam(now)
   const all = await db.query.anniversaries.findMany()
   const due = findDueReminders(all, today)
 
-  let sent = 0
+  const fresh: DueReminder<AnniversaryLike>[] = []
   for (const reminder of due) {
     const claimed = await db
       .insert(anniversaryRemindersSent)
@@ -90,21 +90,32 @@ export async function runAnniversaryReminders(now = new Date()) {
       })
       .onConflictDoNothing()
       .returning()
-    if (claimed.length === 0) continue
+    if (claimed.length > 0) fresh.push(reminder)
+  }
+  if (fresh.length === 0) return { checked: all.length, due: due.length, alerted: 0 }
 
-    const message = describe(reminder)
-    await broadcastPushNotification({ ...message, tag: `anniversary-${reminder.anniversary.id}-${reminder.daysBefore}` })
+  const lines = fresh
+    .sort((a, b) => a.daysBefore - b.daysBefore)
+    .map((r) => describeEvent(r.anniversary, r.occursOn, r.daysBefore))
+  const title = fresh.length === 1 ? 'Sự kiện sắp tới cần thông báo' : `${fresh.length} sự kiện sắp tới cần thông báo`
+  const body = lines.join('\n')
+  const url = fresh.length === 1
+    ? `/admin/notifications?event=${fresh[0].anniversary.id}`
+    : '/admin/notifications'
 
-    const recipients = await db.execute<{ email: string }>(
-      sql`SELECT email FROM users WHERE status = 'ACTIVE' AND email_notifications = true AND email IS NOT NULL AND email <> ''`,
-    )
-    for (const { email } of recipients) {
-      await sendEmail(email, message.title, `<p>${escapeHtml(message.body)}</p>`, message.body).catch((e) =>
-        console.error('[Reminders] Email failed:', e.message),
+  const admins = await db.query.users.findMany({
+    where: and(eq(users.status, 'ACTIVE'), inArray(users.role, ['ADMIN', 'SUPER_ADMIN'])),
+  })
+  for (const admin of admins) {
+    await broadcastPushNotification({ title, body, url, tag: `admin-events-${toIsoDate(today)}` }, { targetUserId: admin.id })
+    if (admin.email) {
+      const html = `<p>${lines.map(escapeHtml).join('<br>')}</p>` +
+        `<p>Vào <strong>Quản trị → Thông báo</strong> để quyết định có gửi thông báo cho dòng họ hay không.</p>`
+      await sendEmail(admin.email, title, html, body).catch((e) =>
+        console.error('[Event alerts] Email failed:', e.message),
       )
     }
-    sent++
   }
 
-  return { checked: all.length, due: due.length, sent }
+  return { checked: all.length, due: due.length, alerted: fresh.length, admins: admins.length }
 }

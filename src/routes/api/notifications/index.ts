@@ -18,19 +18,30 @@ export const Route = createFileRoute('/api/notifications/')({
       return Response.json({ error: 'Không có quyền' }, { status: 403 })
     }
     const body = await request.json()
-    const [n] = await db.insert(notifications).values({ title: body.title, content: body.content }).returning()
+    // Each channel is the admin's choice. `broadcast` is the older all-or-nothing flag.
+    const channels = {
+      web: body.channels?.web ?? true,
+      push: body.channels?.push ?? !!body.broadcast,
+      email: body.channels?.email ?? !!body.broadcast,
+    }
+
+    // The row is the homepage announcement; when web is off it is kept hidden as a record
+    const [n] = await db
+      .insert(notifications)
+      .values({ title: body.title, content: body.content, isActive: channels.web })
+      .returning()
 
     let recipientCount = 0
+    let pushResult: { totalSent: number; successCount: number; failureCount: number } | null = null
 
-    // Broadcast to users only if explicitly requested
-    if (body.broadcast) {
+    if (channels.email) {
       try {
         const activeUsers = await db.query.users.findMany({
           where: (users, { eq }) => eq(users.status, 'ACTIVE')
         })
         const { sendNotification } = await import('@/lib/notifications')
         for (const u of activeUsers) {
-          if (u.emailNotifications && (u.email || u.phone)) {
+          if (u.emailNotifications && u.email) {
             sendNotification(
               { displayName: u.displayName, email: u.email, phone: u.phone },
               n.title,
@@ -42,21 +53,22 @@ export const Route = createFileRoute('/api/notifications/')({
       } catch (err) {
         console.error('Email broadcast error:', err)
       }
+    }
 
-      // Also broadcast Web Push to all subscribed PWA devices
+    if (channels.push) {
       try {
         const { broadcastPushNotification } = await import('@/lib/push-notifications')
-        await broadcastPushNotification({
+        pushResult = await broadcastPushNotification({
           title: n.title,
           body: n.content,
-          url: '/'
+          url: body.url || '/'
         })
       } catch (pushErr) {
         console.error('Web push broadcast error:', pushErr)
       }
     }
 
-    return Response.json({ notification: n, recipientCount }, { status: 201 })
+    return Response.json({ notification: n, recipientCount, pushResult }, { status: 201 })
   },
 
   PATCH: async ({ request }) => {

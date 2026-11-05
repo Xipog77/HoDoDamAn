@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { timingSafeEqual } from 'node:crypto'
 import { getAuthUser } from '@/lib/auth'
-import { runAnniversaryReminders } from '@/lib/anniversary-reminders'
+import { runAdminEventAlerts } from '@/lib/anniversary-reminders'
 
 // server.js generates INTERNAL_CRON_TOKEN at startup and calls this route hourly
 function isInternalCall(request: Request) {
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/api/cron/reminders')({
         }
 
         try {
-          const result = await runAnniversaryReminders()
+          const result = await runAdminEventAlerts()
           return Response.json(result)
         } catch (e) {
           console.error('[Reminders] Run failed:', e)

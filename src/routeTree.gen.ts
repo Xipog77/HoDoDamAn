@@ -59,6 +59,7 @@ import { Route as ApiAuthRegisterRouteImport } from './routes/api/auth/register'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
+import { Route as ApiAnniversariesUpcomingRouteImport } from './routes/api/anniversaries/upcoming'
 import { Route as ApiAnniversariesIdRouteImport } from './routes/api/anniversaries/$id'
 import { Route as ApiAdminUsersRouteImport } from './routes/api/admin/users'
 import { Route as ApiAdminStatusRouteImport } from './routes/api/admin/status'
@@ -323,6 +324,12 @@ const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
   path: '/api/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAnniversariesUpcomingRoute =
+  ApiAnniversariesUpcomingRouteImport.update({
+    id: '/api/anniversaries/upcoming',
+    path: '/api/anniversaries/upcoming',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAnniversariesIdRoute = ApiAnniversariesIdRouteImport.update({
   id: '/api/anniversaries/$id',
   path: '/api/anniversaries/$id',
@@ -399,6 +406,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/anniversaries/$id': typeof ApiAnniversariesIdRoute
+  '/api/anniversaries/upcoming': typeof ApiAnniversariesUpcomingRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -460,6 +468,7 @@ export interface FileRoutesByTo {
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/anniversaries/$id': typeof ApiAnniversariesIdRoute
+  '/api/anniversaries/upcoming': typeof ApiAnniversariesUpcomingRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -522,6 +531,7 @@ export interface FileRoutesById {
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/anniversaries/$id': typeof ApiAnniversariesIdRoute
+  '/api/anniversaries/upcoming': typeof ApiAnniversariesUpcomingRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -585,6 +595,7 @@ export interface FileRouteTypes {
     | '/api/admin/status'
     | '/api/admin/users'
     | '/api/anniversaries/$id'
+    | '/api/anniversaries/upcoming'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
@@ -646,6 +657,7 @@ export interface FileRouteTypes {
     | '/api/admin/status'
     | '/api/admin/users'
     | '/api/anniversaries/$id'
+    | '/api/anniversaries/upcoming'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
@@ -707,6 +719,7 @@ export interface FileRouteTypes {
     | '/api/admin/status'
     | '/api/admin/users'
     | '/api/anniversaries/$id'
+    | '/api/anniversaries/upcoming'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
@@ -758,6 +771,7 @@ export interface RootRouteChildren {
   ApiAdminStatusRoute: typeof ApiAdminStatusRoute
   ApiAdminUsersRoute: typeof ApiAdminUsersRoute
   ApiAnniversariesIdRoute: typeof ApiAnniversariesIdRoute
+  ApiAnniversariesUpcomingRoute: typeof ApiAnniversariesUpcomingRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthMeRoute: typeof ApiAuthMeRoute
@@ -1141,6 +1155,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/anniversaries/upcoming': {
+      id: '/api/anniversaries/upcoming'
+      path: '/api/anniversaries/upcoming'
+      fullPath: '/api/anniversaries/upcoming'
+      preLoaderRoute: typeof ApiAnniversariesUpcomingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/anniversaries/$id': {
       id: '/api/anniversaries/$id'
       path: '/api/anniversaries/$id'
@@ -1258,6 +1279,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminStatusRoute: ApiAdminStatusRoute,
   ApiAdminUsersRoute: ApiAdminUsersRoute,
   ApiAnniversariesIdRoute: ApiAnniversariesIdRoute,
+  ApiAnniversariesUpcomingRoute: ApiAnniversariesUpcomingRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthMeRoute: ApiAuthMeRoute,

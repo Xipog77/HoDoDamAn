@@ -200,8 +200,8 @@ const server = createServer(async (req, res) => {
 })
 
 /**
- * Hourly anniversary reminders (from 07:00 Vietnam time). The route records what it
- * sent, so repeated runs on the same day are no-ops.
+ * Hourly check (from 07:00 Vietnam time) that alerts admins about upcoming events;
+ * admins decide what to announce. The route records what it sent, so repeats are no-ops.
  */
 async function runReminders() {
   const vnHour = (new Date().getUTCHours() + 7) % 24
@@ -212,7 +212,7 @@ async function runReminders() {
       headers: { 'x-internal-token': process.env.INTERNAL_CRON_TOKEN },
     }))
     const result = await response.json()
-    if (result.sent) console.log('[Reminders]', result)
+    if (result.alerted) console.log('[Event alerts]', result)
   } catch (err) {
     console.error('[Reminders] Failed:', err.message)
   }

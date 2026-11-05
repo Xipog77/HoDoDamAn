@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { nextOccurrence } from '@/lib/lunar-calendar'
-import { findDueReminders, todayInVietnam } from '@/lib/anniversary-reminders'
+import { describeEvent, findDueReminders, todayInVietnam } from '@/lib/anniversary-reminders'
 
 const base = { type: 'DEATH', isRecurring: true, year: null, personId: null }
 
@@ -24,15 +24,24 @@ describe('nextOccurrence', () => {
 
 describe('findDueReminders', () => {
   const list = [
-    { ...base, id: 1, title: 'Giỗ cụ A', dateType: 'SOLAR', day: 8, month: 11 },
-    { ...base, id: 2, title: 'Giỗ cụ B', dateType: 'SOLAR', day: 5, month: 11 },
-    { ...base, id: 3, title: 'Giỗ cụ C', dateType: 'SOLAR', day: 6, month: 11 },
-    { ...base, id: 4, title: 'Họp họ 2025', dateType: 'SOLAR', day: 8, month: 11, isRecurring: false, year: 2025 },
+    { ...base, id: 1, title: 'Giỗ cụ A', dateType: 'SOLAR', day: 12, month: 11 }, // 7 days
+    { ...base, id: 2, title: 'Giỗ cụ B', dateType: 'SOLAR', day: 8, month: 11 }, // 3 days
+    { ...base, id: 3, title: 'Giỗ cụ C', dateType: 'SOLAR', day: 6, month: 11 }, // 1 day
+    { ...base, id: 4, title: 'Giỗ cụ D', dateType: 'SOLAR', day: 5, month: 11 }, // today: too late to decide
+    { ...base, id: 5, title: 'Giỗ cụ E', dateType: 'SOLAR', day: 10, month: 11 }, // 5 days
+    { ...base, id: 6, title: 'Họp họ 2025', dateType: 'SOLAR', day: 12, month: 11, isRecurring: false, year: 2025 },
   ]
 
-  it('picks events 3 days ahead and today only', () => {
+  it('alerts admins 7, 3 and 1 days ahead', () => {
     const due = findDueReminders(list, new Date(2026, 10, 5))
-    expect(due.map((d) => [d.anniversary.id, d.daysBefore])).toEqual([[1, 3], [2, 0]])
+    expect(due.map((d) => [d.anniversary.id, d.daysBefore])).toEqual([[1, 7], [2, 3], [3, 1]])
+  })
+})
+
+describe('describeEvent', () => {
+  it('mentions the lunar date and days left', () => {
+    const text = describeEvent({ ...base, id: 1, title: 'cụ Đỗ Văn A', dateType: 'LUNAR', day: 27, month: 9 }, new Date(2026, 10, 5), 3)
+    expect(text).toBe('Giỗ cụ Đỗ Văn A — 5/11/2026 (27/9 âm lịch), còn 3 ngày')
   })
 })
 

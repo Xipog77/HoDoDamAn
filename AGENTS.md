@@ -32,7 +32,7 @@ src/
     background-images.ts # Configurable background image paths for homepage & profiles
     sanitize.ts         # sanitize-html for all rich-text writes (posts, biographies)
     rate-limit.ts       # In-memory limiter for login/register
-    anniversary-reminders.ts # Hourly push/email reminders (3 days before + on the day)
+    anniversary-reminders.ts # Hourly alerts to ADMINS only (7/3/1 days before); admins announce via /admin/notifications
     gedcom.ts           # GEDCOM 5.5.1 export (/api/admin/gedcom)
   server/               # createServerFn helpers used by route loaders (SSR meta)
 
