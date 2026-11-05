@@ -63,6 +63,7 @@ import { Route as ApiAnniversariesIdRouteImport } from './routes/api/anniversari
 import { Route as ApiAdminUsersRouteImport } from './routes/api/admin/users'
 import { Route as ApiAdminStatusRouteImport } from './routes/api/admin/status'
 import { Route as ApiAdminRequestsRouteImport } from './routes/api/admin/requests'
+import { Route as ApiAdminGedcomRouteImport } from './routes/api/admin/gedcom'
 import { Route as ApiAdminFeedbackRouteImport } from './routes/api/admin/feedback'
 import { Route as ApiAdminBackupRouteImport } from './routes/api/admin/backup'
 import { Route as AdminPostsNewRouteImport } from './routes/admin/posts/new'
@@ -342,6 +343,11 @@ const ApiAdminRequestsRoute = ApiAdminRequestsRouteImport.update({
   path: '/api/admin/requests',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminGedcomRoute = ApiAdminGedcomRouteImport.update({
+  id: '/api/admin/gedcom',
+  path: '/api/admin/gedcom',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminFeedbackRoute = ApiAdminFeedbackRouteImport.update({
   id: '/api/admin/feedback',
   path: '/api/admin/feedback',
@@ -388,6 +394,7 @@ export interface FileRoutesByFullPath {
   '/admin/posts/new': typeof AdminPostsNewRoute
   '/api/admin/backup': typeof ApiAdminBackupRoute
   '/api/admin/feedback': typeof ApiAdminFeedbackRoute
+  '/api/admin/gedcom': typeof ApiAdminGedcomRoute
   '/api/admin/requests': typeof ApiAdminRequestsRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
@@ -448,6 +455,7 @@ export interface FileRoutesByTo {
   '/admin/posts/new': typeof AdminPostsNewRoute
   '/api/admin/backup': typeof ApiAdminBackupRoute
   '/api/admin/feedback': typeof ApiAdminFeedbackRoute
+  '/api/admin/gedcom': typeof ApiAdminGedcomRoute
   '/api/admin/requests': typeof ApiAdminRequestsRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
@@ -509,6 +517,7 @@ export interface FileRoutesById {
   '/admin/posts/new': typeof AdminPostsNewRoute
   '/api/admin/backup': typeof ApiAdminBackupRoute
   '/api/admin/feedback': typeof ApiAdminFeedbackRoute
+  '/api/admin/gedcom': typeof ApiAdminGedcomRoute
   '/api/admin/requests': typeof ApiAdminRequestsRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
@@ -571,6 +580,7 @@ export interface FileRouteTypes {
     | '/admin/posts/new'
     | '/api/admin/backup'
     | '/api/admin/feedback'
+    | '/api/admin/gedcom'
     | '/api/admin/requests'
     | '/api/admin/status'
     | '/api/admin/users'
@@ -631,6 +641,7 @@ export interface FileRouteTypes {
     | '/admin/posts/new'
     | '/api/admin/backup'
     | '/api/admin/feedback'
+    | '/api/admin/gedcom'
     | '/api/admin/requests'
     | '/api/admin/status'
     | '/api/admin/users'
@@ -691,6 +702,7 @@ export interface FileRouteTypes {
     | '/admin/posts/new'
     | '/api/admin/backup'
     | '/api/admin/feedback'
+    | '/api/admin/gedcom'
     | '/api/admin/requests'
     | '/api/admin/status'
     | '/api/admin/users'
@@ -741,6 +753,7 @@ export interface RootRouteChildren {
   PostsIndexRoute: typeof PostsIndexRoute
   ApiAdminBackupRoute: typeof ApiAdminBackupRoute
   ApiAdminFeedbackRoute: typeof ApiAdminFeedbackRoute
+  ApiAdminGedcomRoute: typeof ApiAdminGedcomRoute
   ApiAdminRequestsRoute: typeof ApiAdminRequestsRoute
   ApiAdminStatusRoute: typeof ApiAdminStatusRoute
   ApiAdminUsersRoute: typeof ApiAdminUsersRoute
@@ -1156,6 +1169,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminRequestsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/gedcom': {
+      id: '/api/admin/gedcom'
+      path: '/api/admin/gedcom'
+      fullPath: '/api/admin/gedcom'
+      preLoaderRoute: typeof ApiAdminGedcomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/feedback': {
       id: '/api/admin/feedback'
       path: '/api/admin/feedback'
@@ -1233,6 +1253,7 @@ const rootRouteChildren: RootRouteChildren = {
   PostsIndexRoute: PostsIndexRoute,
   ApiAdminBackupRoute: ApiAdminBackupRoute,
   ApiAdminFeedbackRoute: ApiAdminFeedbackRoute,
+  ApiAdminGedcomRoute: ApiAdminGedcomRoute,
   ApiAdminRequestsRoute: ApiAdminRequestsRoute,
   ApiAdminStatusRoute: ApiAdminStatusRoute,
   ApiAdminUsersRoute: ApiAdminUsersRoute,

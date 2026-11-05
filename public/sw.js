@@ -3,7 +3,14 @@
  * Handles background lifecycle and Web Push Notifications for Android (Chrome) & iOS (Safari 16.4+)
  */
 
-const CACHE_NAME = 'dodo-pwa-v1';
+const STATIC_CACHE = 'dodo-static-v2';
+const PAGE_CACHE = 'dodo-pages-v2';
+const API_CACHE = 'dodo-api-v2';
+const CURRENT_CACHES = [STATIC_CACHE, PAGE_CACHE, API_CACHE];
+
+// Read-only data worth having offline (e.g. viewing the tree at the family altar
+// with poor signal). Cached network-first, so online users always get fresh data.
+const OFFLINE_API = [/^\/api\/persons\/tree/, /^\/api\/persons\/\d+$/, /^\/api\/homepage\/data/, /^\/api\/anniversaries/, /^\/api\/posts/];
 
 // 1. Install Event: Skip waiting to activate immediately without waiting for page reload
 self.addEventListener('install', (event) => {
@@ -19,7 +26,7 @@ self.addEventListener('activate', (event) => {
       caches.keys().then((cacheNames) => {
         return Promise.all(
           cacheNames.map((name) => {
-            if (name !== CACHE_NAME) {
+            if (!CURRENT_CACHES.includes(name)) {
               return caches.delete(name);
             }
           })
@@ -28,6 +35,52 @@ self.addEventListener('activate', (event) => {
     ])
   );
 });
+
+// Offline support: hashed assets cache-first, pages and selected API GETs network-first
+self.addEventListener('fetch', (event) => {
+  const request = event.request;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
+  // Cached member data must not outlive the session on a shared phone
+  if (request.method === 'POST' && url.pathname === '/api/auth/logout') {
+    event.waitUntil(caches.delete(API_CACHE));
+    return;
+  }
+  if (request.method !== 'GET') return;
+
+  if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/icons/')) {
+    event.respondWith(cacheFirst(request, STATIC_CACHE));
+  } else if (request.mode === 'navigate') {
+    event.respondWith(networkFirst(request, PAGE_CACHE));
+  } else if (OFFLINE_API.some((re) => re.test(url.pathname))) {
+    event.respondWith(networkFirst(request, API_CACHE));
+  }
+});
+
+async function cacheFirst(request, cacheName) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response.ok) (await caches.open(cacheName)).put(request, response.clone());
+  return response;
+}
+
+async function networkFirst(request, cacheName) {
+  try {
+    const response = await fetch(request);
+    if (response.ok) (await caches.open(cacheName)).put(request, response.clone());
+    return response;
+  } catch (err) {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    if (request.mode === 'navigate') {
+      const home = await caches.match('/');
+      if (home) return home;
+    }
+    throw err;
+  }
+}
 
 // 3. Push Event: Listen for server push messages and show notifications
 self.addEventListener('push', (event) => {

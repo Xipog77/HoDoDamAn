@@ -3,8 +3,27 @@ import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Calendar, User, ArrowLeft, Send, Trash2, Reply, MessageSquare } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
+import { getPostMeta } from '@/server/post-meta'
 
 export const Route = createFileRoute('/posts/$id')({
+  // Link-preview metadata only; the page loads its own data, so never fail rendering over it
+  loader: ({ params }) => getPostMeta({ data: params.id }).catch(() => null),
+  head: ({ loaderData }) => {
+    if (!loaderData) return {}
+    const title = `${loaderData.title} | Tộc Phả Họ Đỗ Đàm An`
+    return {
+      meta: [
+        { title },
+        { name: 'description', content: loaderData.description },
+        { property: 'og:type', content: 'article' },
+        { property: 'og:title', content: loaderData.title },
+        { property: 'og:description', content: loaderData.description },
+        { property: 'og:url', content: loaderData.url },
+        ...(loaderData.image ? [{ property: 'og:image', content: loaderData.image }] : []),
+        { name: 'twitter:card', content: loaderData.image ? 'summary_large_image' : 'summary' },
+      ],
+    }
+  },
   component: PostDetail,
 })
 
