@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 import { broadcastPushNotification } from '@/lib/push-notifications'
 import { db } from '~/db/client'
 import { pushSubscriptions } from '~/db/schema'
@@ -8,8 +8,7 @@ export const Route = createFileRoute('/api/notifications/test-push')({
   server: {
     handlers: {
       GET: async ({ request }: { request: Request }) => {
-        const token = getTokenFromCookies(request.headers.get('cookie'))
-        const payload = token ? await verifyToken(token) : null
+        const payload = await getAuthUser(request)
         if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
           return Response.json({ error: 'Không có quyền' }, { status: 403 })
         }
@@ -17,8 +16,7 @@ export const Route = createFileRoute('/api/notifications/test-push')({
         return Response.json({ subscribersCount: count })
       },
       POST: async ({ request }: { request: Request }) => {
-        const token = getTokenFromCookies(request.headers.get('cookie'))
-        const payload = token ? await verifyToken(token) : null
+        const payload = await getAuthUser(request)
         if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
           return Response.json({ error: 'Không có quyền' }, { status: 403 })
         }

@@ -1,5 +1,6 @@
 import { createServer } from 'node:http'
-import { readFileSync, existsSync, statSync } from 'node:fs'
+import { createReadStream, existsSync, statSync } from 'node:fs'
+import { pipeline } from 'node:stream/promises'
 import { join, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -24,6 +25,30 @@ const MIME_TYPES = {
   '.webm': 'video/webm',
   '.mp4': 'video/mp4',
   '.map': 'application/json',
+  '.pdf': 'application/pdf',
+  '.mp3': 'audio/mpeg',
+  '.m4a': 'audio/mp4',
+  '.avif': 'image/avif',
+}
+
+/**
+ * Stream a file to the response instead of buffering it, so large uploads
+ * (videos, scans) don't block the event loop or spike memory.
+ */
+function sendFile(req, res, filePath, size, headers) {
+  res.writeHead(200, {
+    ...headers,
+    'Content-Length': size,
+    'X-Content-Type-Options': 'nosniff',
+  })
+  if (req.method === 'HEAD') {
+    res.end()
+    return
+  }
+  pipeline(createReadStream(filePath), res).catch((err) => {
+    console.error('Static file error:', err.message)
+    res.destroy()
+  })
 }
 
 // Import the fetch handler from the vite build output
@@ -66,11 +91,7 @@ function tryServeStatic(req, res) {
   }
 
   try {
-    const data = readFileSync(filePath)
-    const headers = {
-      'Content-Type': contentType,
-      'Content-Length': data.length,
-    }
+    const headers = { 'Content-Type': contentType }
 
     if (url.pathname.includes('/assets/')) {
       headers['Cache-Control'] = 'public, max-age=31536000, immutable'
@@ -81,12 +102,7 @@ function tryServeStatic(req, res) {
       headers['Cache-Control'] = 'public, max-age=3600'
     }
 
-    res.writeHead(200, headers)
-    if (isHead) {
-      res.end()
-    } else {
-      res.end(data)
-    }
+    sendFile(req, res, filePath, statSync(filePath).size, headers)
     return true
   } catch {
     return false
@@ -108,13 +124,12 @@ const server = createServer(async (req, res) => {
     if (filePath.startsWith(UPLOADS_DIR) && existsSync(filePath) && statSync(filePath).isFile()) {
       const ext = extname(filePath).toLowerCase()
       const contentType = MIME_TYPES[ext] || 'application/octet-stream'
-      const data = readFileSync(filePath)
-      res.writeHead(200, { 'Content-Type': contentType, 'Content-Length': data.length, 'Cache-Control': 'public, max-age=86400' })
-      if (req.method === 'HEAD') {
-        res.end()
-      } else {
-        res.end(data)
-      }
+      sendFile(req, res, filePath, statSync(filePath).size, {
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=86400',
+        // User uploads never need to run script; sandbox neutralises any HTML/SVG that slipped in
+        'Content-Security-Policy': 'sandbox',
+      })
       return
     }
   }

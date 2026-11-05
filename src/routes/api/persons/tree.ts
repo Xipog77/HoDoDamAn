@@ -1,13 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 
 export const Route = createFileRoute('/api/persons/tree')({
   server: {
     handlers: {
   GET: async ({ request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || (payload.status !== 'ACTIVE' && !['ADMIN', 'SUPER_ADMIN'].includes(payload.role))) {
       return Response.json({ error: 'Bạn cần đăng nhập bằng tài khoản thành viên hoạt động để xem thông tin' }, { status: 403 })
     }

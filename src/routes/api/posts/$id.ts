@@ -2,7 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { posts, users } from '~/db/schema'
 import { eq } from 'drizzle-orm'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
+import { sanitizeRichText } from '@/lib/sanitize'
 
 export const Route = createFileRoute('/api/posts/$id')({
   server: {
@@ -22,8 +23,7 @@ export const Route = createFileRoute('/api/posts/$id')({
   },
 
   DELETE: async ({ params, request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
       return Response.json({ error: 'Không có quyền' }, { status: 403 })
     }
@@ -35,8 +35,7 @@ export const Route = createFileRoute('/api/posts/$id')({
   },
 
   POST: async ({ params, request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
       return Response.json({ error: 'Không có quyền' }, { status: 403 })
     }
@@ -45,7 +44,9 @@ export const Route = createFileRoute('/api/posts/$id')({
       const id = parseInt(params.id)
       if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
       const body = await request.json()
-      const [updated] = await db.update(posts).set({ ...body, updatedAt: new Date() }).where(eq(posts.id, id)).returning()
+      const { id: _id, authorId: _authorId, createdAt: _createdAt, ...fields } = body
+      if (typeof fields.content === 'string') fields.content = sanitizeRichText(fields.content)
+      const [updated] = await db.update(posts).set({ ...fields, updatedAt: new Date() }).where(eq(posts.id, id)).returning()
       const author = await db.query.users.findFirst({ where: eq(users.id, updated.authorId) })
       return Response.json({ post: { ...updated, authorName: author?.displayName || 'Admin' } })
     } catch (e) {

@@ -2,7 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { posts, users } from '~/db/schema'
 import { eq, desc } from 'drizzle-orm'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
+import { sanitizeRichText } from '@/lib/sanitize'
 
 export const Route = createFileRoute('/api/posts/')({
   server: {
@@ -40,15 +41,14 @@ export const Route = createFileRoute('/api/posts/')({
   },
 
   POST: async ({ request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
       return Response.json({ error: 'Không có quyền' }, { status: 403 })
     }
 
     try {
       const body = await request.json()
-      const [post] = await db.insert(posts).values({ ...body, authorId: payload.userId }).returning()
+      const [post] = await db.insert(posts).values({ ...body, content: sanitizeRichText(body.content), authorId: payload.userId }).returning()
       return Response.json({ post }, { status: 201 })
     } catch (e) {
       return Response.json({ error: 'Lỗi server' }, { status: 500 })

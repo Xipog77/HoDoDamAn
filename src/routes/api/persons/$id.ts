@@ -2,8 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { persons, marriages, memoryWall, anniversaries } from '~/db/schema'
 import { eq } from 'drizzle-orm'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 import { syncPersonDeathAnniversary } from '@/lib/sync-anniversaries'
+import { sanitizePersonHtml } from '@/lib/sanitize'
 
 async function updateDescendantsGeneration(parentId: number, parentGeneration: number, visited = new Set<number>()) {
   if (visited.has(parentId)) return
@@ -20,8 +21,7 @@ export const Route = createFileRoute('/api/persons/$id')({
   server: {
     handlers: {
   GET: async ({ params, request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || (payload.status !== 'ACTIVE' && !['ADMIN', 'SUPER_ADMIN'].includes(payload.role))) {
       return Response.json({ error: 'Bạn cần đăng nhập bằng tài khoản thành viên hoạt động để xem thông tin' }, { status: 403 })
     }
@@ -63,8 +63,7 @@ export const Route = createFileRoute('/api/persons/$id')({
   },
 
   POST: async ({ params, request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     const id = parseInt(params.id)
     if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
 
@@ -118,7 +117,7 @@ export const Route = createFileRoute('/api/persons/$id')({
 
       updateData.updatedAt = new Date()
 
-      const updated = await db.update(persons).set(updateData).where(eq(persons.id, id)).returning()
+      const updated = await db.update(persons).set(sanitizePersonHtml(updateData)).where(eq(persons.id, id)).returning()
 
       if (updated[0]) {
         await syncPersonDeathAnniversary(updated[0])
@@ -136,8 +135,7 @@ export const Route = createFileRoute('/api/persons/$id')({
   },
 
   DELETE: async ({ params, request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
       return Response.json({ error: 'Không có quyền truy cập' }, { status: 403 })
     }

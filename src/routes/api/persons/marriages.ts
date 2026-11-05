@@ -2,11 +2,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { marriages } from '~/db/schema'
 import { eq, and } from 'drizzle-orm'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 
 async function isAdmin(request: Request) {
-  const token = getTokenFromCookies(request.headers.get('cookie'))
-  const payload = token ? await verifyToken(token) : null
+  const payload = await getAuthUser(request)
   return !!payload && ['ADMIN', 'SUPER_ADMIN'].includes(payload.role)
 }
 

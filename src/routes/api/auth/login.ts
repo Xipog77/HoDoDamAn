@@ -4,6 +4,11 @@ import { db } from '~/db/client'
 import { users } from '~/db/schema'
 import { eq } from 'drizzle-orm'
 import { signToken, setAuthCookie } from '@/lib/auth'
+import { clientIp, hit, reset, retryAfter, tooManyRequests } from '@/lib/rate-limit'
+
+const WINDOW_MS = 15 * 60 * 1000
+const MAX_FAILURES_PER_ACCOUNT = 10
+const MAX_FAILURES_PER_IP = 30
 
 export const Route = createFileRoute('/api/auth/login')({
   server: {
@@ -17,14 +22,27 @@ export const Route = createFileRoute('/api/auth/login')({
         return Response.json({ error: 'Vui lòng nhập tên đăng nhập và mật khẩu' }, { status: 400 })
       }
 
+      const accountKey = `login:${clientIp(request)}:${String(username).toLowerCase()}`
+      const ipKey = `login-ip:${clientIp(request)}`
+      const wait = Math.max(
+        retryAfter(accountKey, MAX_FAILURES_PER_ACCOUNT),
+        retryAfter(ipKey, MAX_FAILURES_PER_IP),
+      )
+      if (wait > 0) return tooManyRequests(wait)
+      const fail = (response: Response) => {
+        hit(accountKey, WINDOW_MS)
+        hit(ipKey, WINDOW_MS)
+        return response
+      }
+
       const user = await db.query.users.findFirst({ where: eq(users.username, username) })
       if (!user) {
-        return Response.json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' }, { status: 401 })
+        return fail(Response.json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' }, { status: 401 }))
       }
 
       const valid = await bcrypt.compare(password, user.passwordHash)
       if (!valid) {
-        return Response.json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' }, { status: 401 })
+        return fail(Response.json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' }, { status: 401 }))
       }
 
       if (user.status === 'PENDING') {
@@ -47,9 +65,11 @@ export const Route = createFileRoute('/api/auth/login')({
         const { verifyTOTP } = await import('@/lib/totp')
         const isValidOTP = verifyTOTP(code, user.twoFactorSecret || '')
         if (!isValidOTP) {
-          return Response.json({ error: 'Mã xác thực 2FA không chính xác' }, { status: 401 })
+          return fail(Response.json({ error: 'Mã xác thực 2FA không chính xác' }, { status: 401 }))
         }
       }
+
+      reset(accountKey)
 
       const token = await signToken({
         userId: user.id,

@@ -2,14 +2,14 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { editRequests, persons, users } from '~/db/schema'
 import { eq, desc } from 'drizzle-orm'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
+import { sanitizePersonHtml } from '@/lib/sanitize'
 
 export const Route = createFileRoute('/api/admin/requests')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const token = getTokenFromCookies(request.headers.get('cookie'))
-        const payload = token ? await verifyToken(token) : null
+        const payload = await getAuthUser(request)
         if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
           return Response.json({ error: 'Không có quyền truy cập' }, { status: 403 })
         }
@@ -50,8 +50,7 @@ export const Route = createFileRoute('/api/admin/requests')({
       },
 
       POST: async ({ request }) => {
-        const token = getTokenFromCookies(request.headers.get('cookie'))
-        const payload = token ? await verifyToken(token) : null
+        const payload = await getAuthUser(request)
         if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
           return Response.json({ error: 'Không có quyền truy cập' }, { status: 403 })
         }
@@ -86,7 +85,7 @@ export const Route = createFileRoute('/api/admin/requests')({
             if (Object.keys(cleanChanges).length > 0) {
               await db
                 .update(persons)
-                .set({ ...cleanChanges, updatedAt: new Date() })
+                .set({ ...sanitizePersonHtml(cleanChanges), updatedAt: new Date() })
                 .where(eq(persons.id, targetRequest.personId))
             }
 

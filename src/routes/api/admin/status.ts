@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 import { checkDiskSpace } from '@/lib/system'
 
 export const Route = createFileRoute('/api/admin/status')({
@@ -7,8 +7,7 @@ export const Route = createFileRoute('/api/admin/status')({
     handlers: {
       GET: async ({ request }) => {
         // Verify Authentication & Admin Role
-        const token = getTokenFromCookies(request.headers.get('cookie'))
-        const payload = token ? await verifyToken(token) : null
+        const payload = await getAuthUser(request)
         if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
           return Response.json({ error: 'Không có quyền' }, { status: 403 })
         }

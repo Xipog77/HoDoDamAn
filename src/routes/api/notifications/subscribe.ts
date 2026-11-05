@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 import {
   savePushSubscription,
   sendNotificationToSubscription,
@@ -10,8 +10,7 @@ export const Route = createFileRoute('/api/notifications/subscribe')({
     handlers: {
       POST: async ({ request }: { request: Request }) => {
         try {
-          const token = getTokenFromCookies(request.headers.get('cookie'))
-          const payload = token ? await verifyToken(token) : null
+          const payload = await getAuthUser(request)
           const userId = payload ? payload.userId : null
 
           const body = await request.json()

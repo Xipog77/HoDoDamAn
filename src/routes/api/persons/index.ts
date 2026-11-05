@@ -2,15 +2,15 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { persons } from '~/db/schema'
 import { eq } from 'drizzle-orm'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 import { syncPersonDeathAnniversary } from '@/lib/sync-anniversaries'
+import { sanitizePersonHtml } from '@/lib/sanitize'
 
 export const Route = createFileRoute('/api/persons/')({
   server: {
     handlers: {
   GET: async ({ request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || (payload.status !== 'ACTIVE' && !['ADMIN', 'SUPER_ADMIN'].includes(payload.role))) {
       return Response.json({ error: 'Bạn cần đăng nhập bằng tài khoản thành viên hoạt động để xem thông tin' }, { status: 403 })
     }
@@ -37,8 +37,7 @@ export const Route = createFileRoute('/api/persons/')({
   },
 
   POST: async ({ request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
       return Response.json({ error: 'Không có quyền' }, { status: 403 })
     }
@@ -61,7 +60,7 @@ export const Route = createFileRoute('/api/persons/')({
         }
       }
 
-      const [person] = await db.insert(persons).values(body).returning()
+      const [person] = await db.insert(persons).values(sanitizePersonHtml(body)).returning()
       await syncPersonDeathAnniversary(person)
       return Response.json({ person }, { status: 201 })
     } catch (e) {
