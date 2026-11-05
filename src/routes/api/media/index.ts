@@ -1,11 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { media } from '~/db/schema'
-import { desc } from 'drizzle-orm'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { and, desc, eq } from 'drizzle-orm'
+import { getAuthUser } from '@/lib/auth'
 import { checkDiskSpace } from '@/lib/system'
 import * as fs from 'fs'
 import * as path from 'path'
+
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024
+const ALLOWED_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'heic', 'pdf', 'mp4', 'webm', 'mp3', 'm4a'])
+const UPLOAD_TYPES = ['archive', 'background', 'portrait', 'carousel', 'posts', 'others']
 
 export const Route = createFileRoute('/api/media/')({
   server: {
@@ -16,10 +20,14 @@ export const Route = createFileRoute('/api/media/')({
       const personId = url.searchParams.get('personId')
       const postId = url.searchParams.get('postId')
 
-      let allMedia = await db.query.media.findMany({ orderBy: [desc(media.createdAt)] })
+      const filters = []
+      if (personId) filters.push(eq(media.personId, parseInt(personId)))
+      if (postId) filters.push(eq(media.postId, parseInt(postId)))
 
-      if (personId) allMedia = allMedia.filter(m => m.personId === parseInt(personId))
-      if (postId) allMedia = allMedia.filter(m => m.postId === parseInt(postId))
+      const allMedia = await db.query.media.findMany({
+        where: filters.length ? and(...filters) : undefined,
+        orderBy: [desc(media.createdAt)],
+      })
 
       return Response.json({ media: allMedia })
     } catch (e) {
@@ -29,8 +37,7 @@ export const Route = createFileRoute('/api/media/')({
   },
 
   POST: async ({ request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
       return Response.json({ error: 'Không có quyền' }, { status: 403 })
     }
@@ -91,8 +98,19 @@ export const Route = createFileRoute('/api/media/')({
         return `${str}.${ext.toLowerCase()}`
       }
 
+      if (file.size > MAX_UPLOAD_BYTES) {
+        return Response.json({ error: `Tệp quá lớn (tối đa ${MAX_UPLOAD_BYTES / 1024 / 1024} MB)` }, { status: 413 })
+      }
+
       const sanitized = sanitizeFilename(file.name)
       const ext = sanitized.split('.').pop() || 'bin'
+      // Only media/document types: an uploaded .html or .svg would run script on our origin
+      if (!ALLOWED_EXTENSIONS.has(ext)) {
+        return Response.json({ error: `Không hỗ trợ định dạng .${ext}` }, { status: 415 })
+      }
+      if (!UPLOAD_TYPES.includes(type)) {
+        return Response.json({ error: 'Loại tải lên không hợp lệ' }, { status: 400 })
+      }
 
       let finalFilename = sanitized
       if (type === 'portrait' && personId) {
@@ -116,10 +134,7 @@ export const Route = createFileRoute('/api/media/')({
       }
 
       // Map to subfolder
-      let subFolder = 'others'
-      if (['archive', 'background', 'portrait', 'carousel', 'posts'].includes(type)) {
-        subFolder = type
-      }
+      const subFolder = type === 'others' ? 'others' : type
 
       const subfolderPath = path.join(process.cwd(), 'uploads', subFolder)
       if (!fs.existsSync(subfolderPath)) fs.mkdirSync(subfolderPath, { recursive: true })

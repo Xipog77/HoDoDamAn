@@ -51,6 +51,7 @@ import { Route as ApiMemoriesPersonIdRouteImport } from './routes/api/memories/$
 import { Route as ApiMediaIdRouteImport } from './routes/api/media/$id'
 import { Route as ApiHomepageDataRouteImport } from './routes/api/homepage/data'
 import { Route as ApiFundIdRouteImport } from './routes/api/fund/$id'
+import { Route as ApiCronRemindersRouteImport } from './routes/api/cron/reminders'
 import { Route as ApiCommentsIdRouteImport } from './routes/api/comments/$id'
 import { Route as ApiCarouselIdRouteImport } from './routes/api/carousel/$id'
 import { Route as ApiAuthSettingsRouteImport } from './routes/api/auth/settings'
@@ -62,6 +63,7 @@ import { Route as ApiAnniversariesIdRouteImport } from './routes/api/anniversari
 import { Route as ApiAdminUsersRouteImport } from './routes/api/admin/users'
 import { Route as ApiAdminStatusRouteImport } from './routes/api/admin/status'
 import { Route as ApiAdminRequestsRouteImport } from './routes/api/admin/requests'
+import { Route as ApiAdminGedcomRouteImport } from './routes/api/admin/gedcom'
 import { Route as ApiAdminFeedbackRouteImport } from './routes/api/admin/feedback'
 import { Route as ApiAdminBackupRouteImport } from './routes/api/admin/backup'
 import { Route as AdminPostsNewRouteImport } from './routes/admin/posts/new'
@@ -281,6 +283,11 @@ const ApiFundIdRoute = ApiFundIdRouteImport.update({
   path: '/api/fund/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCronRemindersRoute = ApiCronRemindersRouteImport.update({
+  id: '/api/cron/reminders',
+  path: '/api/cron/reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCommentsIdRoute = ApiCommentsIdRouteImport.update({
   id: '/api/comments/$id',
   path: '/api/comments/$id',
@@ -336,6 +343,11 @@ const ApiAdminRequestsRoute = ApiAdminRequestsRouteImport.update({
   path: '/api/admin/requests',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminGedcomRoute = ApiAdminGedcomRouteImport.update({
+  id: '/api/admin/gedcom',
+  path: '/api/admin/gedcom',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminFeedbackRoute = ApiAdminFeedbackRouteImport.update({
   id: '/api/admin/feedback',
   path: '/api/admin/feedback',
@@ -382,6 +394,7 @@ export interface FileRoutesByFullPath {
   '/admin/posts/new': typeof AdminPostsNewRoute
   '/api/admin/backup': typeof ApiAdminBackupRoute
   '/api/admin/feedback': typeof ApiAdminFeedbackRoute
+  '/api/admin/gedcom': typeof ApiAdminGedcomRoute
   '/api/admin/requests': typeof ApiAdminRequestsRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
@@ -393,6 +406,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/settings': typeof ApiAuthSettingsRoute
   '/api/carousel/$id': typeof ApiCarouselIdRoute
   '/api/comments/$id': typeof ApiCommentsIdRoute
+  '/api/cron/reminders': typeof ApiCronRemindersRoute
   '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
@@ -441,6 +455,7 @@ export interface FileRoutesByTo {
   '/admin/posts/new': typeof AdminPostsNewRoute
   '/api/admin/backup': typeof ApiAdminBackupRoute
   '/api/admin/feedback': typeof ApiAdminFeedbackRoute
+  '/api/admin/gedcom': typeof ApiAdminGedcomRoute
   '/api/admin/requests': typeof ApiAdminRequestsRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
@@ -452,6 +467,7 @@ export interface FileRoutesByTo {
   '/api/auth/settings': typeof ApiAuthSettingsRoute
   '/api/carousel/$id': typeof ApiCarouselIdRoute
   '/api/comments/$id': typeof ApiCommentsIdRoute
+  '/api/cron/reminders': typeof ApiCronRemindersRoute
   '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
@@ -501,6 +517,7 @@ export interface FileRoutesById {
   '/admin/posts/new': typeof AdminPostsNewRoute
   '/api/admin/backup': typeof ApiAdminBackupRoute
   '/api/admin/feedback': typeof ApiAdminFeedbackRoute
+  '/api/admin/gedcom': typeof ApiAdminGedcomRoute
   '/api/admin/requests': typeof ApiAdminRequestsRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
@@ -512,6 +529,7 @@ export interface FileRoutesById {
   '/api/auth/settings': typeof ApiAuthSettingsRoute
   '/api/carousel/$id': typeof ApiCarouselIdRoute
   '/api/comments/$id': typeof ApiCommentsIdRoute
+  '/api/cron/reminders': typeof ApiCronRemindersRoute
   '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
@@ -562,6 +580,7 @@ export interface FileRouteTypes {
     | '/admin/posts/new'
     | '/api/admin/backup'
     | '/api/admin/feedback'
+    | '/api/admin/gedcom'
     | '/api/admin/requests'
     | '/api/admin/status'
     | '/api/admin/users'
@@ -573,6 +592,7 @@ export interface FileRouteTypes {
     | '/api/auth/settings'
     | '/api/carousel/$id'
     | '/api/comments/$id'
+    | '/api/cron/reminders'
     | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
@@ -621,6 +641,7 @@ export interface FileRouteTypes {
     | '/admin/posts/new'
     | '/api/admin/backup'
     | '/api/admin/feedback'
+    | '/api/admin/gedcom'
     | '/api/admin/requests'
     | '/api/admin/status'
     | '/api/admin/users'
@@ -632,6 +653,7 @@ export interface FileRouteTypes {
     | '/api/auth/settings'
     | '/api/carousel/$id'
     | '/api/comments/$id'
+    | '/api/cron/reminders'
     | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
@@ -680,6 +702,7 @@ export interface FileRouteTypes {
     | '/admin/posts/new'
     | '/api/admin/backup'
     | '/api/admin/feedback'
+    | '/api/admin/gedcom'
     | '/api/admin/requests'
     | '/api/admin/status'
     | '/api/admin/users'
@@ -691,6 +714,7 @@ export interface FileRouteTypes {
     | '/api/auth/settings'
     | '/api/carousel/$id'
     | '/api/comments/$id'
+    | '/api/cron/reminders'
     | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
@@ -729,6 +753,7 @@ export interface RootRouteChildren {
   PostsIndexRoute: typeof PostsIndexRoute
   ApiAdminBackupRoute: typeof ApiAdminBackupRoute
   ApiAdminFeedbackRoute: typeof ApiAdminFeedbackRoute
+  ApiAdminGedcomRoute: typeof ApiAdminGedcomRoute
   ApiAdminRequestsRoute: typeof ApiAdminRequestsRoute
   ApiAdminStatusRoute: typeof ApiAdminStatusRoute
   ApiAdminUsersRoute: typeof ApiAdminUsersRoute
@@ -740,6 +765,7 @@ export interface RootRouteChildren {
   ApiAuthSettingsRoute: typeof ApiAuthSettingsRoute
   ApiCarouselIdRoute: typeof ApiCarouselIdRoute
   ApiCommentsIdRoute: typeof ApiCommentsIdRoute
+  ApiCronRemindersRoute: typeof ApiCronRemindersRoute
   ApiFundIdRoute: typeof ApiFundIdRoute
   ApiHomepageDataRoute: typeof ApiHomepageDataRoute
   ApiMediaIdRoute: typeof ApiMediaIdRoute
@@ -1059,6 +1085,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFundIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/cron/reminders': {
+      id: '/api/cron/reminders'
+      path: '/api/cron/reminders'
+      fullPath: '/api/cron/reminders'
+      preLoaderRoute: typeof ApiCronRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/comments/$id': {
       id: '/api/comments/$id'
       path: '/api/comments/$id'
@@ -1134,6 +1167,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/requests'
       fullPath: '/api/admin/requests'
       preLoaderRoute: typeof ApiAdminRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/gedcom': {
+      id: '/api/admin/gedcom'
+      path: '/api/admin/gedcom'
+      fullPath: '/api/admin/gedcom'
+      preLoaderRoute: typeof ApiAdminGedcomRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/feedback': {
@@ -1213,6 +1253,7 @@ const rootRouteChildren: RootRouteChildren = {
   PostsIndexRoute: PostsIndexRoute,
   ApiAdminBackupRoute: ApiAdminBackupRoute,
   ApiAdminFeedbackRoute: ApiAdminFeedbackRoute,
+  ApiAdminGedcomRoute: ApiAdminGedcomRoute,
   ApiAdminRequestsRoute: ApiAdminRequestsRoute,
   ApiAdminStatusRoute: ApiAdminStatusRoute,
   ApiAdminUsersRoute: ApiAdminUsersRoute,
@@ -1224,6 +1265,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthSettingsRoute: ApiAuthSettingsRoute,
   ApiCarouselIdRoute: ApiCarouselIdRoute,
   ApiCommentsIdRoute: ApiCommentsIdRoute,
+  ApiCronRemindersRoute: ApiCronRemindersRoute,
   ApiFundIdRoute: ApiFundIdRoute,
   ApiHomepageDataRoute: ApiHomepageDataRoute,
   ApiMediaIdRoute: ApiMediaIdRoute,

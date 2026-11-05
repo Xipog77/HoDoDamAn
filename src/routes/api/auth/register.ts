@@ -3,12 +3,18 @@ import bcrypt from 'bcryptjs'
 import { db } from '~/db/client'
 import { users } from '~/db/schema'
 import { eq } from 'drizzle-orm'
+import { clientIp, hit, retryAfter, tooManyRequests } from '@/lib/rate-limit'
 
 
 export const Route = createFileRoute('/api/auth/register')({
   server: {
     handlers: {
   POST: async ({ request }) => {
+    const ipKey = `register:${clientIp(request)}`
+    const wait = retryAfter(ipKey, 5)
+    if (wait > 0) return tooManyRequests(wait)
+    hit(ipKey, 60 * 60 * 1000)
+
     try {
       const body = await request.json()
       const { username, displayName, password } = body

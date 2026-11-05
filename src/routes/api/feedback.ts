@@ -1,15 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { systemFeedbacks } from '~/db/schema'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 
 export const Route = createFileRoute('/api/feedback')({
   server: {
     handlers: {
       POST: async ({ request }) => {
         // Verify Authentication
-        const token = getTokenFromCookies(request.headers.get('cookie'))
-        const payload = token ? await verifyToken(token) : null
+        const payload = await getAuthUser(request)
         if (!payload) {
           return Response.json({ error: 'Bạn phải đăng nhập để gửi góp ý' }, { status: 401 })
         }

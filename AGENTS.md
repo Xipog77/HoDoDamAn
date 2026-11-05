@@ -30,6 +30,11 @@ src/
     auth.ts             # JWT sign/verify, cookie helpers
     lunar-calendar.ts   # Vietnamese lunar calendar utilities, anniversary detection
     background-images.ts # Configurable background image paths for homepage & profiles
+    sanitize.ts         # sanitize-html for all rich-text writes (posts, biographies)
+    rate-limit.ts       # In-memory limiter for login/register
+    anniversary-reminders.ts # Hourly push/email reminders (3 days before + on the day)
+    gedcom.ts           # GEDCOM 5.5.1 export (/api/admin/gedcom)
+  server/               # createServerFn helpers used by route loaders (SSR meta)
 
   components/
     AuthProvider.tsx     # React context for user auth state
@@ -114,6 +119,10 @@ src/
 6. User dropdown shows "Hồ sơ của tôi" link if `personId` is set
 
 ## Coding Conventions
+
+- Auth in API routes: `const payload = await getAuthUser(request)` — it re-reads role/status from the DB; never trust JWT claims alone
+- Rich text stored as HTML must go through `sanitizeRichText`/`sanitizePersonHtml` before insert/update
+- Tests: `npm test` (Vitest, `tests/`); `npm run typecheck`; CI runs both plus the build
 
 - API routes: TanStack Start file routes using `createFileRoute` with `server.handlers` pattern
 - Path aliases: `@/*` → `src/*`, `~/` → project root (for `~/db/client`, `~/db/schema`)

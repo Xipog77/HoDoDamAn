@@ -1,5 +1,8 @@
 import { SignJWT, jwtVerify } from 'jose'
 import type { JWTPayload } from 'jose'
+import { eq } from 'drizzle-orm'
+import { db } from '~/db/client'
+import { users } from '~/db/schema'
 
 // Never fall back to a known secret in production: anyone could forge an ADMIN token
 if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
@@ -48,4 +51,36 @@ export function getTokenFromCookies(cookieHeader: string | null): string | null 
   if (!cookieHeader) return null
   const match = cookieHeader.match(/auth_token=([^;]+)/)
   return match ? match[1] : null
+}
+
+export interface AuthUser {
+  userId: number
+  username: string
+  displayName: string | null
+  role: string
+  status: string
+  personId: number | null
+}
+
+/**
+ * Resolve the current user from the auth cookie, re-reading role/status from the DB
+ * so suspensions and role changes take effect immediately instead of at token expiry.
+ * Returns null for missing/invalid tokens, deleted users and SUSPENDED accounts.
+ */
+export async function getAuthUser(request: Request): Promise<AuthUser | null> {
+  const token = getTokenFromCookies(request.headers.get('cookie'))
+  const payload = token ? await verifyToken(token) : null
+  if (!payload) return null
+
+  const user = await db.query.users.findFirst({ where: eq(users.id, payload.userId) })
+  if (!user || user.status === 'SUSPENDED') return null
+
+  return {
+    userId: user.id,
+    username: user.username,
+    displayName: user.displayName,
+    role: user.role,
+    status: user.status,
+    personId: user.personId,
+  }
 }

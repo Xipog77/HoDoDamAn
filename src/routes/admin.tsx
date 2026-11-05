@@ -81,6 +81,15 @@ function AdminLayout() {
             <Download className="w-4 h-4 text-gold-400 group-hover:scale-110 transition-transform animate-pulse" />
             <span className="group-hover:text-gold-300 transition-colors font-medium">Sao lưu dữ liệu</span>
           </a>
+          <a
+            href="/api/admin/gedcom"
+            download
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-stone-300 hover:text-white hover:bg-wood-700 transition-colors font-sans w-full text-left cursor-pointer group"
+            title="Tệp .ged mở được bằng Gramps, MyHeritage, FamilySearch"
+          >
+            <Download className="w-4 h-4 text-gold-400 group-hover:scale-110 transition-transform" />
+            <span className="group-hover:text-gold-300 transition-colors font-medium">Xuất GEDCOM</span>
+          </a>
         </div>
       </aside>
 

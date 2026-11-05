@@ -1,15 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { memoryWall } from '~/db/schema'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 
 export const Route = createFileRoute('/api/memories/$personId')({
   server: {
     handlers: {
   POST: async ({ params, request }) => {
     try {
-      const token = getTokenFromCookies(request.headers.get('cookie'))
-      const payload = token ? await verifyToken(token) : null
+      const payload = await getAuthUser(request)
 
       const body = await request.json()
       const { authorName, content } = body

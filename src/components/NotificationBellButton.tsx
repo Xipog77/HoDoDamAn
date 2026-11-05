@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { Bell, BellRing, BellOff, Check, AlertCircle, Loader2 } from 'lucide-react'
+import { Bell, BellRing, BellOff, Loader2 } from 'lucide-react'
 
 export function NotificationBellButton() {
   const [isOpen, setIsOpen] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
-  const [permission, setPermission] = useState<string>('default')
+  const [, setPermission] = useState<string>('default')
   const [supported, setSupported] = useState(true)
   const [loading, setLoading] = useState(false)
   const [statusMsg, setStatusMsg] = useState<string | null>(null)

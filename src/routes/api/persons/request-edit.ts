@@ -2,14 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { editRequests, persons } from '~/db/schema'
 import { eq } from 'drizzle-orm'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 
 export const Route = createFileRoute('/api/persons/request-edit')({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const token = getTokenFromCookies(request.headers.get('cookie'))
-        const payload = token ? await verifyToken(token) : null
+        const payload = await getAuthUser(request)
         if (!payload || !['MEMBER', 'ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
           return Response.json({ error: 'Vui lòng đăng nhập để gửi yêu cầu' }, { status: 401 })
         }

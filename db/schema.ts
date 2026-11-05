@@ -8,6 +8,9 @@ import {
   timestamp,
   jsonb,
   pgEnum,
+  index,
+  date,
+  primaryKey,
 } from 'drizzle-orm/pg-core'
 
 export const userRoleEnum = pgEnum('user_role', ['GUEST', 'MEMBER', 'ADMIN', 'SUPER_ADMIN'])
@@ -69,7 +72,10 @@ export const persons = pgTable('persons', {
   extra: jsonb('extra'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+}, (t) => ({
+  fatherIdIdx: index('idx_persons_father_id').on(t.fatherId),
+  motherIdIdx: index('idx_persons_mother_id').on(t.motherId),
+}))
 
 export const marriages = pgTable('marriages', {
   id: serial('id').primaryKey(),
@@ -77,7 +83,10 @@ export const marriages = pgTable('marriages', {
   wifeId: integer('wife_id').notNull(),
   weddingYear: integer('wedding_year'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+}, (t) => ({
+  husbandIdIdx: index('idx_marriages_husband_id').on(t.husbandId),
+  wifeIdIdx: index('idx_marriages_wife_id').on(t.wifeId),
+}))
 
 export const posts = pgTable('posts', {
   id: serial('id').primaryKey(),
@@ -98,7 +107,9 @@ export const postComments = pgTable('post_comments', {
   content: text('content').notNull(),
   parentId: integer('parent_id'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+}, (t) => ({
+  postIdIdx: index('idx_post_comments_post_id').on(t.postId),
+}))
 
 export const galleries = pgTable('galleries', {
   id: serial('id').primaryKey(),
@@ -126,7 +137,9 @@ export const memoryWall = pgTable('memory_wall', {
   authorUserId: integer('author_user_id'),
   content: text('content').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+}, (t) => ({
+  personIdIdx: index('idx_memory_wall_person_id').on(t.personId),
+}))
 
 export const editRequests = pgTable('edit_requests', {
   id: serial('id').primaryKey(),
@@ -136,7 +149,9 @@ export const editRequests = pgTable('edit_requests', {
   status: editRequestStatusEnum('status').notNull().default('PENDING'),
   reviewedBy: integer('reviewed_by'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+}, (t) => ({
+  personIdIdx: index('idx_edit_requests_person_id').on(t.personId),
+}))
 
 export const notifications = pgTable('notifications', {
   id: serial('id').primaryKey(),
@@ -157,7 +172,10 @@ export const media = pgTable('media', {
   caption: text('caption'),
   uploadedBy: integer('uploaded_by'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+}, (t) => ({
+  personIdIdx: index('idx_media_person_id').on(t.personId),
+  postIdIdx: index('idx_media_post_id').on(t.postId),
+}))
 
 export const homeCarouselSlides = pgTable('home_carousel_slides', {
   id: serial('id').primaryKey(),
@@ -185,7 +203,9 @@ export const anniversaries = pgTable('anniversaries', {
   year: integer('year'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+}, (t) => ({
+  personIdIdx: index('idx_anniversaries_person_id').on(t.personId),
+}))
 
 export const systemFeedbacks = pgTable('system_feedbacks', {
   id: serial('id').primaryKey(),
@@ -207,3 +227,13 @@ export const pushSubscriptions = pgTable('push_subscriptions', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
+
+// One row per reminder actually sent, so the hourly job never notifies twice
+export const anniversaryRemindersSent = pgTable('anniversary_reminders_sent', {
+  anniversaryId: integer('anniversary_id').notNull(),
+  occursOn: date('occurs_on').notNull(),
+  daysBefore: integer('days_before').notNull(),
+  sentAt: timestamp('sent_at').notNull().defaultNow(),
+}, (t) => ({
+  pk: primaryKey({ columns: [t.anniversaryId, t.occursOn, t.daysBefore] }),
+}))

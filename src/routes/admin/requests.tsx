@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { FileEdit, Check, X, Clock, ExternalLink, User, Calendar, AlertCircle } from 'lucide-react'
+import { FileEdit, Check, X, Clock, ExternalLink } from 'lucide-react'
 
 export const Route = createFileRoute('/admin/requests')({
   component: AdminRequestsPage,

@@ -1,9 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import * as schema from '~/db/schema'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 import fs from 'fs'
 import path from 'path'
+import os from 'os'
 import { execSync } from 'child_process'
 
 export const Route = createFileRoute('/api/admin/backup')({
@@ -11,8 +12,7 @@ export const Route = createFileRoute('/api/admin/backup')({
     handlers: {
       GET: async ({ request }) => {
         // 1. Verify Authentication & Role
-        const token = getTokenFromCookies(request.headers.get('cookie'))
-        const payload = token ? await verifyToken(token) : null
+        const payload = await getAuthUser(request)
         if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
           return Response.json({ error: 'Không có quyền' }, { status: 403 })
         }
@@ -43,7 +43,11 @@ export const Route = createFileRoute('/api/admin/backup')({
             try {
               // @ts-ignore
               const records = await db.select().from(table.schemaObj)
-              dataBackup[table.name] = records
+              // 2FA secrets are plaintext; never ship them in a downloadable file.
+              // Password hashes stay (bcrypt) so a restore keeps accounts usable.
+              dataBackup[table.name] = table.name === 'users'
+                ? records.map(({ twoFactorSecret: _secret, ...user }: any) => ({ ...user, twoFactorEnabled: false }))
+                : records
             } catch (err: any) {
               console.error(`Error backing up table ${table.name}:`, err.message)
               dataBackup[table.name] = []
@@ -51,11 +55,12 @@ export const Route = createFileRoute('/api/admin/backup')({
           }
 
           // 3. Write database backup JSON to a file
-          const dbBackupPath = path.resolve('backup_db.json')
+          const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'giapha-backup-'))
+          const dbBackupPath = path.join(workDir, 'backup_db.json')
           fs.writeFileSync(dbBackupPath, JSON.stringify(dataBackup, null, 2), 'utf-8')
 
           // 4. Compress database JSON and uploads directory into backup.tar.gz
-          const archivePath = path.resolve('backup.tar.gz')
+          const archivePath = path.join(workDir, 'backup.tar.gz')
           const uploadsPath = path.resolve('uploads')
           
           // Ensure uploads directory exists so tar command doesn't error out
@@ -65,7 +70,7 @@ export const Route = createFileRoute('/api/admin/backup')({
 
           console.log('Compiling tarball archive...')
           // Use standard tar command to create tar.gz archive
-          execSync(`tar -czf "${archivePath}" "backup_db.json" "uploads/"`)
+          execSync(`tar -czf "${archivePath}" -C "${workDir}" backup_db.json -C "${path.dirname(uploadsPath)}" uploads`)
 
           // 5. Send file stream as response
           const fileStream = fs.createReadStream(archivePath)
@@ -73,9 +78,7 @@ export const Route = createFileRoute('/api/admin/backup')({
           // Set hook to delete temp files after client finishes downloading
           fileStream.on('close', () => {
             try {
-              if (fs.existsSync(archivePath)) fs.unlinkSync(archivePath)
-              if (fs.existsSync(dbBackupPath)) fs.unlinkSync(dbBackupPath)
-              console.log('Temporary backup files cleaned up successfully.')
+              fs.rmSync(workDir, { recursive: true, force: true })
             } catch (cleanupErr: any) {
               console.error('Error during backup cleanup:', cleanupErr.message)
             }

@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { media } from '~/db/schema'
 import { eq } from 'drizzle-orm'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -10,8 +10,7 @@ export const Route = createFileRoute('/api/media/$id')({
   server: {
     handlers: {
   DELETE: async ({ params, request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
       return Response.json({ error: 'Không có quyền' }, { status: 403 })
     }
@@ -36,8 +35,7 @@ export const Route = createFileRoute('/api/media/$id')({
     }
   },
   PATCH: async ({ params, request }) => {
-    const token = getTokenFromCookies(request.headers.get('cookie'))
-    const payload = token ? await verifyToken(token) : null
+    const payload = await getAuthUser(request)
     if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
       return Response.json({ error: 'Không có quyền' }, { status: 403 })
     }

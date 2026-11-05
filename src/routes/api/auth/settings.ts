@@ -3,15 +3,14 @@ import bcrypt from 'bcryptjs'
 import { db } from '~/db/client'
 import { users, persons } from '~/db/schema'
 import { eq } from 'drizzle-orm'
-import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+import { getAuthUser } from '@/lib/auth'
 import { generateSecret, verifyTOTP } from '@/lib/totp'
 
 export const Route = createFileRoute('/api/auth/settings')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const token = getTokenFromCookies(request.headers.get('cookie'))
-        const payload = token ? await verifyToken(token) : null
+        const payload = await getAuthUser(request)
         if (!payload) {
           return Response.json({ error: 'Chưa đăng nhập' }, { status: 401 })
         }
@@ -58,8 +57,7 @@ export const Route = createFileRoute('/api/auth/settings')({
       },
 
       POST: async ({ request }) => {
-        const token = getTokenFromCookies(request.headers.get('cookie'))
-        const payload = token ? await verifyToken(token) : null
+        const payload = await getAuthUser(request)
         if (!payload) {
           return Response.json({ error: 'Chưa đăng nhập' }, { status: 401 })
         }
