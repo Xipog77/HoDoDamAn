@@ -3,6 +3,7 @@ import { getAuthUser } from '@/lib/auth'
 import { broadcastPushNotification } from '@/lib/push-notifications'
 import { db } from '~/db/client'
 import { pushSubscriptions } from '~/db/schema'
+import { sql } from 'drizzle-orm'
 
 export const Route = createFileRoute('/api/notifications/test-push')({
   server: {
@@ -12,7 +13,8 @@ export const Route = createFileRoute('/api/notifications/test-push')({
         if (!payload || !['ADMIN', 'SUPER_ADMIN'].includes(payload.role)) {
           return Response.json({ error: 'Không có quyền' }, { status: 403 })
         }
-        const count = await db.$count(pushSubscriptions)
+        // db.$count() only exists in drizzle-orm >= 0.34
+        const [{ count }] = await db.select({ count: sql<number>`count(*)::int` }).from(pushSubscriptions)
         return Response.json({ subscribersCount: count })
       },
       POST: async ({ request }: { request: Request }) => {
