@@ -1,8 +1,13 @@
 import { SignJWT, jwtVerify } from 'jose'
 import type { JWTPayload } from 'jose'
 
+// Never fall back to a known secret in production: anyone could forge an ADMIN token
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+  throw new Error('JWT_SECRET is not set')
+}
+
 const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'gia-pha-viet-nam-secret-key-change-in-production'
+  process.env.JWT_SECRET || 'dev-only-insecure-secret'
 )
 
 export interface TokenPayload extends JWTPayload {

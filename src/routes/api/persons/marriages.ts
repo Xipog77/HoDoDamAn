@@ -2,11 +2,21 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { marriages } from '~/db/schema'
 import { eq, and } from 'drizzle-orm'
+import { getTokenFromCookies, verifyToken } from '@/lib/auth'
+
+async function isAdmin(request: Request) {
+  const token = getTokenFromCookies(request.headers.get('cookie'))
+  const payload = token ? await verifyToken(token) : null
+  return !!payload && ['ADMIN', 'SUPER_ADMIN'].includes(payload.role)
+}
 
 export const Route = createFileRoute('/api/persons/marriages')({
   server: {
     handlers: {
   POST: async ({ request }) => {
+    if (!(await isAdmin(request))) {
+      return Response.json({ error: 'Không có quyền' }, { status: 403 })
+    }
     try {
       const data = await request.json()
       const husbandId = parseInt(data.husbandId)
@@ -28,6 +38,9 @@ export const Route = createFileRoute('/api/persons/marriages')({
     }
   },
   DELETE: async ({ request }) => {
+    if (!(await isAdmin(request))) {
+      return Response.json({ error: 'Không có quyền' }, { status: 403 })
+    }
     try {
       const data = await request.json()
       const husbandId = parseInt(data.husbandId)

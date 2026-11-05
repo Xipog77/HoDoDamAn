@@ -4,12 +4,12 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set}
       POSTGRES_DB: familytree
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"   # chỉ truy cập từ chính server (SSH tunnel)
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -31,8 +31,9 @@ services:
     ports:
       - "3005:3000"
     environment:
-      DATABASE_URL: postgres://postgres:postgrespassword@db:5432/familytree
-      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/familytree
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is not set}
+      SECURE_COOKIE: ${SECURE_COOKIE:-true}
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
       SMTP_SECURE: ${SMTP_SECURE}
@@ -61,7 +62,7 @@ services:
     restart: always
     command: tunnel --no-autoupdate run
     environment:
-      - TUNNEL_TOKEN=eyJhIjoiYmE3YTE4NDE3ODNjMzIzOTNhN2RiOWMzNzA3NDViYjIiLCJ0IjoiMGVjMjA1YTYtN2Y4MS00MGJmLTgyOWQtNmExZDUwYzE3NDliIiwicyI6Ik1UTTNOREV5TkdVdE5XVTBPUzAwTWpabUxXRmhOMlF0TmpFellqZGtaakpsWVdKbSJ9
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     deploy:
       resources:
         limits:
