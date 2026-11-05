@@ -170,6 +170,30 @@ export function lunarToSolar(lunarDay: number, lunarMonth: number, year: number,
 }
 
 /**
+ * Next solar date (on or after `from`, time ignored) of a yearly event.
+ * Lunar day 30 falls back to 29 in years where that month is short, as is customary for giỗ.
+ */
+export function nextOccurrence(dateType: string, day: number, month: number, from: Date): Date | null {
+  const start = new Date(from.getFullYear(), from.getMonth(), from.getDate())
+  const year = start.getFullYear()
+
+  if (dateType !== 'LUNAR') {
+    for (const y of [year, year + 1]) {
+      const date = new Date(y, month - 1, day)
+      if (date.getMonth() === month - 1 && date >= start) return date
+    }
+    return null
+  }
+
+  // Lunar month 11-12 of year Y falls in Jan-Feb of Y+1, so start one lunar year back
+  for (const y of [year - 1, year, year + 1]) {
+    const date = lunarToSolar(day, month, y) ?? (day === 30 ? lunarToSolar(29, month, y) : null)
+    if (date && date >= start) return date
+  }
+  return null
+}
+
+/**
  * Return Can Chi string for a year (e.g. 2024 -> 'Giáp Thìn', 2025 -> 'Ất Tỵ', 2026 -> 'Bính Ngọ')
  */
 export function getLunarYear(year: number): string {
@@ -239,16 +263,7 @@ export function getUpcomingDeathAnniversaries(
     const lunarParsed = parseLunarDate(person.dodLunar)
     if (lunarParsed) {
       displayLunarStr = person.dodLunar || formatLunarDate(lunarParsed.day, lunarParsed.month)
-      // Check for current year
-      let sol = lunarToSolar(lunarParsed.day, lunarParsed.month, currentYear)
-      if (sol) {
-        sol.setHours(0, 0, 0, 0)
-        if (sol.getTime() < today.getTime()) {
-          // Has passed this year, get next year's date
-          sol = lunarToSolar(lunarParsed.day, lunarParsed.month, currentYear + 1)
-        }
-        targetSolarDate = sol
-      }
+      targetSolarDate = nextOccurrence('LUNAR', lunarParsed.day, lunarParsed.month, today)
     } else if (person.dod) {
       // 2. Parse solar date of death
       const dodStr = person.dod.trim()

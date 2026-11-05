@@ -51,6 +51,7 @@ import { Route as ApiMemoriesPersonIdRouteImport } from './routes/api/memories/$
 import { Route as ApiMediaIdRouteImport } from './routes/api/media/$id'
 import { Route as ApiHomepageDataRouteImport } from './routes/api/homepage/data'
 import { Route as ApiFundIdRouteImport } from './routes/api/fund/$id'
+import { Route as ApiCronRemindersRouteImport } from './routes/api/cron/reminders'
 import { Route as ApiCommentsIdRouteImport } from './routes/api/comments/$id'
 import { Route as ApiCarouselIdRouteImport } from './routes/api/carousel/$id'
 import { Route as ApiAuthSettingsRouteImport } from './routes/api/auth/settings'
@@ -281,6 +282,11 @@ const ApiFundIdRoute = ApiFundIdRouteImport.update({
   path: '/api/fund/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCronRemindersRoute = ApiCronRemindersRouteImport.update({
+  id: '/api/cron/reminders',
+  path: '/api/cron/reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCommentsIdRoute = ApiCommentsIdRouteImport.update({
   id: '/api/comments/$id',
   path: '/api/comments/$id',
@@ -393,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/settings': typeof ApiAuthSettingsRoute
   '/api/carousel/$id': typeof ApiCarouselIdRoute
   '/api/comments/$id': typeof ApiCommentsIdRoute
+  '/api/cron/reminders': typeof ApiCronRemindersRoute
   '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
@@ -452,6 +459,7 @@ export interface FileRoutesByTo {
   '/api/auth/settings': typeof ApiAuthSettingsRoute
   '/api/carousel/$id': typeof ApiCarouselIdRoute
   '/api/comments/$id': typeof ApiCommentsIdRoute
+  '/api/cron/reminders': typeof ApiCronRemindersRoute
   '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
@@ -512,6 +520,7 @@ export interface FileRoutesById {
   '/api/auth/settings': typeof ApiAuthSettingsRoute
   '/api/carousel/$id': typeof ApiCarouselIdRoute
   '/api/comments/$id': typeof ApiCommentsIdRoute
+  '/api/cron/reminders': typeof ApiCronRemindersRoute
   '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
@@ -573,6 +582,7 @@ export interface FileRouteTypes {
     | '/api/auth/settings'
     | '/api/carousel/$id'
     | '/api/comments/$id'
+    | '/api/cron/reminders'
     | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
@@ -632,6 +642,7 @@ export interface FileRouteTypes {
     | '/api/auth/settings'
     | '/api/carousel/$id'
     | '/api/comments/$id'
+    | '/api/cron/reminders'
     | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
@@ -691,6 +702,7 @@ export interface FileRouteTypes {
     | '/api/auth/settings'
     | '/api/carousel/$id'
     | '/api/comments/$id'
+    | '/api/cron/reminders'
     | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
@@ -740,6 +752,7 @@ export interface RootRouteChildren {
   ApiAuthSettingsRoute: typeof ApiAuthSettingsRoute
   ApiCarouselIdRoute: typeof ApiCarouselIdRoute
   ApiCommentsIdRoute: typeof ApiCommentsIdRoute
+  ApiCronRemindersRoute: typeof ApiCronRemindersRoute
   ApiFundIdRoute: typeof ApiFundIdRoute
   ApiHomepageDataRoute: typeof ApiHomepageDataRoute
   ApiMediaIdRoute: typeof ApiMediaIdRoute
@@ -1059,6 +1072,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFundIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/cron/reminders': {
+      id: '/api/cron/reminders'
+      path: '/api/cron/reminders'
+      fullPath: '/api/cron/reminders'
+      preLoaderRoute: typeof ApiCronRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/comments/$id': {
       id: '/api/comments/$id'
       path: '/api/comments/$id'
@@ -1224,6 +1244,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthSettingsRoute: ApiAuthSettingsRoute,
   ApiCarouselIdRoute: ApiCarouselIdRoute,
   ApiCommentsIdRoute: ApiCommentsIdRoute,
+  ApiCronRemindersRoute: ApiCronRemindersRoute,
   ApiFundIdRoute: ApiFundIdRoute,
   ApiHomepageDataRoute: ApiHomepageDataRoute,
   ApiMediaIdRoute: ApiMediaIdRoute,

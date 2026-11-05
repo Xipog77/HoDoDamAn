@@ -3,19 +3,18 @@ import { db } from '~/db/client'
 import { pushSubscriptions } from '~/db/schema'
 import { eq } from 'drizzle-orm'
 
-export const VAPID_PUBLIC_KEY =
-  process.env.VAPID_PUBLIC_KEY ||
-  'BPqOsqvR2Irtgs4k5bs38UoXBZ4CYdNM9z53Ig-kGq4F8pWz0v2xi156mM1XtXNNPnI0QMUF4iZl9xc8c9yvI8A'
+// Keys come only from the environment; without them push is disabled rather than
+// falling back to a key pair published in the repository.
+export const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || ''
+export const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || ''
+export const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:admin@dodaman.id.vn'
 
-export const VAPID_PRIVATE_KEY =
-  process.env.VAPID_PRIVATE_KEY ||
-  'Xe2Z-5Py-WI_0vzdIi_j6R6Lq64n3Y67gZYbaeEAWMM'
-
-export const VAPID_SUBJECT =
-  process.env.VAPID_SUBJECT || 'mailto:admin@dodaman.id.vn'
-
-// Configure web-push with VAPID details
-webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
+const pushConfigured = !!(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY)
+if (pushConfigured) {
+  webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
+} else {
+  console.warn('[Push] VAPID keys not set; push notifications are disabled')
+}
 
 export interface PushPayload {
   title: string
@@ -151,6 +150,8 @@ export async function broadcastPushNotification(
   payload: PushPayload,
   options?: { targetUserId?: number }
 ) {
+  if (!pushConfigured) return { totalSent: 0, successCount: 0, failureCount: 0 }
+
   let query = db.query.pushSubscriptions.findMany()
   if (options?.targetUserId) {
     query = db.query.pushSubscriptions.findMany({

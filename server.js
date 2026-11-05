@@ -3,6 +3,7 @@ import { createReadStream, existsSync, statSync } from 'node:fs'
 import { pipeline } from 'node:stream/promises'
 import { join, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { randomUUID } from 'node:crypto'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -50,6 +51,9 @@ function sendFile(req, res, filePath, size, headers) {
     res.destroy()
   })
 }
+
+// Shared secret for the in-process reminder job; set before the app reads process.env
+process.env.INTERNAL_CRON_TOKEN ||= randomUUID()
 
 // Import the fetch handler from the vite build output
 const { default: app } = await import('./dist/server/server.js')
@@ -194,6 +198,27 @@ const server = createServer(async (req, res) => {
     res.end('Internal Server Error')
   }
 })
+
+/**
+ * Hourly anniversary reminders (from 07:00 Vietnam time). The route records what it
+ * sent, so repeated runs on the same day are no-ops.
+ */
+async function runReminders() {
+  const vnHour = (new Date().getUTCHours() + 7) % 24
+  if (vnHour < 7) return
+  try {
+    const response = await app.fetch(new Request(`http://localhost:${PORT}/api/cron/reminders`, {
+      method: 'POST',
+      headers: { 'x-internal-token': process.env.INTERNAL_CRON_TOKEN },
+    }))
+    const result = await response.json()
+    if (result.sent) console.log('[Reminders]', result)
+  } catch (err) {
+    console.error('[Reminders] Failed:', err.message)
+  }
+}
+setTimeout(runReminders, 60 * 1000)
+setInterval(runReminders, 60 * 60 * 1000)
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 FamilyTree server running at http://localhost:${PORT}`)
