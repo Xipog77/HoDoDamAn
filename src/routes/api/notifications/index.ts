@@ -32,6 +32,8 @@ function parseFields(body: any) {
   const isActive = audience === 'ALL' && body.showOnHomepage !== false
   if (!sendEmail && !sendPush && !isActive) return { error: 'Chọn ít nhất một kênh gửi' }
 
+  const anniversaryId = Number.isInteger(Number(body.anniversaryId)) && Number(body.anniversaryId) > 0 ? Number(body.anniversaryId) : null
+
   const url = typeof body.url === 'string' && body.url.startsWith('/') ? body.url.slice(0, 500) : null
 
   const mode = ['now', 'schedule', 'draft'].includes(body.mode) ? body.mode : 'now'
@@ -43,7 +45,7 @@ function parseFields(body: any) {
   }
   const status = mode === 'schedule' ? 'SCHEDULED' : 'DRAFT'
 
-  return { mode, values: { title, content, audience, recipientUserIds, sendEmail, sendPush, isActive, url, scheduledAt, status } }
+  return { mode, values: { title, content, anniversaryId, audience, recipientUserIds, sendEmail, sendPush, isActive, url, scheduledAt, status } }
 }
 
 export const Route = createFileRoute('/api/notifications/')({

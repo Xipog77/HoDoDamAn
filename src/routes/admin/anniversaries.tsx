@@ -1,10 +1,15 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState, useMemo } from 'react'
-import { Calendar, Plus, X, Trash2, Search } from 'lucide-react'
+import { Calendar, Plus, X, Trash2, Search, Bell, Clock, CheckCircle2, FileText, AlertTriangle, ExternalLink } from 'lucide-react'
 import { SearchableSelect } from '@/components/SearchableSelect'
 import { lunarToSolar } from '@/lib/lunar-calendar'
 
 export const Route = createFileRoute('/admin/anniversaries')({
+  // ?id=ID opens that event (linked from the notification center)
+  validateSearch: (s: Record<string, unknown>): { id?: number } => {
+    const id = Number(s.id)
+    return { id: Number.isInteger(id) && id > 0 ? id : undefined }
+  },
   component: AdminAnniversaries,
 })
 
@@ -35,10 +40,30 @@ interface Post {
   title: string
 }
 
+interface LinkedNotification {
+  id: number
+  title: string
+  status: string
+  anniversaryId: number | null
+  scheduledAt: string | null
+  sentAt: string | null
+  createdAt: string
+}
+
+const NOTI_STATUS: Record<string, { label: string; cls: string; icon: typeof Clock }> = {
+  DRAFT: { label: 'Nháp', cls: 'text-stone-600 bg-stone-100', icon: FileText },
+  SCHEDULED: { label: 'Hẹn giờ', cls: 'text-sky-700 bg-sky-50', icon: Clock },
+  SENDING: { label: 'Đang gửi', cls: 'text-amber-700 bg-amber-50', icon: Clock },
+  SENT: { label: 'Đã gửi', cls: 'text-emerald-700 bg-emerald-50', icon: CheckCircle2 },
+  FAILED: { label: 'Lỗi', cls: 'text-crimson-700 bg-crimson-50', icon: AlertTriangle },
+}
+
 function AdminAnniversaries() {
   const [events, setEvents] = useState<Anniversary[]>([])
   const [persons, setPersons] = useState<Person[]>([])
   const [posts, setPosts] = useState<Post[]>([])
+  const [linked, setLinked] = useState<LinkedNotification[]>([])
+  const routeSearch = Route.useSearch()
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -64,18 +89,33 @@ function AdminAnniversaries() {
     Promise.all([
       fetch('/api/anniversaries').then(r => r.json()),
       fetch('/api/persons').then(r => r.json()),
-      fetch('/api/posts').then(r => r.json())
+      fetch('/api/posts').then(r => r.json()),
+      fetch('/api/notifications').then(r => r.json()).catch(() => ({})),
     ])
-      .then(([annData, persData, postData]) => {
+      .then(([annData, persData, postData, notiData]) => {
         setEvents(annData.anniversaries || [])
         setPersons(persData.persons || [])
         setPosts(postData.posts || [])
+        setLinked((notiData.notifications || []).filter((n: LinkedNotification) => n.anniversaryId != null))
       })
       .catch(console.error)
       .finally(() => setLoading(false))
   }
 
   useEffect(load, [])
+
+  // Notifications grouped by the event they are linked to
+  const linkedByEvent = useMemo(() => {
+    const m = new Map<number, LinkedNotification[]>()
+    for (const n of linked) m.set(n.anniversaryId!, [...(m.get(n.anniversaryId!) || []), n])
+    return m
+  }, [linked])
+
+  // Deep link from the notification center
+  useEffect(() => {
+    const ev = routeSearch.id ? events.find(e => e.id === routeSearch.id) : undefined
+    if (ev) selectEvent(ev)
+  }, [routeSearch.id, events.length])
 
   const selectEvent = (ev: Anniversary) => {
     setSelectedId(ev.id)
@@ -282,6 +322,11 @@ function AdminAnniversaries() {
                       <span className={`text-[0.6rem] font-medium px-1.5 py-0.5 rounded-full ${typeColor(ev.type)}`}>
                         {typeLabel(ev.type)}
                       </span>
+                      {!!linkedByEvent.get(ev.id)?.length && (
+                        <span className="inline-flex items-center gap-0.5 text-[0.6rem] font-medium px-1.5 py-0.5 rounded-full text-gold-700 bg-gold-50" title="Số thông báo đã gắn">
+                          <Bell className="w-2.5 h-2.5" />{linkedByEvent.get(ev.id)!.length}
+                        </span>
+                      )}
                     </div>
                     <p className={`font-serif font-bold text-sm leading-snug truncate ${selectedId === ev.id ? 'text-gold-800' : 'text-wood-900'}`}>
                       {ev.title}
@@ -330,6 +375,56 @@ function AdminAnniversaries() {
                   </button>
                 )}
               </div>
+
+              {selectedId && (
+                <div className="mb-6 rounded-xl border border-gold-200 bg-gold-50/40 p-4 font-sans">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <h3 className="text-sm font-semibold text-wood-900 flex items-center gap-1.5">
+                      <Bell className="w-4 h-4 text-gold-600" />
+                      Thông báo liên kết ({linkedByEvent.get(selectedId)?.length || 0})
+                    </h3>
+                    <div className="flex gap-2">
+                      <Link
+                        to="/admin/notifications"
+                        search={{ event: selectedId }}
+                        className="text-xs px-3 py-1.5 rounded-lg border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 flex items-center gap-1"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" /> Xem trong trung tâm
+                      </Link>
+                      <Link
+                        to="/admin/notifications"
+                        search={{ newForEvent: selectedId }}
+                        className="text-xs px-3 py-1.5 rounded-lg bg-gold-600 hover:bg-gold-500 text-white flex items-center gap-1"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Tạo thông báo
+                      </Link>
+                    </div>
+                  </div>
+                  {(linkedByEvent.get(selectedId) || []).length === 0 ? (
+                    <p className="text-xs text-stone-500">
+                      Chưa có thông báo nào cho sự kiện này. Bấm “Tạo thông báo” để soạn sẵn nội dung và hẹn gửi trước 3 ngày.
+                    </p>
+                  ) : (
+                    <ul className="space-y-1.5">
+                      {linkedByEvent.get(selectedId)!.map(n => {
+                        const st = NOTI_STATUS[n.status] ?? NOTI_STATUS.DRAFT
+                        const when = n.status === 'SCHEDULED' ? n.scheduledAt : n.sentAt || n.createdAt
+                        return (
+                          <li key={n.id} className="flex items-center gap-2 bg-white rounded-lg border border-stone-100 px-3 py-2">
+                            <span className={`inline-flex items-center gap-1 text-[0.65rem] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap ${st.cls}`}>
+                              <st.icon className="w-3 h-3" />{st.label}
+                            </span>
+                            <span className="flex-1 min-w-0 text-sm text-wood-800 truncate">{n.title}</span>
+                            <span className="text-[0.65rem] text-stone-400 whitespace-nowrap">
+                              {when ? new Date(when).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : ''}
+                            </span>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  )}
+                </div>
+              )}
 
               <form onSubmit={submit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

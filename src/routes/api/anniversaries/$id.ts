@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
-import { anniversaries } from '~/db/schema'
+import { anniversaries, notifications } from '~/db/schema'
 import { eq } from 'drizzle-orm'
 import { getAuthUser } from '@/lib/auth'
 
@@ -16,6 +16,8 @@ export const Route = createFileRoute('/api/anniversaries/$id')({
 
           const id = parseInt(params.id)
           if (isNaN(id)) return Response.json({ error: 'ID không hợp lệ' }, { status: 400 })
+          // Linked notifications stay (they may already be sent); they just lose the event link
+          await db.update(notifications).set({ anniversaryId: null }).where(eq(notifications.anniversaryId, id))
           await db.delete(anniversaries).where(eq(anniversaries.id, id))
           return Response.json({ success: true })
         } catch (e) {

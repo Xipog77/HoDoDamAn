@@ -100,6 +100,8 @@ src/
 
 **notification_deliveries** — One row per email/push attempt (who, channel, status, error)
 
+**Event → notification mapping** — `notifications.anniversary_id` links a notification to an event; `src/lib/event-notification.ts` builds the pre-filled draft (suggested send: 3 days before at 08:00). `/admin/anniversaries` lists linked notifications; `/admin/notifications?event=ID` filters, `?newForEvent=ID` opens a pre-filled form
+
 **anniversaries** — Family events with dual calendar support
 - `dateType`: SOLAR or LUNAR
 - `type`: DEATH | COMMEMORATION | OTHER

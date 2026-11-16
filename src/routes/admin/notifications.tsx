@@ -1,11 +1,20 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import {
   Bell, Plus, X, Trash2, Send, Mail, Home, Smartphone, Clock, FileText, CheckCircle2, AlertTriangle,
-  Users, Globe, Eye, EyeOff, Pencil, Ban, Search, Loader2,
+  Users, Globe, Eye, EyeOff, Pencil, Ban, Search, Loader2, Calendar, Wand2,
 } from 'lucide-react'
+import { SearchableSelect } from '@/components/SearchableSelect'
+import { draftFromEvent, type EventLike } from '@/lib/event-notification'
+
+const toId = (v: unknown) => (Number.isInteger(Number(v)) && Number(v) > 0 ? Number(v) : undefined)
 
 export const Route = createFileRoute('/admin/notifications')({
+  // ?event=ID filters by event; ?newForEvent=ID opens a pre-filled form for that event
+  validateSearch: (s: Record<string, unknown>): { event?: number; newForEvent?: number } => ({
+    event: toId(s.event),
+    newForEvent: toId(s.newForEvent),
+  }),
   component: NotificationCenter,
 })
 
@@ -20,6 +29,7 @@ interface Notification {
   title: string
   content: string
   url: string | null
+  anniversaryId: number | null
   isActive: boolean | null
   kind: 'MANUAL' | 'ACCOUNT' | 'TEST' | string
   audience: 'ALL' | 'USERS' | string
@@ -81,6 +91,7 @@ function toLocalInput(d: Date) {
 }
 
 const EMPTY_FORM = {
+  anniversaryId: null as number | null,
   title: '',
   content: '',
   url: '',
@@ -94,6 +105,20 @@ const EMPTY_FORM = {
 }
 type FormState = typeof EMPTY_FORM
 
+/** New-notification form pre-filled from an event (content, link, suggested schedule). */
+function formFromEvent(ev: EventLike): FormState {
+  const d = draftFromEvent(ev)
+  return {
+    ...EMPTY_FORM,
+    anniversaryId: ev.id,
+    title: d.title,
+    content: d.content,
+    url: d.url,
+    mode: d.scheduledAt ? 'schedule' : 'now',
+    scheduledAt: d.scheduledAt ? toLocalInput(d.scheduledAt) : '',
+  }
+}
+
 function StatusBadge({ status }: { status: string }) {
   const s = STATUS[status] ?? STATUS.DRAFT
   const Icon = s.icon
@@ -106,7 +131,11 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function NotificationCenter() {
+  const search = Route.useSearch()
+  const navigate = Route.useNavigate()
   const [items, setItems] = useState<Notification[]>([])
+  const [events, setEvents] = useState<EventLike[]>([])
+  const [eventFilter, setEventFilter] = useState<'ALL' | 'NONE' | number>(search.event ?? 'ALL')
   const [users, setUsers] = useState<UserOption[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('ALL')
@@ -117,6 +146,7 @@ function NotificationCenter() {
   const [subscribersCount, setSubscribersCount] = useState<number | null>(null)
 
   const userName = useMemo(() => new Map(users.map(u => [u.id, u.displayName])), [users])
+  const eventById = useMemo(() => new Map(events.map(e => [e.id, e])), [events])
 
   const load = () => {
     fetch('/api/notifications')
@@ -133,10 +163,19 @@ function NotificationCenter() {
   useEffect(() => {
     load()
     fetch('/api/admin/users').then(r => r.json()).then(d => setUsers(d.users || [])).catch(console.error)
+    fetch('/api/anniversaries').then(r => r.json()).then(d => setEvents(d.anniversaries || [])).catch(console.error)
     // Keep scheduled → sent transitions visible without a manual refresh
     const t = setInterval(load, 30_000)
     return () => clearInterval(t)
   }, [])
+
+  // Opened from the event page with ?newForEvent=ID: show the pre-filled form once events are loaded
+  useEffect(() => {
+    if (!search.newForEvent || !events.length) return
+    const ev = eventById.get(search.newForEvent)
+    if (ev) setEditing({ id: null, form: formFromEvent(ev) })
+    navigate({ search: { event: search.event }, replace: true })
+  }, [search.newForEvent, events.length])
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { ALL: items.length, SYSTEM: 0 }
@@ -149,6 +188,7 @@ function NotificationCenter() {
 
   const visible = items.filter(n => {
     if (filter === 'SYSTEM' ? n.kind === 'MANUAL' : filter !== 'ALL' && n.status !== filter) return false
+    if (eventFilter === 'NONE' ? n.anniversaryId != null : eventFilter !== 'ALL' && n.anniversaryId !== eventFilter) return false
     if (!query) return true
     const q = query.toLowerCase()
     return n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q)
@@ -186,6 +226,7 @@ function NotificationCenter() {
     setEditing({
       id: n.id,
       form: {
+        anniversaryId: n.anniversaryId,
         title: n.title,
         content: n.content,
         url: n.url || '',
@@ -266,7 +307,20 @@ function NotificationCenter() {
             </button>
           ))}
         </div>
-        <div className="relative sm:ml-auto sm:w-64">
+        <select
+          value={String(eventFilter)}
+          onChange={e => {
+            const v = e.target.value
+            setEventFilter(v === 'ALL' || v === 'NONE' ? v : Number(v))
+          }}
+          className="sm:ml-auto sm:w-56 px-3 py-2 border border-stone-200 rounded-lg text-sm font-sans bg-white outline-none focus:ring-2 focus:ring-gold-300"
+          aria-label="Lọc theo sự kiện"
+        >
+          <option value="ALL">Mọi sự kiện</option>
+          <option value="NONE">Không gắn sự kiện</option>
+          {events.map(e => <option key={e.id} value={e.id}>{e.title}</option>)}
+        </select>
+        <div className="relative sm:w-64">
           <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             value={query}
@@ -292,6 +346,16 @@ function NotificationCenter() {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-1.5 mb-1">
                     <StatusBadge status={n.status} />
+                    {n.anniversaryId && (
+                      <button
+                        onClick={() => setEventFilter(n.anniversaryId!)}
+                        title="Lọc các thông báo của sự kiện này"
+                        className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-crimson-50 text-crimson-700 border border-crimson-200 font-semibold max-w-[14rem]"
+                      >
+                        <Calendar className="w-3 h-3 flex-shrink-0" />
+                        <span className="truncate">{eventById.get(n.anniversaryId)?.title ?? `Sự kiện #${n.anniversaryId}`}</span>
+                      </button>
+                    )}
                     {n.kind !== 'MANUAL' && (
                       <span className="text-[11px] px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200 font-semibold">
                         {KIND[n.kind] || n.kind}
@@ -369,6 +433,7 @@ function NotificationCenter() {
           id={editing.id}
           initial={editing.form}
           users={users}
+          events={events}
           onClose={() => setEditing(null)}
           onSaved={text => {
             setEditing(null)
@@ -378,7 +443,7 @@ function NotificationCenter() {
         />
       )}
 
-      {detailId !== null && <NotificationDetail id={detailId} onClose={() => setDetailId(null)} />}
+      {detailId !== null && <NotificationDetail id={detailId} eventById={eventById} onClose={() => setDetailId(null)} />}
     </div>
   )
 }
@@ -415,10 +480,11 @@ function Sheet({ title, onClose, children }: { title: string; onClose: () => voi
   )
 }
 
-function NotificationForm({ id, initial, users, onClose, onSaved }: {
+function NotificationForm({ id, initial, users, events, onClose, onSaved }: {
   id: number | null
   initial: FormState
   users: UserOption[]
+  events: EventLike[]
   onClose: () => void
   onSaved: (text: string) => void
 }) {
@@ -431,6 +497,34 @@ function NotificationForm({ id, initial, users, onClose, onSaved }: {
   const pickable = users
     .filter(u => u.status === 'ACTIVE' || form.recipientUserIds.includes(u.id))
     .filter(u => !userQuery || `${u.displayName} ${u.username} ${u.email || ''}`.toLowerCase().includes(userQuery.toLowerCase()))
+
+  const eventOptions = useMemo(() => events.map(e => ({
+    value: e.id,
+    label: `${e.title} (${e.day}/${e.month} ${e.dateType === 'LUNAR' ? 'ÂL' : 'DL'})`,
+  })), [events])
+
+  // Keep who/how it is sent; take title, content, link and suggested time from the event
+  const withEvent = (ev: EventLike, f: FormState): FormState => ({
+    ...formFromEvent(ev),
+    audience: f.audience,
+    recipientUserIds: f.recipientUserIds,
+    sendEmail: f.sendEmail,
+    sendPush: f.sendPush,
+    showOnHomepage: f.showOnHomepage,
+  })
+
+  const pickEvent = (v: string | number) => {
+    const ev = events.find(e => e.id === Number(v))
+    if (!ev) return set('anniversaryId', null)
+    // Fill the content automatically only while the form is still blank
+    if (!form.title.trim() && !form.content.trim()) setForm(f => withEvent(ev, f))
+    else set('anniversaryId', ev.id)
+  }
+
+  const fillFromEvent = () => {
+    const ev = events.find(e => e.id === form.anniversaryId)
+    if (ev) setForm(f => withEvent(ev, f))
+  }
 
   const toggleUser = (uid: number) =>
     set('recipientUserIds', form.recipientUserIds.includes(uid) ? form.recipientUserIds.filter(x => x !== uid) : [...form.recipientUserIds, uid])
@@ -474,6 +568,33 @@ function NotificationForm({ id, initial, users, onClose, onSaved }: {
   return (
     <Sheet title={id ? 'Sửa thông báo' : 'Tạo thông báo'} onClose={onClose}>
       <form onSubmit={submit} className="space-y-5 font-sans">
+        <div>
+          <label className={label}>Sự kiện liên quan (tuỳ chọn)</label>
+          <div className="flex gap-2">
+            <div className="flex-1 min-w-0">
+              <SearchableSelect
+                options={eventOptions}
+                value={form.anniversaryId ?? ''}
+                onChange={pickEvent}
+                placeholder="Không gắn sự kiện"
+              />
+            </div>
+            {form.anniversaryId && (
+              <>
+                <button type="button" onClick={fillFromEvent} title="Điền tiêu đề, nội dung và giờ gửi gợi ý theo sự kiện"
+                  className="px-3 rounded-xl border border-gold-300 text-gold-700 hover:bg-gold-50 flex items-center gap-1 text-xs font-medium whitespace-nowrap">
+                  <Wand2 className="w-3.5 h-3.5" /> Điền
+                </button>
+                <button type="button" onClick={() => set('anniversaryId', null)} title="Bỏ gắn sự kiện" aria-label="Bỏ gắn sự kiện"
+                  className="px-2.5 rounded-xl border border-stone-200 text-stone-400 hover:text-stone-600">
+                  <X className="w-4 h-4" />
+                </button>
+              </>
+            )}
+          </div>
+          <p className="text-[11px] text-stone-400 mt-1">Gắn sự kiện để quản lý thông báo theo từng ngày giỗ/sự kiện. Gợi ý gửi trước 3 ngày lúc 8:00.</p>
+        </div>
+
         <div>
           <label className={label}>Tiêu đề *</label>
           <input required maxLength={300} value={form.title} onChange={e => set('title', e.target.value)} className={input} />
@@ -578,7 +699,7 @@ function NotificationForm({ id, initial, users, onClose, onSaved }: {
   )
 }
 
-function NotificationDetail({ id, onClose }: { id: number; onClose: () => void }) {
+function NotificationDetail({ id, eventById, onClose }: { id: number; eventById: Map<number, EventLike>; onClose: () => void }) {
   const [data, setData] = useState<{ notification: Notification; recipients: UserOption[]; deliveries: Delivery[]; createdByName: string | null } | null>(null)
   const [channel, setChannel] = useState<'ALL' | 'EMAIL' | 'PUSH'>('ALL')
 
@@ -617,6 +738,17 @@ function NotificationDetail({ id, onClose }: { id: number; onClose: () => void }
               <dt className="text-[11px] text-stone-400 uppercase">{n.status === 'SCHEDULED' ? 'Hẹn gửi lúc' : 'Gửi lúc'}</dt>
               <dd className="text-wood-800">{fmt(n.status === 'SCHEDULED' ? n.scheduledAt : n.sentAt) || '—'}</dd>
             </div>
+            {n.anniversaryId && (
+              <div className="sm:col-span-2">
+                <dt className="text-[11px] text-stone-400 uppercase">Sự kiện</dt>
+                <dd>
+                  <Link to="/admin/anniversaries" search={{ id: n.anniversaryId }} className="text-crimson-700 hover:underline inline-flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {eventById.get(n.anniversaryId)?.title ?? `Sự kiện #${n.anniversaryId} (đã xoá)`}
+                  </Link>
+                </dd>
+              </div>
+            )}
             {n.url && <div className="sm:col-span-2"><dt className="text-[11px] text-stone-400 uppercase">Liên kết</dt><dd className="text-wood-800 break-all">{n.url}</dd></div>}
           </dl>
 

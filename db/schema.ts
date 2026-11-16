@@ -171,6 +171,8 @@ export const notifications = pgTable('notifications', {
   sendEmail: boolean('send_email').notNull().default(false),
   sendPush: boolean('send_push').notNull().default(false),
   url: varchar('url', { length: 500 }),
+  /** Optional link to the family event (anniversaries.id) this notification is about */
+  anniversaryId: integer('anniversary_id'),
   /** DRAFT | SCHEDULED | SENDING | SENT | FAILED */
   status: varchar('status', { length: 20 }).notNull().default('SENT'),
   scheduledAt: timestamp('scheduled_at'),
@@ -181,6 +183,7 @@ export const notifications = pgTable('notifications', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (t) => ({
   statusScheduledIdx: index('idx_notifications_status_scheduled').on(t.status, t.scheduledAt),
+  anniversaryIdx: index('idx_notifications_anniversary_id').on(t.anniversaryId),
 }))
 
 /** One row per attempted email / push, so admins can see exactly who received what */
