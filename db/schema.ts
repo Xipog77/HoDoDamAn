@@ -163,7 +163,7 @@ export const notifications = pgTable('notifications', {
   content: text('content').notNull(),
   /** Shown on the public homepage (only once status = SENT) */
   isActive: boolean('is_active').default(true),
-  /** MANUAL (admin-written) | ACCOUNT (new-account email) | TEST (test push) */
+  /** MANUAL (admin-written) | ACCOUNT (new-account email) | TEST (legacy test push) */
   kind: varchar('kind', { length: 20 }).notNull().default('MANUAL'),
   /** ALL active members / devices, or only recipientUserIds */
   audience: varchar('audience', { length: 10 }).notNull().default('ALL'),

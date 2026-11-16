@@ -60,6 +60,7 @@ const STATUS: Record<string, { label: string; cls: string; icon: typeof Clock }>
   FAILED: { label: 'Lỗi', cls: 'bg-crimson-50 text-crimson-700 border-crimson-200', icon: AlertTriangle },
 }
 
+// TEST rows are kept only for history from the removed test-push button
 const KIND: Record<string, string> = { MANUAL: 'Thông báo', ACCOUNT: 'Email tài khoản', TEST: 'Thử push' }
 
 const FILTERS = [
@@ -114,7 +115,6 @@ function NotificationCenter() {
   const [detailId, setDetailId] = useState<number | null>(null)
   const [toast, setToast] = useState<{ ok: boolean; text: string } | null>(null)
   const [subscribersCount, setSubscribersCount] = useState<number | null>(null)
-  const [testingPush, setTestingPush] = useState(false)
 
   const userName = useMemo(() => new Map(users.map(u => [u.id, u.displayName])), [users])
 
@@ -124,7 +124,7 @@ function NotificationCenter() {
       .then(d => setItems(d.notifications || []))
       .catch(console.error)
       .finally(() => setLoading(false))
-    fetch('/api/notifications/test-push')
+    fetch('/api/notifications/push-stats')
       .then(r => r.json())
       .then(d => d.subscribersCount !== undefined && setSubscribersCount(d.subscribersCount))
       .catch(console.error)
@@ -180,28 +180,6 @@ function NotificationCenter() {
       if (detailId === id) setDetailId(null)
     } else flash(false, 'Lỗi khi xóa thông báo')
     load()
-  }
-
-  const handleTestPush = async () => {
-    setTestingPush(true)
-    try {
-      const res = await fetch('/api/notifications/test-push', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'Họ Đỗ Đàm An (Thử nghiệm)',
-          body: 'Thông báo đẩy PWA hoạt động trên thiết bị của bạn! 🎉',
-        }),
-      })
-      const d = await res.json()
-      if (d.success) flash(true, `Đã gửi thử tới ${d.totalSent} thiết bị (${d.successCount} thành công, ${d.failureCount} lỗi).`)
-      else flash(false, d.error || 'Lỗi gửi thông báo thử.')
-      load()
-    } catch {
-      flash(false, 'Lỗi kết nối máy chủ.')
-    } finally {
-      setTestingPush(false)
-    }
   }
 
   const openEdit = (n: Notification) => {
@@ -263,7 +241,7 @@ function NotificationCenter() {
       </div>
 
       {/* Push status */}
-      <div className="bg-gradient-to-r from-wood-900 to-wood-950 border border-gold-500/30 rounded-2xl p-4 mb-5 text-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-sans">
+      <div className="bg-gradient-to-r from-wood-900 to-wood-950 border border-gold-500/30 rounded-2xl p-4 mb-5 text-stone-200 flex items-center gap-3 font-sans">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/30 flex items-center justify-center text-gold-400 flex-shrink-0">
             <Smartphone className="w-5 h-5" />
@@ -273,14 +251,6 @@ function NotificationCenter() {
             <strong className="text-gold-300">{subscribersCount ?? '...'}</strong> thiết bị đang bật nhận thông báo đẩy
           </p>
         </div>
-        <button
-          onClick={handleTestPush}
-          disabled={testingPush}
-          className="self-start sm:self-auto bg-gold-600/90 hover:bg-gold-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-gold-400/30 transition-all flex items-center gap-2 disabled:opacity-50"
-        >
-          <Send className="w-3.5 h-3.5" />
-          {testingPush ? 'Đang gửi...' : 'Gửi thử tới mọi thiết bị'}
-        </button>
       </div>
 
       {/* Filters */}

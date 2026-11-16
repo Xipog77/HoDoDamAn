@@ -45,8 +45,8 @@ import { Route as ApiPersonsMarriagesRouteImport } from './routes/api/persons/ma
 import { Route as ApiPersonsIdRouteImport } from './routes/api/persons/$id'
 import { Route as ApiNotificationsVapidKeyRouteImport } from './routes/api/notifications/vapid-key'
 import { Route as ApiNotificationsUnsubscribeRouteImport } from './routes/api/notifications/unsubscribe'
-import { Route as ApiNotificationsTestPushRouteImport } from './routes/api/notifications/test-push'
 import { Route as ApiNotificationsSubscribeRouteImport } from './routes/api/notifications/subscribe'
+import { Route as ApiNotificationsPushStatsRouteImport } from './routes/api/notifications/push-stats'
 import { Route as ApiNotificationsDispatchDueRouteImport } from './routes/api/notifications/dispatch-due'
 import { Route as ApiNotificationsIdRouteImport } from './routes/api/notifications/$id'
 import { Route as ApiMemoriesPersonIdRouteImport } from './routes/api/memories/$personId'
@@ -252,16 +252,16 @@ const ApiNotificationsUnsubscribeRoute =
     path: '/api/notifications/unsubscribe',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiNotificationsTestPushRoute =
-  ApiNotificationsTestPushRouteImport.update({
-    id: '/api/notifications/test-push',
-    path: '/api/notifications/test-push',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiNotificationsSubscribeRoute =
   ApiNotificationsSubscribeRouteImport.update({
     id: '/api/notifications/subscribe',
     path: '/api/notifications/subscribe',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiNotificationsPushStatsRoute =
+  ApiNotificationsPushStatsRouteImport.update({
+    id: '/api/notifications/push-stats',
+    path: '/api/notifications/push-stats',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiNotificationsDispatchDueRoute =
@@ -419,8 +419,8 @@ export interface FileRoutesByFullPath {
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
   '/api/notifications/$id': typeof ApiNotificationsIdRoute
   '/api/notifications/dispatch-due': typeof ApiNotificationsDispatchDueRoute
+  '/api/notifications/push-stats': typeof ApiNotificationsPushStatsRoute
   '/api/notifications/subscribe': typeof ApiNotificationsSubscribeRoute
-  '/api/notifications/test-push': typeof ApiNotificationsTestPushRoute
   '/api/notifications/unsubscribe': typeof ApiNotificationsUnsubscribeRoute
   '/api/notifications/vapid-key': typeof ApiNotificationsVapidKeyRoute
   '/api/persons/$id': typeof ApiPersonsIdRoute
@@ -481,8 +481,8 @@ export interface FileRoutesByTo {
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
   '/api/notifications/$id': typeof ApiNotificationsIdRoute
   '/api/notifications/dispatch-due': typeof ApiNotificationsDispatchDueRoute
+  '/api/notifications/push-stats': typeof ApiNotificationsPushStatsRoute
   '/api/notifications/subscribe': typeof ApiNotificationsSubscribeRoute
-  '/api/notifications/test-push': typeof ApiNotificationsTestPushRoute
   '/api/notifications/unsubscribe': typeof ApiNotificationsUnsubscribeRoute
   '/api/notifications/vapid-key': typeof ApiNotificationsVapidKeyRoute
   '/api/persons/$id': typeof ApiPersonsIdRoute
@@ -544,8 +544,8 @@ export interface FileRoutesById {
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
   '/api/notifications/$id': typeof ApiNotificationsIdRoute
   '/api/notifications/dispatch-due': typeof ApiNotificationsDispatchDueRoute
+  '/api/notifications/push-stats': typeof ApiNotificationsPushStatsRoute
   '/api/notifications/subscribe': typeof ApiNotificationsSubscribeRoute
-  '/api/notifications/test-push': typeof ApiNotificationsTestPushRoute
   '/api/notifications/unsubscribe': typeof ApiNotificationsUnsubscribeRoute
   '/api/notifications/vapid-key': typeof ApiNotificationsVapidKeyRoute
   '/api/persons/$id': typeof ApiPersonsIdRoute
@@ -608,8 +608,8 @@ export interface FileRouteTypes {
     | '/api/memories/$personId'
     | '/api/notifications/$id'
     | '/api/notifications/dispatch-due'
+    | '/api/notifications/push-stats'
     | '/api/notifications/subscribe'
-    | '/api/notifications/test-push'
     | '/api/notifications/unsubscribe'
     | '/api/notifications/vapid-key'
     | '/api/persons/$id'
@@ -670,8 +670,8 @@ export interface FileRouteTypes {
     | '/api/memories/$personId'
     | '/api/notifications/$id'
     | '/api/notifications/dispatch-due'
+    | '/api/notifications/push-stats'
     | '/api/notifications/subscribe'
-    | '/api/notifications/test-push'
     | '/api/notifications/unsubscribe'
     | '/api/notifications/vapid-key'
     | '/api/persons/$id'
@@ -732,8 +732,8 @@ export interface FileRouteTypes {
     | '/api/memories/$personId'
     | '/api/notifications/$id'
     | '/api/notifications/dispatch-due'
+    | '/api/notifications/push-stats'
     | '/api/notifications/subscribe'
-    | '/api/notifications/test-push'
     | '/api/notifications/unsubscribe'
     | '/api/notifications/vapid-key'
     | '/api/persons/$id'
@@ -784,8 +784,8 @@ export interface RootRouteChildren {
   ApiMemoriesPersonIdRoute: typeof ApiMemoriesPersonIdRoute
   ApiNotificationsIdRoute: typeof ApiNotificationsIdRoute
   ApiNotificationsDispatchDueRoute: typeof ApiNotificationsDispatchDueRoute
+  ApiNotificationsPushStatsRoute: typeof ApiNotificationsPushStatsRoute
   ApiNotificationsSubscribeRoute: typeof ApiNotificationsSubscribeRoute
-  ApiNotificationsTestPushRoute: typeof ApiNotificationsTestPushRoute
   ApiNotificationsUnsubscribeRoute: typeof ApiNotificationsUnsubscribeRoute
   ApiNotificationsVapidKeyRoute: typeof ApiNotificationsVapidKeyRoute
   ApiPersonsIdRoute: typeof ApiPersonsIdRoute
@@ -1057,18 +1057,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiNotificationsUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/notifications/test-push': {
-      id: '/api/notifications/test-push'
-      path: '/api/notifications/test-push'
-      fullPath: '/api/notifications/test-push'
-      preLoaderRoute: typeof ApiNotificationsTestPushRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/notifications/subscribe': {
       id: '/api/notifications/subscribe'
       path: '/api/notifications/subscribe'
       fullPath: '/api/notifications/subscribe'
       preLoaderRoute: typeof ApiNotificationsSubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notifications/push-stats': {
+      id: '/api/notifications/push-stats'
+      path: '/api/notifications/push-stats'
+      fullPath: '/api/notifications/push-stats'
+      preLoaderRoute: typeof ApiNotificationsPushStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/notifications/dispatch-due': {
@@ -1292,8 +1292,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiMemoriesPersonIdRoute: ApiMemoriesPersonIdRoute,
   ApiNotificationsIdRoute: ApiNotificationsIdRoute,
   ApiNotificationsDispatchDueRoute: ApiNotificationsDispatchDueRoute,
+  ApiNotificationsPushStatsRoute: ApiNotificationsPushStatsRoute,
   ApiNotificationsSubscribeRoute: ApiNotificationsSubscribeRoute,
-  ApiNotificationsTestPushRoute: ApiNotificationsTestPushRoute,
   ApiNotificationsUnsubscribeRoute: ApiNotificationsUnsubscribeRoute,
   ApiNotificationsVapidKeyRoute: ApiNotificationsVapidKeyRoute,
   ApiPersonsIdRoute: ApiPersonsIdRoute,
