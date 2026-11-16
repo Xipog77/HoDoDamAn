@@ -9,8 +9,6 @@ import {
   jsonb,
   pgEnum,
   index,
-  date,
-  primaryKey,
 } from 'drizzle-orm/pg-core'
 
 export const userRoleEnum = pgEnum('user_role', ['GUEST', 'MEMBER', 'ADMIN', 'SUPER_ADMIN'])
@@ -153,13 +151,51 @@ export const editRequests = pgTable('edit_requests', {
   personIdIdx: index('idx_edit_requests_person_id').on(t.personId),
 }))
 
+export interface NotificationStats {
+  recipients: number
+  email: { sent: number; failed: number; skipped: number }
+  push: { sent: number; failed: number }
+}
+
 export const notifications = pgTable('notifications', {
   id: serial('id').primaryKey(),
   title: varchar('title', { length: 300 }).notNull(),
   content: text('content').notNull(),
+  /** Shown on the public homepage (only once status = SENT) */
   isActive: boolean('is_active').default(true),
+  /** MANUAL (admin-written) | ACCOUNT (new-account email) | TEST (test push) */
+  kind: varchar('kind', { length: 20 }).notNull().default('MANUAL'),
+  /** ALL active members / devices, or only recipientUserIds */
+  audience: varchar('audience', { length: 10 }).notNull().default('ALL'),
+  recipientUserIds: jsonb('recipient_user_ids').$type<number[]>(),
+  sendEmail: boolean('send_email').notNull().default(false),
+  sendPush: boolean('send_push').notNull().default(false),
+  url: varchar('url', { length: 500 }),
+  /** DRAFT | SCHEDULED | SENDING | SENT | FAILED */
+  status: varchar('status', { length: 20 }).notNull().default('SENT'),
+  scheduledAt: timestamp('scheduled_at'),
+  sentAt: timestamp('sent_at'),
+  stats: jsonb('stats').$type<NotificationStats>(),
+  createdBy: integer('created_by'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => ({
+  statusScheduledIdx: index('idx_notifications_status_scheduled').on(t.status, t.scheduledAt),
+}))
+
+/** One row per attempted email / push, so admins can see exactly who received what */
+export const notificationDeliveries = pgTable('notification_deliveries', {
+  id: serial('id').primaryKey(),
+  notificationId: integer('notification_id').notNull(),
+  userId: integer('user_id'),
+  channel: varchar('channel', { length: 10 }).notNull(), // EMAIL | PUSH
+  target: varchar('target', { length: 500 }), // email address or device description
+  status: varchar('status', { length: 10 }).notNull(), // SENT | FAILED | SKIPPED
+  error: text('error'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (t) => ({
+  notificationIdx: index('idx_notification_deliveries_notification_id').on(t.notificationId),
+}))
 
 export const media = pgTable('media', {
   id: serial('id').primaryKey(),
@@ -227,13 +263,3 @@ export const pushSubscriptions = pgTable('push_subscriptions', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
-
-// One row per reminder actually sent, so the hourly job never notifies twice
-export const anniversaryRemindersSent = pgTable('anniversary_reminders_sent', {
-  anniversaryId: integer('anniversary_id').notNull(),
-  occursOn: date('occurs_on').notNull(),
-  daysBefore: integer('days_before').notNull(),
-  sentAt: timestamp('sent_at').notNull().defaultNow(),
-}, (t) => ({
-  pk: primaryKey({ columns: [t.anniversaryId, t.occursOn, t.daysBefore] }),
-}))

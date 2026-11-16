@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '~/db/client'
 import { users, notifications, posts } from '~/db/schema'
 import { getUpcomingDeathAnniversaries } from '@/lib/lunar-calendar'
-import { eq, desc } from 'drizzle-orm'
+import { and, eq, desc } from 'drizzle-orm'
 
 export const Route = createFileRoute('/api/homepage/data')({
   server: {
@@ -24,7 +24,12 @@ export const Route = createFileRoute('/api/homepage/data')({
           where: eq(posts.isFeatured, true),
           orderBy: [desc(posts.createdAt)]
         }),
-        db.query.notifications.findMany({ where: eq(notifications.isActive, true), orderBy: [desc(notifications.createdAt)] }),
+        db.query.notifications.findMany({
+          columns: { id: true, title: true, content: true, url: true, createdAt: true },
+          where: and(eq(notifications.isActive, true), eq(notifications.status, 'SENT'), eq(notifications.audience, 'ALL')),
+          orderBy: [desc(notifications.createdAt)],
+          limit: 5,
+        }),
         db.query.persons.findMany(),
       ])
 

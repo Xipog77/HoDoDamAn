@@ -67,7 +67,16 @@ export function Navbar() {
   ]
 
   return (
-    <nav className="sticky top-0 z-50 bg-wood-900/95 backdrop-blur-sm border-b border-gold-600/20 shadow-lg">
+    // With viewport-fit=cover + black-translucent status bar (iOS PWA), the page starts under the
+    // notch; pad by the safe-area insets so the bar's buttons aren't hidden behind it.
+    <nav
+      className="sticky top-0 z-50 bg-wood-900/95 backdrop-blur-sm border-b border-gold-600/20 shadow-lg"
+      style={{
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)',
+      }}
+    >
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -134,7 +143,8 @@ export function Navbar() {
             {user ? (
               <div className="relative">
                 <button
-                  onClick={() => setShowUser(!showUser)}
+                  type="button"
+                  onClick={() => { setShowUser(!showUser); setOpen(false) }}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-stone-300 hover:text-gold-400 hover:bg-wood-800 transition-all"
                 >
                   <div className="w-7 h-7 bg-gold-600 rounded-full flex items-center justify-center">
@@ -196,8 +206,11 @@ export function Navbar() {
 
             {/* Mobile menu button */}
             <button
-              onClick={() => setOpen(!open)}
-              className="md:hidden p-2 text-stone-300 hover:text-gold-400 hover:bg-wood-800 rounded-lg transition-colors"
+              type="button"
+              onClick={() => { setOpen(!open); setShowUser(false) }}
+              aria-label={open ? 'Đóng menu' : 'Mở menu'}
+              aria-expanded={open}
+              className="md:hidden p-2.5 -mr-1 text-stone-300 hover:text-gold-400 hover:bg-wood-800 rounded-lg transition-colors"
             >
               {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -206,7 +219,7 @@ export function Navbar() {
 
         {/* Mobile nav */}
         {open && (
-          <div className="md:hidden border-t border-wood-700 py-3 space-y-1">
+          <div className="md:hidden border-t border-wood-700 py-3 space-y-1 overflow-y-auto max-h-[calc(100dvh-4rem-env(safe-area-inset-top))]">
             {navLinks.map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}

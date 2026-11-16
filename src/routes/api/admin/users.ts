@@ -4,6 +4,7 @@ import { users } from '~/db/schema'
 import { eq } from 'drizzle-orm'
 import { getAuthUser } from '@/lib/auth'
 import { sendEmail } from '@/lib/notifications'
+import { recordSystemEmail } from '@/lib/notification-center'
 import bcrypt from 'bcryptjs'
 
 export const Route = createFileRoute('/api/admin/users')({
@@ -93,12 +94,24 @@ export const Route = createFileRoute('/api/admin/users')({
                   </div>
                 </div>
               `
+              let result: { ok: true } | { ok: false; skipped?: boolean; error: string }
               try {
-                await sendEmail(email, subject, html, `Tài khoản của bạn đã được tạo.\nTên đăng nhập: ${username}\nMật khẩu: ${password}`)
-                console.log(`[Credentials Sent] Successfully sent credentials to ${email}`)
-              } catch (mailErr) {
+                const sent = await sendEmail(email, subject, html, `Tài khoản của bạn đã được tạo.\nTên đăng nhập: ${username}\nMật khẩu: ${password}`)
+                result = sent ? { ok: true } : { ok: false, skipped: true, error: 'SMTP chưa cấu hình' }
+              } catch (mailErr: any) {
                 console.error('Failed to send credentials email:', mailErr)
+                result = { ok: false, error: String(mailErr?.message || mailErr) }
               }
+              // The password is deliberately left out of the logged content
+              await recordSystemEmail({
+                kind: 'ACCOUNT',
+                title: subject,
+                content: `Email gửi thông tin đăng nhập cho tài khoản "${username}" (${displayName}).`,
+                userId: newUser.id,
+                email,
+                createdBy: payload.userId,
+                result,
+              }).catch((e) => console.error('Failed to log credentials email:', e))
             }
 
             return Response.json({ user: { ...newUser, passwordHash: undefined } }, { status: 201 })

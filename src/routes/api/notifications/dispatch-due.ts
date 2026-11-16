@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { timingSafeEqual } from 'node:crypto'
 import { getAuthUser } from '@/lib/auth'
-import { runAnniversaryReminders } from '@/lib/anniversary-reminders'
+import { dispatchDueNotifications } from '@/lib/notification-center'
 
-// server.js generates INTERNAL_CRON_TOKEN at startup and calls this route hourly
+// server.js generates INTERNAL_CRON_TOKEN at startup and calls this route every minute
 function isInternalCall(request: Request) {
   const expected = process.env.INTERNAL_CRON_TOKEN
   const given = request.headers.get('x-internal-token')
@@ -11,7 +11,7 @@ function isInternalCall(request: Request) {
   return timingSafeEqual(Buffer.from(given), Buffer.from(expected))
 }
 
-export const Route = createFileRoute('/api/cron/reminders')({
+export const Route = createFileRoute('/api/notifications/dispatch-due')({
   server: {
     handlers: {
       POST: async ({ request }) => {
@@ -21,12 +21,10 @@ export const Route = createFileRoute('/api/cron/reminders')({
             return Response.json({ error: 'Không có quyền' }, { status: 403 })
           }
         }
-
         try {
-          const result = await runAnniversaryReminders()
-          return Response.json(result)
+          return Response.json(await dispatchDueNotifications())
         } catch (e) {
-          console.error('[Reminders] Run failed:', e)
+          console.error('[Notifications] Scheduled run failed:', e)
           return Response.json({ error: 'Lỗi server' }, { status: 500 })
         }
       },

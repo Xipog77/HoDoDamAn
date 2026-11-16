@@ -32,7 +32,7 @@ src/
     background-images.ts # Configurable background image paths for homepage & profiles
     sanitize.ts         # sanitize-html for all rich-text writes (posts, biographies)
     rate-limit.ts       # In-memory limiter for login/register
-    anniversary-reminders.ts # Hourly push/email reminders (3 days before + on the day)
+    notification-center.ts # Send/schedule notifications (homepage, email, push) + per-recipient delivery log
     gedcom.ts           # GEDCOM 5.5.1 export (/api/admin/gedcom)
   server/               # createServerFn helpers used by route loaders (SSR meta)
 
@@ -60,7 +60,7 @@ src/
     admin/posts.tsx      # Write posts with TipTap editor
     admin/fund.tsx       # Record income/expenses
     admin/anniversaries.tsx # Manage family events (lunar/solar, recurring/one-time)
-    admin/notifications.tsx # Manage homepage notifications
+    admin/notifications.tsx # Notification center (compose, recipients, schedule, delivery log)
 
     api/auth/            # register, login, logout, me endpoints
     api/persons/         # tree, index (list/create), $id (read/update/delete)
@@ -96,7 +96,9 @@ src/
 
 **memory_wall** — Text tributes tied to a person profile
 
-**notifications** — Homepage announcements (togglable active/inactive)
+**notifications** — Notification center: audience (ALL/USERS), channels (homepage/email/push), status (DRAFT/SCHEDULED/SENDING/SENT/FAILED), scheduledAt; `server.js` dispatches due ones every minute via `/api/notifications/dispatch-due`
+
+**notification_deliveries** — One row per email/push attempt (who, channel, status, error)
 
 **anniversaries** — Family events with dual calendar support
 - `dateType`: SOLAR or LUNAR

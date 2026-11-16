@@ -52,7 +52,7 @@ function sendFile(req, res, filePath, size, headers) {
   })
 }
 
-// Shared secret for the in-process reminder job; set before the app reads process.env
+// Shared secret for the in-process scheduled-notification job; set before the app reads process.env
 process.env.INTERNAL_CRON_TOKEN ||= randomUUID()
 
 // Import the fetch handler from the vite build output
@@ -200,25 +200,23 @@ const server = createServer(async (req, res) => {
 })
 
 /**
- * Hourly anniversary reminders (from 07:00 Vietnam time). The route records what it
- * sent, so repeated runs on the same day are no-ops.
+ * Every minute, send notifications that admins scheduled in the notification center.
+ * Each notification is claimed atomically, so overlapping runs never double-send.
  */
-async function runReminders() {
-  const vnHour = (new Date().getUTCHours() + 7) % 24
-  if (vnHour < 7) return
+async function runScheduledNotifications() {
   try {
-    const response = await app.fetch(new Request(`http://localhost:${PORT}/api/cron/reminders`, {
+    const response = await app.fetch(new Request(`http://localhost:${PORT}/api/notifications/dispatch-due`, {
       method: 'POST',
       headers: { 'x-internal-token': process.env.INTERNAL_CRON_TOKEN },
     }))
     const result = await response.json()
-    if (result.sent) console.log('[Reminders]', result)
+    if (result.sent) console.log('[Notifications] Scheduled sent:', result)
   } catch (err) {
-    console.error('[Reminders] Failed:', err.message)
+    console.error('[Notifications] Scheduled run failed:', err.message)
   }
 }
-setTimeout(runReminders, 60 * 1000)
-setInterval(runReminders, 60 * 60 * 1000)
+setTimeout(runScheduledNotifications, 30 * 1000)
+setInterval(runScheduledNotifications, 60 * 1000)
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 FamilyTree server running at http://localhost:${PORT}`)

@@ -98,7 +98,7 @@ export function NotificationBellButton() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 bg-wood-900 border border-gold-500/30 rounded-2xl shadow-2xl p-4 z-50 text-stone-200 animate-in fade-in duration-200 font-sans">
+        <div className="fixed left-4 right-4 top-[calc(4rem+env(safe-area-inset-top))] sm:absolute sm:left-auto sm:right-0 sm:top-full sm:w-72 mt-2 bg-wood-900 border border-gold-500/30 rounded-2xl shadow-2xl p-4 z-50 text-stone-200 animate-in fade-in duration-200 font-sans">
           <div className="flex items-center justify-between pb-2 mb-3 border-b border-wood-700/60">
             <span className="font-serif font-bold text-sm text-gold-400 flex items-center gap-1.5">
               <Bell className="w-4 h-4" />
@@ -118,7 +118,7 @@ export function NotificationBellButton() {
           <p className="text-xs text-stone-300 leading-relaxed mb-3">
             {isSubscribed
               ? 'Thiết bị này đang nhận thông báo ngày giỗ và tin tức quan trọng từ Tộc phả Họ Đỗ Đàm An.'
-              : 'Bật thông báo đẩy để nhận lời nhắc các ngày giỗ tổ tiên và hoạt động dòng tộc ngay trên màn hình thiết bị.'}
+              : 'Bật thông báo đẩy để nhận thông báo về ngày giỗ, sự kiện và hoạt động dòng tộc ngay trên màn hình thiết bị.'}
           </p>
 
           {statusMsg && (

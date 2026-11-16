@@ -142,6 +142,14 @@ body {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+/* iPhone notch / Dynamic Island / home indicator (needs viewport-fit=cover) */
+@utility safe-pt {
+  padding-top: env(safe-area-inset-top);
+}
+@utility safe-pb {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 .scrollbar-none {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */

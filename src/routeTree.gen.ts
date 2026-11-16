@@ -47,11 +47,12 @@ import { Route as ApiNotificationsVapidKeyRouteImport } from './routes/api/notif
 import { Route as ApiNotificationsUnsubscribeRouteImport } from './routes/api/notifications/unsubscribe'
 import { Route as ApiNotificationsTestPushRouteImport } from './routes/api/notifications/test-push'
 import { Route as ApiNotificationsSubscribeRouteImport } from './routes/api/notifications/subscribe'
+import { Route as ApiNotificationsDispatchDueRouteImport } from './routes/api/notifications/dispatch-due'
+import { Route as ApiNotificationsIdRouteImport } from './routes/api/notifications/$id'
 import { Route as ApiMemoriesPersonIdRouteImport } from './routes/api/memories/$personId'
 import { Route as ApiMediaIdRouteImport } from './routes/api/media/$id'
 import { Route as ApiHomepageDataRouteImport } from './routes/api/homepage/data'
 import { Route as ApiFundIdRouteImport } from './routes/api/fund/$id'
-import { Route as ApiCronRemindersRouteImport } from './routes/api/cron/reminders'
 import { Route as ApiCommentsIdRouteImport } from './routes/api/comments/$id'
 import { Route as ApiCarouselIdRouteImport } from './routes/api/carousel/$id'
 import { Route as ApiAuthSettingsRouteImport } from './routes/api/auth/settings'
@@ -263,6 +264,17 @@ const ApiNotificationsSubscribeRoute =
     path: '/api/notifications/subscribe',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiNotificationsDispatchDueRoute =
+  ApiNotificationsDispatchDueRouteImport.update({
+    id: '/api/notifications/dispatch-due',
+    path: '/api/notifications/dispatch-due',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiNotificationsIdRoute = ApiNotificationsIdRouteImport.update({
+  id: '/api/notifications/$id',
+  path: '/api/notifications/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMemoriesPersonIdRoute = ApiMemoriesPersonIdRouteImport.update({
   id: '/api/memories/$personId',
   path: '/api/memories/$personId',
@@ -281,11 +293,6 @@ const ApiHomepageDataRoute = ApiHomepageDataRouteImport.update({
 const ApiFundIdRoute = ApiFundIdRouteImport.update({
   id: '/api/fund/$id',
   path: '/api/fund/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiCronRemindersRoute = ApiCronRemindersRouteImport.update({
-  id: '/api/cron/reminders',
-  path: '/api/cron/reminders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCommentsIdRoute = ApiCommentsIdRouteImport.update({
@@ -406,11 +413,12 @@ export interface FileRoutesByFullPath {
   '/api/auth/settings': typeof ApiAuthSettingsRoute
   '/api/carousel/$id': typeof ApiCarouselIdRoute
   '/api/comments/$id': typeof ApiCommentsIdRoute
-  '/api/cron/reminders': typeof ApiCronRemindersRoute
   '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
+  '/api/notifications/$id': typeof ApiNotificationsIdRoute
+  '/api/notifications/dispatch-due': typeof ApiNotificationsDispatchDueRoute
   '/api/notifications/subscribe': typeof ApiNotificationsSubscribeRoute
   '/api/notifications/test-push': typeof ApiNotificationsTestPushRoute
   '/api/notifications/unsubscribe': typeof ApiNotificationsUnsubscribeRoute
@@ -467,11 +475,12 @@ export interface FileRoutesByTo {
   '/api/auth/settings': typeof ApiAuthSettingsRoute
   '/api/carousel/$id': typeof ApiCarouselIdRoute
   '/api/comments/$id': typeof ApiCommentsIdRoute
-  '/api/cron/reminders': typeof ApiCronRemindersRoute
   '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
+  '/api/notifications/$id': typeof ApiNotificationsIdRoute
+  '/api/notifications/dispatch-due': typeof ApiNotificationsDispatchDueRoute
   '/api/notifications/subscribe': typeof ApiNotificationsSubscribeRoute
   '/api/notifications/test-push': typeof ApiNotificationsTestPushRoute
   '/api/notifications/unsubscribe': typeof ApiNotificationsUnsubscribeRoute
@@ -529,11 +538,12 @@ export interface FileRoutesById {
   '/api/auth/settings': typeof ApiAuthSettingsRoute
   '/api/carousel/$id': typeof ApiCarouselIdRoute
   '/api/comments/$id': typeof ApiCommentsIdRoute
-  '/api/cron/reminders': typeof ApiCronRemindersRoute
   '/api/fund/$id': typeof ApiFundIdRoute
   '/api/homepage/data': typeof ApiHomepageDataRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/api/memories/$personId': typeof ApiMemoriesPersonIdRoute
+  '/api/notifications/$id': typeof ApiNotificationsIdRoute
+  '/api/notifications/dispatch-due': typeof ApiNotificationsDispatchDueRoute
   '/api/notifications/subscribe': typeof ApiNotificationsSubscribeRoute
   '/api/notifications/test-push': typeof ApiNotificationsTestPushRoute
   '/api/notifications/unsubscribe': typeof ApiNotificationsUnsubscribeRoute
@@ -592,11 +602,12 @@ export interface FileRouteTypes {
     | '/api/auth/settings'
     | '/api/carousel/$id'
     | '/api/comments/$id'
-    | '/api/cron/reminders'
     | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
     | '/api/memories/$personId'
+    | '/api/notifications/$id'
+    | '/api/notifications/dispatch-due'
     | '/api/notifications/subscribe'
     | '/api/notifications/test-push'
     | '/api/notifications/unsubscribe'
@@ -653,11 +664,12 @@ export interface FileRouteTypes {
     | '/api/auth/settings'
     | '/api/carousel/$id'
     | '/api/comments/$id'
-    | '/api/cron/reminders'
     | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
     | '/api/memories/$personId'
+    | '/api/notifications/$id'
+    | '/api/notifications/dispatch-due'
     | '/api/notifications/subscribe'
     | '/api/notifications/test-push'
     | '/api/notifications/unsubscribe'
@@ -714,11 +726,12 @@ export interface FileRouteTypes {
     | '/api/auth/settings'
     | '/api/carousel/$id'
     | '/api/comments/$id'
-    | '/api/cron/reminders'
     | '/api/fund/$id'
     | '/api/homepage/data'
     | '/api/media/$id'
     | '/api/memories/$personId'
+    | '/api/notifications/$id'
+    | '/api/notifications/dispatch-due'
     | '/api/notifications/subscribe'
     | '/api/notifications/test-push'
     | '/api/notifications/unsubscribe'
@@ -765,11 +778,12 @@ export interface RootRouteChildren {
   ApiAuthSettingsRoute: typeof ApiAuthSettingsRoute
   ApiCarouselIdRoute: typeof ApiCarouselIdRoute
   ApiCommentsIdRoute: typeof ApiCommentsIdRoute
-  ApiCronRemindersRoute: typeof ApiCronRemindersRoute
   ApiFundIdRoute: typeof ApiFundIdRoute
   ApiHomepageDataRoute: typeof ApiHomepageDataRoute
   ApiMediaIdRoute: typeof ApiMediaIdRoute
   ApiMemoriesPersonIdRoute: typeof ApiMemoriesPersonIdRoute
+  ApiNotificationsIdRoute: typeof ApiNotificationsIdRoute
+  ApiNotificationsDispatchDueRoute: typeof ApiNotificationsDispatchDueRoute
   ApiNotificationsSubscribeRoute: typeof ApiNotificationsSubscribeRoute
   ApiNotificationsTestPushRoute: typeof ApiNotificationsTestPushRoute
   ApiNotificationsUnsubscribeRoute: typeof ApiNotificationsUnsubscribeRoute
@@ -1057,6 +1071,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiNotificationsSubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/notifications/dispatch-due': {
+      id: '/api/notifications/dispatch-due'
+      path: '/api/notifications/dispatch-due'
+      fullPath: '/api/notifications/dispatch-due'
+      preLoaderRoute: typeof ApiNotificationsDispatchDueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notifications/$id': {
+      id: '/api/notifications/$id'
+      path: '/api/notifications/$id'
+      fullPath: '/api/notifications/$id'
+      preLoaderRoute: typeof ApiNotificationsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/memories/$personId': {
       id: '/api/memories/$personId'
       path: '/api/memories/$personId'
@@ -1083,13 +1111,6 @@ declare module '@tanstack/react-router' {
       path: '/api/fund/$id'
       fullPath: '/api/fund/$id'
       preLoaderRoute: typeof ApiFundIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/cron/reminders': {
-      id: '/api/cron/reminders'
-      path: '/api/cron/reminders'
-      fullPath: '/api/cron/reminders'
-      preLoaderRoute: typeof ApiCronRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/comments/$id': {
@@ -1265,11 +1286,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthSettingsRoute: ApiAuthSettingsRoute,
   ApiCarouselIdRoute: ApiCarouselIdRoute,
   ApiCommentsIdRoute: ApiCommentsIdRoute,
-  ApiCronRemindersRoute: ApiCronRemindersRoute,
   ApiFundIdRoute: ApiFundIdRoute,
   ApiHomepageDataRoute: ApiHomepageDataRoute,
   ApiMediaIdRoute: ApiMediaIdRoute,
   ApiMemoriesPersonIdRoute: ApiMemoriesPersonIdRoute,
+  ApiNotificationsIdRoute: ApiNotificationsIdRoute,
+  ApiNotificationsDispatchDueRoute: ApiNotificationsDispatchDueRoute,
   ApiNotificationsSubscribeRoute: ApiNotificationsSubscribeRoute,
   ApiNotificationsTestPushRoute: ApiNotificationsTestPushRoute,
   ApiNotificationsUnsubscribeRoute: ApiNotificationsUnsubscribeRoute,

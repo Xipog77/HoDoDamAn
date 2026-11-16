@@ -96,7 +96,7 @@ export function PushPromptBanner() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-5 duration-300">
+    <div style={{ bottom: 'calc(1rem + env(safe-area-inset-bottom))' }} className="fixed right-4 left-4 sm:left-auto sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-5 duration-300">
       <div className="bg-wood-900/95 backdrop-blur-md border border-gold-500/40 rounded-2xl p-4 sm:p-5 shadow-2xl text-stone-200">
         <div className="flex items-start justify-between gap-3">
           <div className="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/30 flex items-center justify-center flex-shrink-0 text-gold-400">

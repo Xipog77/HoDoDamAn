@@ -94,7 +94,7 @@ function AdminLayout() {
       </aside>
 
       {/* Mobile nav */}
-      <div className="md:hidden bg-wood-900 w-full fixed bottom-0 left-0 z-40 border-t border-wood-700 flex overflow-x-auto scrollbar-none">
+      <div className="md:hidden bg-wood-900 w-full fixed bottom-0 left-0 z-40 border-t border-wood-700 flex overflow-x-auto scrollbar-none safe-pb">
         {adminLinks.map(({ to, shortLabel, icon: Icon }) => (
           <Link
             key={to}
@@ -118,7 +118,7 @@ function AdminLayout() {
       </div>
 
       {/* Content */}
-      <main className="flex-1 overflow-auto bg-stone-50 p-6 pb-20 md:pb-6">
+      <main className="flex-1 min-w-0 overflow-auto bg-stone-50 p-4 sm:p-6 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-6">
         <Outlet />
       </main>
     </div>

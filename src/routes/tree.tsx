@@ -11,7 +11,7 @@ function TreePage() {
   const [showInfo, setShowInfo] = useState(false)
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)]">
+    <div className="flex flex-col h-[calc(100dvh-64px-env(safe-area-inset-top))]">
       {/* Header */}
       <div className="no-print bg-white border-b border-stone-200 px-4 py-2.5 flex items-center justify-between gap-4 flex-shrink-0 shadow-sm z-10">
         <div className="flex items-center gap-2.5">

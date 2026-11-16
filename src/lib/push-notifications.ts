@@ -9,7 +9,7 @@ export const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || ''
 export const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || ''
 export const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:admin@dodaman.id.vn'
 
-const pushConfigured = !!(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY)
+export const pushConfigured = !!(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY)
 if (pushConfigured) {
   webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
 } else {
@@ -140,48 +140,5 @@ export async function sendNotificationToSubscription(
       console.error(`[Push] Failed to send push to ID ${sub.id}:`, err.message || err)
     }
     return { success: false, id: sub.id, error: err.message }
-  }
-}
-
-/**
- * Broadcast notification to all active devices (or filtered by user)
- */
-export async function broadcastPushNotification(
-  payload: PushPayload,
-  options?: { targetUserId?: number }
-) {
-  if (!pushConfigured) return { totalSent: 0, successCount: 0, failureCount: 0 }
-
-  let query = db.query.pushSubscriptions.findMany()
-  if (options?.targetUserId) {
-    query = db.query.pushSubscriptions.findMany({
-      where: eq(pushSubscriptions.userId, options.targetUserId),
-    })
-  }
-
-  const allSubs = await query
-  if (!allSubs || allSubs.length === 0) {
-    return { totalSent: 0, successCount: 0, failureCount: 0 }
-  }
-
-  const results = await Promise.allSettled(
-    allSubs.map((sub) => sendNotificationToSubscription(sub, payload))
-  )
-
-  let successCount = 0
-  let failureCount = 0
-
-  for (const r of results) {
-    if (r.status === 'fulfilled' && r.value.success) {
-      successCount++
-    } else {
-      failureCount++
-    }
-  }
-
-  return {
-    totalSent: allSubs.length,
-    successCount,
-    failureCount,
   }
 }
